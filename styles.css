@@ -7,3 +7,29 @@ body {
 	flex-direction: column;
 	gap: 0.5rem;
 }
+
+.teams {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	grid-template-rows: 1fr 1fr;
+}
+
+.north {
+	grid-column: 1;
+	grid-row: 1;
+}
+
+.ships {
+	grid-column: 2;
+	grid-row: 1;
+}
+
+.southFront {
+	grid-column: 1;
+	grid-row: 2;
+}
+
+.southBack {
+	grid-column: 2;
+	grid-row: 2;
+}
