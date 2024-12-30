@@ -27,12 +27,30 @@ onload = (event) => {
 	const leagueSelect = document.querySelector('#league');
 
 	typeSelect.addEventListener('change', (event) => {
+		localStorage.setItem('type', typeSelect.value);
+
 		updateTeams(typeSelect, leagueSelect);
 	})
 
 	leagueSelect.addEventListener('change', (event) => {
+		localStorage.setItem('league', leagueSelect.value);
+
 		updateTeams(typeSelect, leagueSelect);
 	});
+
+	const savedType = localStorage.getItem('type');
+	if (savedType) {
+		typeSelect.value = savedType;
+	}
+
+	const savedLeague = localStorage.getItem('league');
+	if (savedLeague) {
+		leagueSelect.value = savedLeague;
+	}
+
+	if (savedType || savedLeague) {
+		updateTeams(typeSelect, leagueSelect);
+	}
 };
 
 function updateTeams(typeSelect, leagueSelect) {
