@@ -25,15 +25,29 @@
 </form>
 
 <h2>North</h2>
-<ul id="north" class="zone"></ul>
+<div id="north" class="zone"></div>
 
 <h2>Ships</h2>
-<ul id="ships" class="zone"></ul>
+<div id="ships" class="zone"></div>
 
 <h2>South Front</h2>
-<ul id="south" class="zone"></ul>
+<div id="south" class="zone"></div>
 
 <h2>South Back</h2>
-<ul id="back" class="zone"></ul>
+<div id="back" class="zone"></div>
+
+<template id="team-info-template">
+	<style>
+		.team {
+			display: flex;
+			gap: 1rem;
+		}
+	</style>
+
+	<div class="team">
+		<input type="text" autocomplete="off" placeholder="Team" />
+		<input type="text" autocomplete="off" placeholder="Counter" />
+	</div>
+</template>
 
 <script src="script.js"></script>

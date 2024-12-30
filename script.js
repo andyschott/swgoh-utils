@@ -1,22 +1,11 @@
 class TeamElement extends HTMLElement {
 	constructor() {
 		super()
-	}
 
-	connectedCallback() {
 		const shadow = this.attachShadow({ mode: 'open' });
 
-		const teamInput = document.createElement('input');
-		teamInput.setAttribute('type', 'text');
-		teamInput.setAttribute('autocomplete', 'off');
-		teamInput.setAttribute('placeholder', 'Team');
-		shadow.appendChild(teamInput);
-
-		const countersInput = document.createElement('input');
-		countersInput.setAttribute('type', 'text');
-		countersInput.setAttribute('autocomplete', 'off');
-		countersInput.setAttribute('placeholder', 'Counters');
-		shadow.appendChild(countersInput);
+		const template = document.getElementById('team-info-template');
+		shadow.appendChild(template.content.cloneNode(true));
 	}
 }
 
@@ -65,10 +54,8 @@ function updateTeams(typeSelect, leagueSelect) {
 
 		removeAllChildren(zone);
 		for (let teamIndex = 0; teamIndex < currentZoneInfo; teamIndex++) {
-			const listItem = document.createElement('li');
 			const team = document.createElement('team-info');
-			listItem.appendChild(team);
-			zone.appendChild(listItem);
+			zone.appendChild(team);
 		}
 	}
 }
