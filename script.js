@@ -1,11 +1,21 @@
 class TeamElement extends HTMLElement {
 	constructor() {
 		super()
+	}
 
+	connectedCallback() {
 		const shadow = this.attachShadow({ mode: 'open' });
 
 		const template = document.getElementById('team-info-template');
 		shadow.appendChild(template.content.cloneNode(true));
+
+		const team = shadow.getElementById('team');
+		const counters = shadow.getElementById('counters');
+		const complete = shadow.getElementById('complete');
+		complete.addEventListener('change', (event) => {
+			team.disabled = complete.checked;
+			counters.disabled = complete.checked;
+		});
 	}
 }
 
