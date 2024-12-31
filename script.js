@@ -47,9 +47,7 @@ onload = (event) => {
 		leagueSelect.value = savedLeague;
 	}
 
-	if (savedType || savedLeague) {
-		updateTeams(typeSelect, leagueSelect);
-	}
+	updateTeams(typeSelect, leagueSelect);
 };
 
 function updateTeams(typeSelect, leagueSelect) {
