@@ -43,6 +43,29 @@ form#parameters {
 	grid-template-rows: min-content min-content;
 }
 
+@media only screen and (max-width: 500px) {
+	body {
+		font-size: 1.25rem;
+	}
+
+	h1 {
+		font-size: 2rem;
+	}
+
+	h2 {
+		font-size: 1.5rem;
+	}
+
+	select {
+		font-size: 1.25rem;
+	}
+
+	.teams {
+		display: flex;
+		flex-direction: column;
+	}
+}
+
 .north {
 	grid-column: 1;
 	grid-row: 1;
