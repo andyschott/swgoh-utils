@@ -2,12 +2,13 @@
 
 <head>
 	<title>SWGOH GAC Planner</title>
+	<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
 	<link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
 
 <h1>SWGOH GAC Planner</h1>
 
-<form>
+<form id="parameters">
 	<label for="type">Type:</label>
 	<select id="type">
 		<option value="3">3v3</option>
@@ -22,6 +23,7 @@
 		<option value="aurodium">Aurodium</option>
 		<option value="kyber">Kyber</option>
 	</select>
+
 </form>
 
 <p>
@@ -54,7 +56,15 @@
 	<style>
 		.team {
 			display: flex;
-			gap: 1rem;
+			gap: 0.5rem;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			input {
+				background-color: black;
+				color: white;
+				border-color: white;
+			}
 		}
 	</style>
 
