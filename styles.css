@@ -67,22 +67,22 @@ form#parameters {
 	}
 }
 
-.north {
+#north {
 	grid-column: 1;
 	grid-row: 1;
 }
 
-.ships {
+#ships {
 	grid-column: 2;
 	grid-row: 1;
 }
 
-.southFront {
+#south {
 	grid-column: 1;
 	grid-row: 2;
 }
 
-.southBack {
+#southBack {
 	grid-column: 2;
 	grid-row: 2;
 }

@@ -31,25 +31,21 @@
 </p>
 
 <div class="teams">
-	<div class="north">
-		<h2>North</h2>
-		<div id="north" class="zone"></div>
-	</div>
+	<zone-info id="north">
+		<span slot="zone-name">North</span>
+	</zone-info>
 
-	<div class="southFront">
-		<h2>South Front</h2>
-		<div id="south" class="zone"></div>
-	</div>
+	<zone-info id="south">
+		<span slot="zone-name">South Front</span>
+	</zone-info>
 
-	<div class="southBack">
-		<h2>South Back</h2>
-		<div id="back" class="zone"></div>
-	</div>
+	<zone-info id="back">
+		<span slot="zone-name">South Back</span>
+	</zone-info>
 
-	<div class="shipds">
-		<h2>Ships</h2>
-		<div id="ships" class="zone"></div>
-	</div>
+	<zone-info id="ships">
+		<span slot="zone-name">Ships</span>
+	</zone-info>
 </div>
 
 <template id="team-info-template">
@@ -104,6 +100,13 @@
 			<input type="text" id="counters" autocomplete="off" placeholder="Counter" />
 		</div>
 	</div>
+</template>
+
+<template id="zone-info-template">
+	<h2 id="name">
+		<slot name="zone-name">Zone Name</slot>
+	</h2>
+	<div id="teams"></div>
 </template>
 
 <script src="script.js"></script>

@@ -18,8 +18,40 @@ class TeamElement extends HTMLElement {
 		});
 	}
 }
-
 customElements.define('team-info', TeamElement);
+
+class ZoneElement extends HTMLElement {
+	static observedAttributes = [
+		'teams'
+	];
+
+	constructor() {
+		super()
+	}
+
+	connectedCallback() {
+		const shadow = this.attachShadow({ mode: 'open' });
+
+		const template = document.getElementById('zone-info-template');
+		const instance = template.content.cloneNode(true);
+
+		shadow.appendChild(instance);
+	}
+
+	attributeChangedCallback(name, oldValue, newValue) {
+		if (name === 'teams') {
+			const shadow = this.shadowRoot;
+			const teamsContainer = shadow.querySelector('#teams');
+			removeAllChildren(teamsContainer);
+
+			for (let teamIndex = 0; teamIndex < newValue; teamIndex++) {
+				const team = document.createElement('team-info');
+				teamsContainer.appendChild(team);
+			}
+		}
+	}
+}
+customElements.define('zone-info', ZoneElement);
 
 onload = (event) => {
 	const typeSelect = document.querySelector('#type');
@@ -55,16 +87,10 @@ function updateTeams(typeSelect, leagueSelect) {
 	const league = leagueSelect.value;
 
 	const zoneInfo = zoneSizes[type][league];
-	const zones = document.querySelectorAll('.zone');
+	const zones = document.querySelectorAll('zone-info');
 	for (let index = 0; index < zones.length; index++) {
 		const zone = zones[index];
-		const currentZoneInfo = zoneInfo[zone.id];
-
-		removeAllChildren(zone);
-		for (let teamIndex = 0; teamIndex < currentZoneInfo; teamIndex++) {
-			const team = document.createElement('team-info');
-			zone.appendChild(team);
-		}
+		zone.setAttribute('teams', zoneInfo[zone.id]);
 	}
 }
 
