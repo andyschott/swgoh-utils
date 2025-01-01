@@ -6,136 +6,140 @@
 	<link rel="stylesheet" type="text/css" href="styles.css" />
 </head>
 
-<h1>SWGOH GAC Planner</h1>
+<body>
+	<h1>SWGOH GAC Planner</h1>
 
-<form id="parameters">
-	<label for="type">Type:</label>
-	<select id="type">
-		<option value="3">3v3</option>
-		<option value="5">5v5</option>
-	</select>
+	<form id="parameters">
+		<label for="type">Type:</label>
+		<select id="type">
+			<option value="3">3v3</option>
+			<option value="5">5v5</option>
+		</select>
 
-	<label>League:</label>
-	<select id="league">
-		<option value="carbonite">Carbonite</option>
-		<option value="bronzium">Bronzium</option>
-		<option value="chromium">Chromium</option>
-		<option value="aurodium">Aurodium</option>
-		<option value="kyber">Kyber</option>
-	</select>
+		<label>League:</label>
+		<select id="league">
+			<option value="carbonite">Carbonite</option>
+			<option value="bronzium">Bronzium</option>
+			<option value="chromium">Chromium</option>
+			<option value="aurodium">Aurodium</option>
+			<option value="kyber">Kyber</option>
+		</select>
 
-</form>
+	</form>
 
-<p>
-	<a href="https://swgoh.gg/gac/counters/" target="_blank">SWGOH.gg GAC Counters</a>
-</p>
+	<p>
+		<a href="https://swgoh.gg/gac/counters/" target="_blank">SWGOH.gg GAC Counters</a>
+	</p>
 
-<div class="teams">
-	<zone-info id="north">
-		<span slot="zone-name">North</span>
-	</zone-info>
+	<div class="teams">
+		<zone-info id="north">
+			<span slot="zone-name">North</span>
+		</zone-info>
 
-	<zone-info id="south">
-		<span slot="zone-name">South Front</span>
-	</zone-info>
+		<zone-info id="south">
+			<span slot="zone-name">South Front</span>
+		</zone-info>
 
-	<zone-info id="back">
-		<span slot="zone-name">South Back</span>
-	</zone-info>
+		<zone-info id="back">
+			<span slot="zone-name">South Back</span>
+		</zone-info>
 
-	<zone-info id="ships">
-		<span slot="zone-name">Ships</span>
-	</zone-info>
-</div>
+		<zone-info id="ships">
+			<span slot="zone-name">Ships</span>
+		</zone-info>
+	</div>
 
-<template id="team-info-template">
-	<style>
-		.team {
-			display: flex;
-			gap: 0.5rem;
-			align-items: center;
-		}
-
-		.team .inputs {
-			display: grid;
-			column-gap: 1rem;
-			grid-template-columns: 1fr 1fr;
-		}
-
-		#team {
-			grid-column: 1;
-		}
-
-		#counters {
-			grid-column: 2;
-		}
-
-		@media (prefers-color-scheme: dark) {
-			input {
-				background-color: black;
-				color: white;
-				border-color: white;
+	<template id="team-info-template">
+		<style>
+			.team {
+				display: flex;
+				gap: 0.5rem;
+				align-items: center;
 			}
-		}
 
-		@media only screen and (max-width: 500px) {
+			.team .inputs {
+				display: grid;
+				column-gap: 1rem;
+				grid-template-columns: 1fr 1fr;
+			}
+
 			#team {
-				width: 100%;
+				grid-column: 1;
 			}
 
 			#counters {
-				width: 100%;
+				grid-column: 2;
 			}
 
-			input {
-				font-size: 1.25rem;
+			@media (prefers-color-scheme: dark) {
+				input {
+					background-color: black;
+					color: white;
+					border-color: white;
+				}
 			}
-		}
-	</style>
 
-	<div class="team">
-		<input type="checkbox" id="complete"/>
-		<div class="inputs">
-			<input type="text" id="team" autocomplete="off" placeholder="Team" />
-			<input type="text" id="counters" autocomplete="off" placeholder="Counter" />
+			@media only screen and (max-width: 500px) {
+				#team {
+					width: 100%;
+				}
+
+				#counters {
+					width: 100%;
+				}
+
+				input {
+					font-size: 1.25rem;
+				}
+			}
+		</style>
+
+		<div class="team">
+			<input type="checkbox" id="complete"/>
+			<div class="inputs">
+				<input type="text" id="team" autocomplete="off" placeholder="Team" />
+				<input type="text" id="counters" autocomplete="off" placeholder="Counter" />
+			</div>
 		</div>
-	</div>
-</template>
+	</template>
 
-<template id="zone-info-template">
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+	<template id="zone-info-template">
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
 
-	<style>
-		.header {
-			display: flex;
-			align-items: center;
-		}
+		<style>
+			.header {
+				display: flex;
+				align-items: center;
+			}
 
-		.hidden {
-			display: none;
-		}
+			.hidden {
+				display: none;
+			}
 
-		.custom-cursor {
-			cursor: pointer;
-		}
-	</style>
+			.custom-cursor {
+				cursor: pointer;
+			}
+		</style>
 
-	<h2 id="name">
-		<div class="header">
-			<span class="expand-circle-container">
-				<span class="material-symbols-outlined custom-cursor hidden" id="expandRight">
-					expand_circle_right
+		<h2 id="name">
+			<div class="header">
+				<span class="expand-circle-container">
+					<span class="material-symbols-outlined custom-cursor hidden" id="expandRight">
+						expand_circle_right
+					</span>
 				</span>
-			</span>
-			<span id="expand-circle-container">
-				<span class="material-symbols-outlined custom-cursor" id="expandDown">
-					expand_circle_down
+				<span id="expand-circle-container">
+					<span class="material-symbols-outlined custom-cursor" id="expandDown">
+						expand_circle_down
+					</span>
 				</span>
-			</span>
-			<slot name="zone-name">Zone Name</slot>
-		</div>
-	</h2>
-	<div id="teams"></div>
-</template>
+				<slot name="zone-name">Zone Name</slot>
+			</div>
+		</h2>
+		<div id="teams"></div>
+	</template>
 
-<script src="script.js"></script>
+	<script src="script.js"></script>
+</body>
+
+</html>
