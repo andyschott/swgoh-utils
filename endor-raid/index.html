@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Endor Raid Tracker</title>
+
+        <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+
+        <link rel="stylesheet" type="text/css" href="styles.css">
+
+        <script src="script.js"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                let targetScore = 0;
+
+                const targets = document.getElementsByClassName('target');
+                for (let index = 0; index < targets.length; index++) {
+                    targets[index].innerText = targetScores[index].toLocaleString();
+
+                    targetScore += targetScores[index];
+                }
+
+                document.getElementById('targetScore').innerText = targetScore.toLocaleString();
+            });
+        </script>
+    </head>
+
+    <body>
+        <div class="header">
+            <label for="aheadBehind" class="cell11">Ahead/Behind:</label>
+            <span id="aheadBehind" class="cell12"></span>
+        </div>
+
+        <div class="container">
+            <label for="team1" class="cell11">Leia:</label>
+            <input type="number" id="team1" class="raidScore cell12" oninput="javascript:calculate()" />
+            <span class="cell13 target"></span>
+    
+            <label for="team2" clas="cell21">Piett, Han:</label>
+            <input type="number" id="team2" class="raidScore cell22" oninput="javascript:calculate()" />
+            <span class="cell23 target"></span>
+    
+            <label for="team3" class="cell31">Drogan, Scout:</label>
+            <input type="number" id="team3" class="raidScore cell32" oninput="javascript:calculate()" />
+            <span class="cell33 target"></span>
+    
+            <label for="team4" class="cell41">Iden, C-3PO:</label>
+            <input type="number" id="team4" class="raidScore cell42" oninput="javascript:calculate()" />
+            <span class="cell43 target"></span>
+    
+            <label for="team5" class="cell51">JKL, Chewie:</label>
+            <input type="number" id="team5" class="raidScore cell52" oninput="javascript:calculate()" />
+            <span class="cell53 target"></span>
+    
+            <label for="team6" class="cell61">Hera, Captain Rex:</label>
+            <input type="number" id="team6" class="raidScore cell62" oninput="javascript:calculate()" />
+            <span class="cell63 target"></span>
+    
+            <label for="team7" class="cell71">Ackbar, Kneesaa, Lando:</label>
+            <input type="number" id="team7" class="raidScore cell72" oninput="javascript:calculate()" />
+            <span class="cell73 target"></span>
+    
+            <label for="team8" class="cell81">Chirpa, Wicket, Wedge:</label>
+            <input type="number" id="team8" class="raidScore cell82" oninput="javascript:calculate()" />
+            <span class="cell83 target"></span>
+    
+            <label for="output" class="cell91">Score:</label>
+            <span id="output" class="cell92"></span>
+            <span id="targetScore" class="cell93"></span>
+
+            <input type="button" value="Save" class="save" onclick="javascript:saveScore()" />
+        </div>
+
+        <a href="savedScores.html">Saved Scores</a>
+    </body>
+</html>
