@@ -103,8 +103,37 @@
 </template>
 
 <template id="zone-info-template">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+
+	<style>
+		.header {
+			display: flex;
+			align-items: center;
+		}
+
+		.hidden {
+			display: none;
+		}
+
+		.custom-cursor {
+			cursor: pointer;
+		}
+	</style>
+
 	<h2 id="name">
-		<slot name="zone-name">Zone Name</slot>
+		<div class="header">
+			<span class="expand-circle-container">
+				<span class="material-symbols-outlined custom-cursor hidden" id="expandRight">
+					expand_circle_right
+				</span>
+			</span>
+			<span id="expand-circle-container">
+				<span class="material-symbols-outlined custom-cursor" id="expandDown">
+					expand_circle_down
+				</span>
+			</span>
+			<slot name="zone-name">Zone Name</slot>
+		</div>
 	</h2>
 	<div id="teams"></div>
 </template>

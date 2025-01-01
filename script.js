@@ -34,8 +34,25 @@ class ZoneElement extends HTMLElement {
 
 		const template = document.getElementById('zone-info-template');
 		const instance = template.content.cloneNode(true);
-
 		shadow.appendChild(instance);
+
+		const expandDown = shadow.querySelector('#expandDown');
+		const expandRight = shadow.querySelector('#expandRight');
+		const teams = shadow.querySelector('#teams');
+
+		expandDown.addEventListener('click', (event) => {
+			expandDown.classList.add('hidden');
+			expandRight.classList.remove('hidden');
+
+			teams.classList.add('hidden');
+		});
+
+		expandRight.addEventListener('click', (event) => {
+			expandDown.classList.remove('hidden');
+			expandRight.classList.add('hidden');
+
+			teams.classList.remove('hidden');
+		});
 	}
 
 	attributeChangedCallback(name, oldValue, newValue) {
