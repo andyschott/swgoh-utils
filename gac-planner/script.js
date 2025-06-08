@@ -3,6 +3,8 @@ class TeamElement extends HTMLElement {
 		super()
 	}
 
+	infoChanged = new Event('info-changed');
+
 	connectedCallback() {
 		const shadow = this.attachShadow({ mode: 'open' });
 
@@ -16,6 +18,32 @@ class TeamElement extends HTMLElement {
 			team.disabled = complete.checked;
 			counters.disabled = complete.checked;
 		});
+		team.addEventListener('change', (event) => {
+			this.dispatchEvent(this.infoChanged);
+		});
+		counters.addEventListener('change', (event) => {
+			this.dispatchEvent(this.infoChanged);
+		})
+	}
+
+	getInfo() {
+		const shadow = this.shadowRoot;
+		const team = shadow.getElementById('team');
+		const counters = shadow.getElementById('counters');
+
+		return {
+			team: team.value,
+			counters: counters.value
+		}
+	}
+
+	setInfo(info) {
+		const shadow = this.shadowRoot;
+		const team = shadow.getElementById('team');
+		const counters = shadow.getElementById('counters');
+
+		team.value = info.team;
+		counters.value = info.counters;
 	}
 }
 customElements.define('team-info', TeamElement);
@@ -28,6 +56,8 @@ class ZoneElement extends HTMLElement {
 	constructor() {
 		super()
 	}
+
+	infoChanged = new Event('info-changed');
 
 	connectedCallback() {
 		const shadow = this.attachShadow({ mode: 'open' });
@@ -63,8 +93,34 @@ class ZoneElement extends HTMLElement {
 
 			for (let teamIndex = 0; teamIndex < newValue; teamIndex++) {
 				const team = document.createElement('team-info');
+				team.addEventListener('info-changed', (event) => {
+					this.dispatchEvent(this.infoChanged);
+				});
 				teamsContainer.appendChild(team);
 			}
+		}
+	}
+
+	getInfo() {
+		const shadow = this.shadowRoot;
+		const teamsContainer = shadow.querySelector('#teams');
+		const teams = teamsContainer.getElementsByTagName('team-info');
+		const info = [];
+		for (let index = 0; index < teams.length; index++) {
+			const team = teams[index];
+			info.push(team.getInfo());
+		}
+		return info;
+	}
+
+	setInfo(info) {
+		const shadow = this.shadowRoot;
+		const teamsContainer = shadow.querySelector('#teams');
+		const teams = teamsContainer.getElementsByTagName('team-info');
+		for (let index = 0; index < teams.length; index++) {
+			const team = teams[index];
+			const currentInfo = info[index];
+			team.setInfo(currentInfo);
 		}
 	}
 }
@@ -97,6 +153,7 @@ onload = (event) => {
 	}
 
 	updateTeams(typeSelect, leagueSelect);
+	restoreAllInfo();
 };
 
 function updateTeams(typeSelect, leagueSelect) {
@@ -107,6 +164,9 @@ function updateTeams(typeSelect, leagueSelect) {
 	const zones = document.querySelectorAll('zone-info');
 	for (let index = 0; index < zones.length; index++) {
 		const zone = zones[index];
+		zone.addEventListener('info-changed', (event) => {
+			saveAllInfo();
+		});
 		zone.setAttribute('teams', zoneInfo[zone.id]);
 	}
 }
@@ -115,6 +175,46 @@ function removeAllChildren(node) {
 	while (node.firstChild) {
 		node.removeChild(node.lastChild);
 	}
+}
+
+const MAX_INFO_AGE = 86400000; // 24 hours
+
+function restoreAllInfo() {
+	const rawInfo = window.localStorage.getItem('teams');
+	if (!rawInfo) {
+		return;
+	}
+
+	const info = JSON.parse(rawInfo);
+
+	// If the saved info is more than 24 hours old, ignore it
+	const now = new Date();
+	const timestamp = new Date(info.timestamp);
+	if (now.getTime() - timestamp.getTime() > MAX_INFO_AGE) {
+		window.localStorage.removeItem('teams');
+		return;
+	}
+
+	const zones = document.querySelectorAll('zone-info');
+	for (let index = 0; index < zones.length; index++) {
+		const zone = zones[index];
+		const team = info.teams[index];
+		zone.setInfo(team);
+	}
+}
+
+function saveAllInfo() {
+	const zones = document.querySelectorAll('zone-info');
+	const teams = [];
+	for (let index = 0; index < zones.length; index++) {
+		const zone = zones[index];
+		teams.push(zone.getInfo());
+	}
+	const info = {
+		timestamp: new Date(),
+		teams,
+	};
+	window.localStorage.setItem('teams', JSON.stringify(info));
 }
 
 const zoneSizes = {
