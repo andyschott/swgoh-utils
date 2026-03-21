@@ -1,0 +1,77 @@
+:host {
+  box-sizing: border-box;
+  display: block;
+  min-height: 100dvh;
+  background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+  color: #f8fafc;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+* {
+  box-sizing: inherit;
+}
+
+.layout {
+  margin: 0 auto;
+  padding: 2rem 1rem;
+  max-width: 56rem;
+  display: grid;
+  gap: 1rem;
+}
+
+section {
+  border: 1px solid #334155;
+  border-radius: 0.75rem;
+  background: #0b1220;
+  padding: 1rem;
+}
+
+h1,
+h2 {
+  margin: 0 0 0.75rem;
+}
+
+.intro {
+  margin: 0 0 1rem;
+}
+
+.config-form {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 16rem;
+}
+
+label {
+  font-weight: 600;
+}
+
+select {
+  border: 1px solid #64748b;
+  border-radius: 0.375rem;
+  background: #0f172a;
+  color: #f8fafc;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.6rem;
+}
+
+select:focus-visible {
+  outline: 2px solid #38bdf8;
+  outline-offset: 2px;
+}
+
+ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+li {
+  line-height: 1.4;
+}
+
+@media (max-width: 40rem) {
+  .layout {
+    padding: 1rem;
+  }
+}
