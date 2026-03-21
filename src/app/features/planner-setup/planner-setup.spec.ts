@@ -1,7 +1,12 @@
 import { TestBed } from '@angular/core/testing';
 import { GacMode } from '../../gac/gac-mode.enum';
 import { League } from '../../gac/league.enum';
-import { GAC_MODE_STORAGE_KEY, LEAGUE_STORAGE_KEY, PlannerSetup } from './planner-setup';
+import {
+  DEFENSE_PLAN_STORAGE_KEY,
+  GAC_MODE_STORAGE_KEY,
+  LEAGUE_STORAGE_KEY,
+  PlannerSetup,
+} from './planner-setup';
 
 describe('PlannerSetup', () => {
   let storage: Storage;
@@ -128,10 +133,18 @@ describe('PlannerSetup', () => {
     const component = fixture.componentInstance;
     fixture.detectChanges();
 
-    const northInput = { value: 'Jedi Master Kenobi' } as HTMLInputElement;
-    component['addSlotAttackOption']('north', 0, northInput);
-    const northSecondInput = { value: 'Starkiller' } as HTMLInputElement;
-    component['addSlotAttackOption']('north', 0, northSecondInput);
+    component['onSlotAttackOptionDraftChanged'](
+      'north',
+      0,
+      { target: { value: 'Jedi Master Kenobi' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0);
+    component['onSlotAttackOptionDraftChanged'](
+      'north',
+      0,
+      { target: { value: 'Starkiller' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0);
 
     const zoneCards = component['zoneCards']();
     const northSlot = zoneCards.find((zone) => zone.zoneId === 'north')?.teamSlots[0];
@@ -151,8 +164,18 @@ describe('PlannerSetup', () => {
     component['selectedLeague'].set(League.Bronzium);
     fixture.detectChanges();
 
-    component['addSlotAttackOption']('north', 0, { value: 'Leia' } as HTMLInputElement);
-    component['addSlotAttackOption']('north', 1, { value: 'Jabba' } as HTMLInputElement);
+    component['onSlotAttackOptionDraftChanged'](
+      'north',
+      0,
+      { target: { value: 'Leia' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0);
+    component['onSlotAttackOptionDraftChanged'](
+      'north',
+      1,
+      { target: { value: 'Jabba' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 1);
 
     const northZone = component['zoneCards']().find((zone) => zone.zoneId === 'north');
     expect(northZone?.teamSlots[0]?.attackOptions).toEqual(['Leia']);
@@ -169,7 +192,12 @@ describe('PlannerSetup', () => {
       0,
       { target: { value: 'Captain Rex' } } as unknown as Event,
     );
-    component['addSlotAttackOption']('north', 0, { value: 'Jedi Master Kenobi' } as HTMLInputElement);
+    component['onSlotAttackOptionDraftChanged'](
+      'north',
+      0,
+      { target: { value: 'Jedi Master Kenobi' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0);
     component['onDefenseDefeatedChanged']('north', 0, { target: { checked: true } } as unknown as Event);
 
     component['onDefenseTeamChanged'](
@@ -177,7 +205,12 @@ describe('PlannerSetup', () => {
       0,
       { target: { value: 'Changed Name' } } as unknown as Event,
     );
-    component['addSlotAttackOption']('north', 0, { value: 'Starkiller' } as HTMLInputElement);
+    component['onSlotAttackOptionDraftChanged'](
+      'north',
+      0,
+      { target: { value: 'Starkiller' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0);
 
     const lockedSlot = component['zoneCards']().find((zone) => zone.zoneId === 'north')?.teamSlots[0];
     expect(lockedSlot?.teamName).toBe('Captain Rex');
@@ -189,10 +222,98 @@ describe('PlannerSetup', () => {
       0,
       { target: { value: 'Changed Name' } } as unknown as Event,
     );
-    component['addSlotAttackOption']('north', 0, { value: 'Starkiller' } as HTMLInputElement);
+    component['onSlotAttackOptionDraftChanged'](
+      'north',
+      0,
+      { target: { value: 'Starkiller' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0);
 
     const unlockedSlot = component['zoneCards']().find((zone) => zone.zoneId === 'north')?.teamSlots[0];
     expect(unlockedSlot?.teamName).toBe('Changed Name');
     expect(unlockedSlot?.attackOptions).toEqual(['Jedi Master Kenobi', 'Starkiller']);
+  });
+
+  it('should persist and restore defense teams and attack options from local storage', () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component['onDefenseTeamChanged']('north', 0, {
+      target: { value: 'General Grievous' },
+    } as unknown as Event);
+    component['onSlotAttackOptionDraftChanged'](
+      'north',
+      0,
+      { target: { value: 'Jedi Master Kenobi' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0);
+    fixture.detectChanges();
+
+    const stored = storage.getItem(DEFENSE_PLAN_STORAGE_KEY);
+    expect(stored).not.toBeNull();
+    expect(stored).toContain('General Grievous');
+    expect(stored).toContain('Jedi Master Kenobi');
+
+    const restoredFixture = TestBed.createComponent(PlannerSetup);
+    const restoredComponent = restoredFixture.componentInstance;
+    restoredFixture.detectChanges();
+    const restoredSlot = restoredComponent['zoneCards']().find((zone) => zone.zoneId === 'north')
+      ?.teamSlots[0];
+
+    expect(restoredSlot?.teamName).toBe('General Grievous');
+    expect(restoredSlot?.attackOptions).toEqual(['Jedi Master Kenobi']);
+  });
+
+  it('should clear only defenses and attack options without clearing mode or league', () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component['selectedMode'].set(GacMode.ThreeVThree);
+    component['selectedLeague'].set(League.Kyber);
+    component['onDefenseTeamChanged']('north', 0, { target: { value: 'Reva' } } as unknown as Event);
+    component['onSlotAttackOptionDraftChanged'](
+      'north',
+      0,
+      { target: { value: 'Leia' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0);
+    component['clearDefenseAndAttackOptions']();
+    fixture.detectChanges();
+
+    const slot = component['zoneCards']().find((zone) => zone.zoneId === 'north')?.teamSlots[0];
+    expect(slot?.teamName).toBe('');
+    expect(slot?.attackOptions).toEqual([]);
+
+    expect(component['selectedMode']()).toBe(GacMode.ThreeVThree);
+    expect(component['selectedLeague']()).toBe(League.Kyber);
+    expect(storage.getItem(GAC_MODE_STORAGE_KEY)).toBe(GacMode.ThreeVThree);
+    expect(storage.getItem(LEAGUE_STORAGE_KEY)).toBe(League.Kyber);
+
+    const storedPlan = storage.getItem(DEFENSE_PLAN_STORAGE_KEY);
+    expect(storedPlan).not.toContain('Reva');
+    expect(storedPlan).not.toContain('Leia');
+  });
+
+  it('should persist and restore attack option draft text', () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component['onSlotAttackOptionDraftChanged'](
+      'north',
+      0,
+      { target: { value: 'Typed but not added' } } as unknown as Event,
+    );
+    fixture.detectChanges();
+
+    const restoredFixture = TestBed.createComponent(PlannerSetup);
+    const restoredComponent = restoredFixture.componentInstance;
+    restoredFixture.detectChanges();
+
+    const restoredSlot = restoredComponent['zoneCards']().find((zone) => zone.zoneId === 'north')
+      ?.teamSlots[0];
+    expect(restoredSlot?.attackOptionDraft).toBe('Typed but not added');
   });
 });

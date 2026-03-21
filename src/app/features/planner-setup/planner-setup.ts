@@ -6,11 +6,13 @@ import { isGacMode, isLeague } from '../../gac/type-guards';
 
 export const GAC_MODE_STORAGE_KEY = 'gac.mode';
 export const LEAGUE_STORAGE_KEY = 'gac.league';
+export const DEFENSE_PLAN_STORAGE_KEY = 'gac.defense-plan';
 
 interface ZoneSlotState {
   teams: string[];
   defeated: boolean[];
   attackOptions: string[][];
+  attackOptionDrafts: string[];
 }
 
 type ZoneStateMap = Record<string, ZoneSlotState>;
@@ -39,13 +41,18 @@ export class PlannerSetup {
 
   protected readonly selectedMode = signal<GacMode>(this.readStoredMode());
   protected readonly selectedLeague = signal<League>(this.readStoredLeague());
-  protected readonly zoneState = signal<ZoneStateMap>({});
+  protected readonly zoneState = signal<ZoneStateMap>(this.readStoredZoneState());
   protected readonly plannerRules = computed(() =>
     getPlannerRules(this.selectedMode(), this.selectedLeague()),
   );
   protected readonly zoneCards = computed(() =>
     this.plannerRules().zones.map((zone) => {
-      const zoneState = this.zoneState()[zone.zoneId] ?? { teams: [], defeated: [], attackOptions: [] };
+      const zoneState = this.zoneState()[zone.zoneId] ?? {
+        teams: [],
+        defeated: [],
+        attackOptions: [],
+        attackOptionDrafts: [],
+      };
       const isUnlocked = this.isZoneUnlocked(zone.zoneId);
       const dependency = zoneUnlockDependency[zone.zoneId];
 
@@ -60,6 +67,7 @@ export class PlannerSetup {
           teamName: zoneState.teams[index] ?? '',
           defeated: zoneState.defeated[index] ?? false,
           attackOptions: zoneState.attackOptions[index] ?? [],
+          attackOptionDraft: zoneState.attackOptionDrafts[index] ?? '',
           isEditable: isUnlocked && !(zoneState.defeated[index] ?? false),
         })),
       };
@@ -70,6 +78,13 @@ export class PlannerSetup {
     effect(() => {
       this.writeStorage(GAC_MODE_STORAGE_KEY, this.selectedMode());
       this.writeStorage(LEAGUE_STORAGE_KEY, this.selectedLeague());
+    });
+
+    effect(() => {
+      this.writeStorage(
+        DEFENSE_PLAN_STORAGE_KEY,
+        JSON.stringify(this.zoneState()),
+      );
     });
 
     effect(() => {
@@ -91,6 +106,10 @@ export class PlannerSetup {
             attackOptions: Array.from(
               { length: zone.slots },
               (_, index) => existingState?.attackOptions[index] ?? [],
+            ),
+            attackOptionDrafts: Array.from(
+              { length: zone.slots },
+              (_, index) => existingState?.attackOptionDrafts[index] ?? '',
             ),
           };
         }
@@ -146,16 +165,12 @@ export class PlannerSetup {
     );
   }
 
-  protected addSlotAttackOption(
-    zoneId: string,
-    slotIndex: number,
-    inputElement: HTMLInputElement,
-  ): void {
+  protected addSlotAttackOption(zoneId: string, slotIndex: number): void {
     if (!this.isZoneUnlocked(zoneId) || this.isSlotDefeated(zoneId, slotIndex)) {
       return;
     }
 
-    const teamName = inputElement.value.trim();
+    const teamName = this.zoneState()[zoneId]?.attackOptionDrafts[slotIndex]?.trim() ?? '';
     if (!teamName) {
       return;
     }
@@ -163,9 +178,9 @@ export class PlannerSetup {
     this.zoneState.update((currentState) =>
       this.updateZoneSlotState(currentState, zoneId, slotIndex, {
         attackOptions: [...(currentState[zoneId]?.attackOptions[slotIndex] ?? []), teamName],
+        attackOptionDraft: '',
       }),
     );
-    inputElement.value = '';
   }
 
   protected removeSlotAttackOption(zoneId: string, slotIndex: number, optionIndex: number): void {
@@ -179,6 +194,17 @@ export class PlannerSetup {
           (_, index) => index !== optionIndex,
         ),
       }),
+    );
+  }
+
+  protected onSlotAttackOptionDraftChanged(zoneId: string, slotIndex: number, event: Event): void {
+    if (!this.isZoneUnlocked(zoneId) || this.isSlotDefeated(zoneId, slotIndex)) {
+      return;
+    }
+
+    const draft = (event.target as HTMLInputElement | null)?.value ?? '';
+    this.zoneState.update((currentState) =>
+      this.updateZoneSlotState(currentState, zoneId, slotIndex, { attackOptionDraft: draft }),
     );
   }
 
@@ -196,6 +222,11 @@ export class PlannerSetup {
     return this.areAllZoneTeamsDefeated(dependencyZoneId);
   }
 
+  protected clearDefenseAndAttackOptions(): void {
+    this.zoneState.set(this.buildEmptyZoneState());
+    this.removeStorage(DEFENSE_PLAN_STORAGE_KEY);
+  }
+
   private areAllZoneTeamsDefeated(zoneId: string): boolean {
     const zone = this.zoneState()[zoneId];
     if (!zone || zone.defeated.length === 0) {
@@ -209,11 +240,30 @@ export class PlannerSetup {
     return this.zoneState()[zoneId]?.defeated[slotIndex] ?? false;
   }
 
+  private buildEmptyZoneState(): ZoneStateMap {
+    const state: ZoneStateMap = {};
+    for (const zone of this.plannerRules().zones) {
+      state[zone.zoneId] = {
+        teams: Array.from({ length: zone.slots }, () => ''),
+        defeated: Array.from({ length: zone.slots }, () => false),
+        attackOptions: Array.from({ length: zone.slots }, () => []),
+        attackOptionDrafts: Array.from({ length: zone.slots }, () => ''),
+      };
+    }
+
+    return state;
+  }
+
   private updateZoneSlotState(
     currentState: ZoneStateMap,
     zoneId: string,
     slotIndex: number,
-    changes: { teamName?: string; defeated?: boolean; attackOptions?: string[] },
+    changes: {
+      teamName?: string;
+      defeated?: boolean;
+      attackOptions?: string[];
+      attackOptionDraft?: string;
+    },
   ): ZoneStateMap {
     const currentZone = currentState[zoneId];
     if (!currentZone) {
@@ -229,6 +279,9 @@ export class PlannerSetup {
     const attackOptions = currentZone.attackOptions.map((options, index) =>
       index === slotIndex ? (changes.attackOptions ?? options) : options,
     );
+    const attackOptionDrafts = currentZone.attackOptionDrafts.map((draft, index) =>
+      index === slotIndex ? (changes.attackOptionDraft ?? draft) : draft,
+    );
 
     return {
       ...currentState,
@@ -236,6 +289,7 @@ export class PlannerSetup {
         teams,
         defeated,
         attackOptions,
+        attackOptionDrafts,
       },
     };
   }
@@ -248,6 +302,55 @@ export class PlannerSetup {
   private readStoredLeague(): League {
     const storedLeague = this.readStorage(LEAGUE_STORAGE_KEY);
     return storedLeague && isLeague(storedLeague) ? storedLeague : League.Carbonite;
+  }
+
+  private readStoredZoneState(): ZoneStateMap {
+    const storedPlan = this.readStorage(DEFENSE_PLAN_STORAGE_KEY);
+    if (!storedPlan) {
+      return {};
+    }
+
+    try {
+      const parsed = JSON.parse(storedPlan);
+      if (!parsed || typeof parsed !== 'object') {
+        return {};
+      }
+
+      const state: ZoneStateMap = {};
+      for (const [zoneId, rawZone] of Object.entries(parsed)) {
+        const zone = rawZone as {
+          teams?: unknown;
+          defeated?: unknown;
+          attackOptions?: unknown;
+          attackOptionDrafts?: unknown;
+        };
+
+        state[zoneId] = {
+          teams: Array.isArray(zone.teams)
+            ? zone.teams.map((team) => (typeof team === 'string' ? team : ''))
+            : [],
+          defeated: Array.isArray(zone.defeated)
+            ? zone.defeated.map((value) => Boolean(value))
+            : [],
+          attackOptions: Array.isArray(zone.attackOptions)
+            ? zone.attackOptions.map((options) =>
+                Array.isArray(options)
+                  ? options
+                      .filter((value): value is string => typeof value === 'string')
+                      .map((value) => value)
+                  : [],
+              )
+            : [],
+          attackOptionDrafts: Array.isArray(zone.attackOptionDrafts)
+            ? zone.attackOptionDrafts.map((draft) => (typeof draft === 'string' ? draft : ''))
+            : [],
+        };
+      }
+
+      return state;
+    } catch {
+      return {};
+    }
   }
 
   private readStorage(key: string): string | null {
@@ -264,6 +367,17 @@ export class PlannerSetup {
       const storage = globalThis.localStorage as Partial<Storage> | undefined;
       if (typeof storage?.setItem === 'function') {
         storage.setItem(key, value);
+      }
+    } catch {
+      // Ignore storage failures to keep the component usable.
+    }
+  }
+
+  private removeStorage(key: string): void {
+    try {
+      const storage = globalThis.localStorage as Partial<Storage> | undefined;
+      if (typeof storage?.removeItem === 'function') {
+        storage.removeItem(key);
       }
     } catch {
       // Ignore storage failures to keep the component usable.

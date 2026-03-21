@@ -33,7 +33,12 @@
   </section>
 
   <section aria-labelledby="defense-title">
-    <h2 id="defense-title">Opponent Defense Entry</h2>
+    <div class="section-header">
+      <h2 id="defense-title">Opponent Defense Entry</h2>
+      <button type="button" class="clear-button" (click)="clearDefenseAndAttackOptions()">
+        Clear defenses and attack options
+      </button>
+    </div>
     <p>
       Enter each defending team and mark it defeated during your run. South Back unlocks after
       South Front is fully defeated, and Ships unlocks after North is fully defeated.
@@ -88,16 +93,17 @@
                     <label [for]="zone.zoneId + '-attack-option-' + slotIndex">Attack options</label>
                     <div class="slot-attack-input-row">
                       <input
-                        #attackOptionInput
                         [id]="zone.zoneId + '-attack-option-' + slotIndex"
                         type="text"
                         placeholder="Add counter team"
+                        [value]="slot.attackOptionDraft"
                         [disabled]="!slot.isEditable"
+                        (input)="onSlotAttackOptionDraftChanged(zone.zoneId, slotIndex, $event)"
                       />
                       <button
                         type="button"
                         [disabled]="!slot.isEditable"
-                        (click)="addSlotAttackOption(zone.zoneId, slotIndex, attackOptionInput)"
+                        (click)="addSlotAttackOption(zone.zoneId, slotIndex)"
                       >
                         Add
                       </button>
