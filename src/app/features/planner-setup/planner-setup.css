@@ -14,7 +14,7 @@
 .layout {
   margin: 0 auto;
   padding: 2rem 1rem;
-  max-width: 56rem;
+  max-width: 68rem;
   display: grid;
   gap: 1rem;
 }
@@ -27,7 +27,8 @@ section {
 }
 
 h1,
-h2 {
+h2,
+h3 {
   margin: 0 0 0.75rem;
 }
 
@@ -45,7 +46,8 @@ label {
   font-weight: 600;
 }
 
-select {
+select,
+input {
   border: 1px solid #64748b;
   border-radius: 0.375rem;
   background: #0f172a;
@@ -54,20 +56,160 @@ select {
   padding: 0.4rem 0.6rem;
 }
 
-select:focus-visible {
+select:focus-visible,
+input:focus-visible,
+button:focus-visible {
   outline: 2px solid #38bdf8;
   outline-offset: 2px;
 }
 
-ul {
+button {
+  border: 1px solid #64748b;
+  border-radius: 0.375rem;
+  background: #1d4ed8;
+  color: #f8fafc;
+  min-height: 2.5rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1e40af;
+}
+
+button:disabled,
+input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.zone-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+.zone-card {
+  border: 1px solid #475569;
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  background: #0f172a;
+}
+
+.zone-card.locked {
+  border-color: #b45309;
+  background: #1c1917;
+}
+
+.zone-meta {
+  margin: 0 0 0.75rem;
+  color: #cbd5e1;
+}
+
+.lock-message {
+  color: #fbbf24;
+  margin: 0 0 0.75rem;
+}
+
+ol {
+  margin: 0;
+  padding-left: 1.25rem;
+  display: grid;
+  gap: 0.75rem;
+}
+
+ol li {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.team-entry {
+  border: 1px solid #334155;
+  border-radius: 0.5rem;
+  background: #111827;
+  padding: 0.6rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.team-entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.team-entry-title {
+  margin: 0;
+  font-weight: 700;
+  color: #e2e8f0;
+}
+
+.defeated-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.defeated-toggle input {
+  min-height: auto;
+  width: 1rem;
+  height: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.slot-attack-options {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.slot-attack-input-row {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+}
+
+.slot-attack-list {
   margin: 0;
   padding-left: 1.25rem;
   display: grid;
   gap: 0.35rem;
 }
 
-li {
-  line-height: 1.4;
+.slot-attack-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.empty-slot-options {
+  margin: 0;
+  color: #cbd5e1;
+}
+
+@media (max-width: 52rem) {
+  .zone-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .zone-card[data-zone-id='north'] {
+    order: 1;
+  }
+
+  .zone-card[data-zone-id='south-front'] {
+    order: 2;
+  }
+
+  .zone-card[data-zone-id='south-back'] {
+    order: 3;
+  }
+
+  .zone-card[data-zone-id='ships'] {
+    order: 4;
+  }
 }
 
 @media (max-width: 40rem) {

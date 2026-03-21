@@ -32,21 +32,106 @@
     </form>
   </section>
 
-  <section class="zone-requirements" aria-labelledby="requirements-title">
-    <h2 id="requirements-title">Zone Requirements</h2>
+  <section aria-labelledby="defense-title">
+    <h2 id="defense-title">Opponent Defense Entry</h2>
     <p>
-      Mode: <strong>{{ plannerRules().mode }}</strong>
-      | League: <strong>{{ formatLeague(plannerRules().league) }}</strong>
+      Enter each defending team and mark it defeated during your run. South Back unlocks after
+      South Front is fully defeated, and Ships unlocks after North is fully defeated.
     </p>
 
-    <ul>
-      @for (zone of plannerRules().zones; track zone.zoneId) {
-        <li>
-          <strong>{{ zone.label }}</strong>
-          <span>({{ zone.type }})</span>
-          <span>{{ zone.slots }} teams</span>
-        </li>
+    <div class="zone-grid" role="list" aria-label="Defense zones">
+      @for (zone of zoneCards(); track zone.zoneId) {
+        <article
+          class="zone-card"
+          role="listitem"
+          [class.locked]="!zone.isUnlocked"
+          [attr.data-zone-id]="zone.zoneId"
+        >
+          <h3>{{ zone.label }}</h3>
+          <p class="zone-meta">{{ zone.slots }} slots • {{ zone.type }}</p>
+
+          @if (zone.unlockMessage) {
+            <p class="lock-message">{{ zone.unlockMessage }}</p>
+          }
+
+          <ol>
+            @for (slot of zone.teamSlots; track $index; let slotIndex = $index) {
+              <li>
+                <div class="team-entry">
+                  <div class="team-entry-header">
+                    <p class="team-entry-title">{{ zone.label }} Team {{ slotIndex + 1 }}</p>
+                    <label
+                      class="defeated-toggle"
+                      [for]="zone.zoneId + '-defeated-' + slotIndex"
+                      aria-label="Mark this defense team as defeated"
+                    >
+                      <input
+                        [id]="zone.zoneId + '-defeated-' + slotIndex"
+                        type="checkbox"
+                        [checked]="slot.defeated"
+                        [disabled]="!zone.isUnlocked"
+                        (change)="onDefenseDefeatedChanged(zone.zoneId, slotIndex, $event)"
+                      />
+                    </label>
+                  </div>
+                  <label [for]="zone.zoneId + '-team-' + slotIndex">Defense team</label>
+                  <input
+                    [id]="zone.zoneId + '-team-' + slotIndex"
+                    type="text"
+                    placeholder="Enter team name"
+                    [value]="slot.teamName"
+                    [disabled]="!slot.isEditable"
+                    (input)="onDefenseTeamChanged(zone.zoneId, slotIndex, $event)"
+                  />
+
+                  <div class="slot-attack-options">
+                    <label [for]="zone.zoneId + '-attack-option-' + slotIndex">Attack options</label>
+                    <div class="slot-attack-input-row">
+                      <input
+                        #attackOptionInput
+                        [id]="zone.zoneId + '-attack-option-' + slotIndex"
+                        type="text"
+                        placeholder="Add counter team"
+                        [disabled]="!slot.isEditable"
+                      />
+                      <button
+                        type="button"
+                        [disabled]="!slot.isEditable"
+                        (click)="addSlotAttackOption(zone.zoneId, slotIndex, attackOptionInput)"
+                      >
+                        Add
+                      </button>
+                    </div>
+
+                    @if (slot.attackOptions.length === 0) {
+                      <p class="empty-slot-options">No attack options added.</p>
+                    } @else {
+                      <ul class="slot-attack-list">
+                        @for (
+                          option of slot.attackOptions;
+                          track option + '-' + $index;
+                          let optionIndex = $index
+                        ) {
+                          <li>
+                            <span>{{ option }}</span>
+                            <button
+                              type="button"
+                              [disabled]="!slot.isEditable"
+                              (click)="removeSlotAttackOption(zone.zoneId, slotIndex, optionIndex)"
+                            >
+                              Remove
+                            </button>
+                          </li>
+                        }
+                      </ul>
+                    }
+                  </div>
+                </div>
+              </li>
+            }
+          </ol>
+        </article>
       }
-    </ul>
+    </div>
   </section>
 </main>

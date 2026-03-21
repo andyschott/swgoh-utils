@@ -88,4 +88,111 @@ describe('PlannerSetup', () => {
     expect(storage.getItem(GAC_MODE_STORAGE_KEY)).toBe(GacMode.ThreeVThree);
     expect(storage.getItem(LEAGUE_STORAGE_KEY)).toBe(League.Kyber);
   });
+
+  it('should keep South Back and Ships locked until dependency zones are fully defeated', () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component['isZoneUnlocked']('south-back')).toBe(false);
+    expect(component['isZoneUnlocked']('ships')).toBe(false);
+
+    const southFrontSlots =
+      component['plannerRules']().zones.find((zone) => zone.zoneId === 'south-front')?.slots ?? 0;
+    for (let index = 0; index < southFrontSlots; index += 1) {
+      component['onDefenseDefeatedChanged'](
+        'south-front',
+        index,
+        { target: { checked: true } } as unknown as Event,
+      );
+    }
+
+    expect(component['isZoneUnlocked']('south-back')).toBe(true);
+    expect(component['isZoneUnlocked']('ships')).toBe(false);
+
+    const northSlots =
+      component['plannerRules']().zones.find((zone) => zone.zoneId === 'north')?.slots ?? 0;
+    for (let index = 0; index < northSlots; index += 1) {
+      component['onDefenseDefeatedChanged'](
+        'north',
+        index,
+        { target: { checked: true } } as unknown as Event,
+      );
+    }
+
+    expect(component['isZoneUnlocked']('ships')).toBe(true);
+  });
+
+  it('should allow adding and removing attack options for a specific defense team', () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const northInput = { value: 'Jedi Master Kenobi' } as HTMLInputElement;
+    component['addSlotAttackOption']('north', 0, northInput);
+    const northSecondInput = { value: 'Starkiller' } as HTMLInputElement;
+    component['addSlotAttackOption']('north', 0, northSecondInput);
+
+    const zoneCards = component['zoneCards']();
+    const northSlot = zoneCards.find((zone) => zone.zoneId === 'north')?.teamSlots[0];
+    expect(northSlot?.attackOptions).toEqual(['Jedi Master Kenobi', 'Starkiller']);
+
+    component['removeSlotAttackOption']('north', 0, 0);
+    const updatedNorthSlot = component['zoneCards']().find((zone) => zone.zoneId === 'north')
+      ?.teamSlots[0];
+    expect(updatedNorthSlot?.attackOptions).toEqual(['Starkiller']);
+  });
+
+  it('should keep attack options isolated by defense slot', () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component['selectedLeague'].set(League.Bronzium);
+    fixture.detectChanges();
+
+    component['addSlotAttackOption']('north', 0, { value: 'Leia' } as HTMLInputElement);
+    component['addSlotAttackOption']('north', 1, { value: 'Jabba' } as HTMLInputElement);
+
+    const northZone = component['zoneCards']().find((zone) => zone.zoneId === 'north');
+    expect(northZone?.teamSlots[0]?.attackOptions).toEqual(['Leia']);
+    expect(northZone?.teamSlots[1]?.attackOptions).toEqual(['Jabba']);
+  });
+
+  it('should disable slot edits while defeated and re-enable when unchecked', () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component['onDefenseTeamChanged'](
+      'north',
+      0,
+      { target: { value: 'Captain Rex' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0, { value: 'Jedi Master Kenobi' } as HTMLInputElement);
+    component['onDefenseDefeatedChanged']('north', 0, { target: { checked: true } } as unknown as Event);
+
+    component['onDefenseTeamChanged'](
+      'north',
+      0,
+      { target: { value: 'Changed Name' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0, { value: 'Starkiller' } as HTMLInputElement);
+
+    const lockedSlot = component['zoneCards']().find((zone) => zone.zoneId === 'north')?.teamSlots[0];
+    expect(lockedSlot?.teamName).toBe('Captain Rex');
+    expect(lockedSlot?.attackOptions).toEqual(['Jedi Master Kenobi']);
+
+    component['onDefenseDefeatedChanged']('north', 0, { target: { checked: false } } as unknown as Event);
+    component['onDefenseTeamChanged'](
+      'north',
+      0,
+      { target: { value: 'Changed Name' } } as unknown as Event,
+    );
+    component['addSlotAttackOption']('north', 0, { value: 'Starkiller' } as HTMLInputElement);
+
+    const unlockedSlot = component['zoneCards']().find((zone) => zone.zoneId === 'north')?.teamSlots[0];
+    expect(unlockedSlot?.teamName).toBe('Changed Name');
+    expect(unlockedSlot?.attackOptions).toEqual(['Jedi Master Kenobi', 'Starkiller']);
+  });
 });
