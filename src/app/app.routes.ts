@@ -4,8 +4,11 @@ export const routes: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./features/planner-setup/planner-setup').then(
-        (module) => module.PlannerSetup,
-      ),
+      import('./features/home/home').then((module) => module.Home),
+  },
+  {
+    path: 'gac-planner',
+    loadComponent: () =>
+      import('./features/planner-setup/planner-setup').then((module) => module.PlannerSetup),
   },
 ];

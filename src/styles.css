@@ -6,6 +6,7 @@ body {
   background: #f1f5f9;
   color: #0f172a;
   color-scheme: light dark;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {

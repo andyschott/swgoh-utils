@@ -1,0 +1,35 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.home-layout {
+  margin: 0 auto;
+  max-width: 48rem;
+  padding: 2rem 1rem;
+}
+
+section {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 1rem;
+}
+
+a {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+@media (prefers-color-scheme: dark) {
+  section {
+    border-color: #334155;
+    background: #0b1220;
+    color: #f8fafc;
+  }
+
+  a {
+    color: #60a5fa;
+  }
+}
