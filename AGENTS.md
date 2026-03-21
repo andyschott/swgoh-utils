@@ -53,3 +53,27 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Git Workflow
+
+- Always create a branch — never commit directly to main
+
+## Boundaries
+
+### Always Do
+
+- Run tests before submitting
+- Add types for all new exports
+- Match the patterns in existing code
+- The user interface should be fully responsive.
+
+### Ask First
+
+- Before adding dependencies
+- Before changing database schema
+- Before modifying authentication logic
+
+### Never Do
+
+- Never commit secrets, .env files, or API keys
+- Never delete failing tests without approval
