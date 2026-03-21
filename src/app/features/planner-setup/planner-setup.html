@@ -12,7 +12,7 @@
         (change)="onModeChanged($event)"
       >
         @for (mode of gacModes; track mode) {
-          <option [value]="mode">{{ mode }}</option>
+          <option [value]="mode" [selected]="mode === selectedMode()">{{ mode }}</option>
         }
       </select>
 
@@ -24,7 +24,9 @@
         (change)="onLeagueChanged($event)"
       >
         @for (league of leagues; track league) {
-          <option [value]="league">{{ league }}</option>
+          <option [value]="league" [selected]="league === selectedLeague()">
+            {{ formatLeague(league) }}
+          </option>
         }
       </select>
     </form>
@@ -34,7 +36,7 @@
     <h2 id="requirements-title">Zone Requirements</h2>
     <p>
       Mode: <strong>{{ plannerRules().mode }}</strong>
-      | League: <strong>{{ plannerRules().league }}</strong>
+      | League: <strong>{{ formatLeague(plannerRules().league) }}</strong>
     </p>
 
     <ul>

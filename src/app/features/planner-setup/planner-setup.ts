@@ -46,4 +46,8 @@ export class PlannerSetup {
 
     this.selectedLeague.set(league);
   }
+
+  protected formatLeague(league: League): string {
+    return league.charAt(0).toUpperCase() + league.slice(1);
+  }
 }

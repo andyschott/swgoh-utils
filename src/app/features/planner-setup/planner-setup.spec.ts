@@ -23,4 +23,16 @@ describe('PlannerSetup', () => {
     expect(component['selectedMode']()).toBe(GacMode.FiveVFive);
     expect(component['selectedLeague']()).toBe(League.Carbonite);
   });
+
+  it('should render 5v5 as the selected mode by default', async () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    await fixture.whenStable();
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const modeSelect = compiled.querySelector('#gac-mode') as HTMLSelectElement | null;
+
+    expect(modeSelect).not.toBeNull();
+    expect(modeSelect?.value).toBe(GacMode.FiveVFive);
+  });
 });
