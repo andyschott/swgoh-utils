@@ -12,8 +12,13 @@ import {
 
 describe('PlannerSetup', () => {
   let storage: Storage;
+  let mediaQueryMatchesDark = false;
+  let mediaQueryChangeListeners: Array<(event: MediaQueryListEvent) => void> = [];
 
   beforeEach(async () => {
+    mediaQueryMatchesDark = false;
+    mediaQueryChangeListeners = [];
+
     const data = new Map<string, string>();
     storage = {
       get length(): number {
@@ -39,6 +44,34 @@ describe('PlannerSetup', () => {
     Object.defineProperty(globalThis, 'localStorage', {
       configurable: true,
       value: storage,
+    });
+
+    Object.defineProperty(globalThis, 'matchMedia', {
+      configurable: true,
+      value: vi.fn().mockImplementation(() => ({
+        get matches() {
+          return mediaQueryMatchesDark;
+        },
+        media: '(prefers-color-scheme: dark)',
+        onchange: null,
+        addEventListener: (_: 'change', handler: (event: MediaQueryListEvent) => void) => {
+          mediaQueryChangeListeners.push(handler);
+        },
+        removeEventListener: (_: 'change', handler: (event: MediaQueryListEvent) => void) => {
+          mediaQueryChangeListeners = mediaQueryChangeListeners.filter(
+            (listener) => listener !== handler,
+          );
+        },
+        addListener: (handler: (event: MediaQueryListEvent) => void) => {
+          mediaQueryChangeListeners.push(handler);
+        },
+        removeListener: (handler: (event: MediaQueryListEvent) => void) => {
+          mediaQueryChangeListeners = mediaQueryChangeListeners.filter(
+            (listener) => listener !== handler,
+          );
+        },
+        dispatchEvent: () => true,
+      })),
     });
 
     await TestBed.configureTestingModule({
@@ -351,5 +384,22 @@ describe('PlannerSetup', () => {
     expect(northSlot?.teamName).toBe('');
     expect(northSlot?.attackOptions).toEqual([]);
     expect(northSlot?.attackOptionDraft).toBe('');
+  });
+
+  it('should reflect device theme and update when preference changes', () => {
+    mediaQueryMatchesDark = false;
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component['themeMode']()).toBe('light');
+
+    mediaQueryMatchesDark = true;
+    for (const listener of mediaQueryChangeListeners) {
+      listener({ matches: true } as MediaQueryListEvent);
+    }
+    fixture.detectChanges();
+
+    expect(component['themeMode']()).toBe('dark');
   });
 });

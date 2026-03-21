@@ -1,4 +1,12 @@
-import { ChangeDetectionStrategy, Component, computed, effect, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  effect,
+  inject,
+  signal,
+} from '@angular/core';
 import { GacMode } from '../../gac/gac-mode.enum';
 import { League } from '../../gac/league.enum';
 import { getPlannerRules } from '../../gac/planner-rules';
@@ -10,6 +18,7 @@ export const DEFENSE_PLAN_STORAGE_KEY = 'gac.defense-plan';
 export const DEFENSE_PLAN_UPDATED_AT_STORAGE_KEY = 'gac.defense-plan-updated-at';
 
 const DEFENSE_PLAN_TTL_MS = 24 * 60 * 60 * 1000;
+type ThemeMode = 'light' | 'dark';
 
 interface ZoneSlotState {
   teams: string[];
@@ -30,9 +39,13 @@ const zoneUnlockDependency: Readonly<Record<string, string>> = {
   imports: [],
   templateUrl: './planner-setup.html',
   styleUrl: './planner-setup.css',
+  host: {
+    '[attr.data-theme]': 'themeMode()',
+  },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PlannerSetup {
+  private readonly destroyRef = inject(DestroyRef);
   protected readonly gacModes = [GacMode.ThreeVThree, GacMode.FiveVFive] as const;
   protected readonly leagues = [
     League.Carbonite,
@@ -45,6 +58,7 @@ export class PlannerSetup {
   protected readonly selectedMode = signal<GacMode>(this.readStoredMode());
   protected readonly selectedLeague = signal<League>(this.readStoredLeague());
   protected readonly zoneState = signal<ZoneStateMap>(this.readStoredZoneState());
+  protected readonly themeMode = signal<ThemeMode>(this.getInitialThemeMode());
   protected readonly plannerRules = computed(() =>
     getPlannerRules(this.selectedMode(), this.selectedLeague()),
   );
@@ -78,6 +92,8 @@ export class PlannerSetup {
   );
 
   public constructor() {
+    this.initializeThemeSync();
+
     effect(() => {
       this.writeStorage(GAC_MODE_STORAGE_KEY, this.selectedMode());
       this.writeStorage(LEAGUE_STORAGE_KEY, this.selectedLeague());
@@ -404,5 +420,49 @@ export class PlannerSetup {
 
   private isDefensePlanExpired(updatedAtMs: number): boolean {
     return Date.now() - updatedAtMs >= DEFENSE_PLAN_TTL_MS;
+  }
+
+  private initializeThemeSync(): void {
+    const mediaQuery = this.getColorSchemeQuery();
+    if (!mediaQuery) {
+      return;
+    }
+
+    const applyTheme = (matchesDark: boolean): void => {
+      this.themeMode.set(matchesDark ? 'dark' : 'light');
+    };
+    const onChange = (event: MediaQueryListEvent): void => {
+      applyTheme(event.matches);
+    };
+
+    applyTheme(mediaQuery.matches);
+
+    if (typeof mediaQuery.addEventListener === 'function') {
+      mediaQuery.addEventListener('change', onChange);
+      this.destroyRef.onDestroy(() => mediaQuery.removeEventListener('change', onChange));
+      return;
+    }
+
+    if (typeof mediaQuery.addListener === 'function') {
+      mediaQuery.addListener(onChange);
+      this.destroyRef.onDestroy(() => mediaQuery.removeListener(onChange));
+    }
+  }
+
+  private getInitialThemeMode(): ThemeMode {
+    const mediaQuery = this.getColorSchemeQuery();
+    return mediaQuery?.matches ? 'dark' : 'light';
+  }
+
+  private getColorSchemeQuery(): MediaQueryList | null {
+    try {
+      if (typeof globalThis.matchMedia !== 'function') {
+        return null;
+      }
+
+      return globalThis.matchMedia('(prefers-color-scheme: dark)');
+    } catch {
+      return null;
+    }
   }
 }
