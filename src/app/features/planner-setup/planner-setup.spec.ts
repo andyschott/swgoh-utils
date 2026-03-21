@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing';
+import { vi } from 'vitest';
 import { GacMode } from '../../gac/gac-mode.enum';
 import { League } from '../../gac/league.enum';
 import {
   DEFENSE_PLAN_STORAGE_KEY,
+  DEFENSE_PLAN_UPDATED_AT_STORAGE_KEY,
   GAC_MODE_STORAGE_KEY,
   LEAGUE_STORAGE_KEY,
   PlannerSetup,
@@ -42,6 +44,10 @@ describe('PlannerSetup', () => {
     await TestBed.configureTestingModule({
       imports: [PlannerSetup],
     }).compileComponents();
+  });
+
+  afterEach(() => {
+    vi.restoreAllMocks();
   });
 
   it('should render planner setup heading', async () => {
@@ -315,5 +321,35 @@ describe('PlannerSetup', () => {
     const restoredSlot = restoredComponent['zoneCards']().find((zone) => zone.zoneId === 'north')
       ?.teamSlots[0];
     expect(restoredSlot?.attackOptionDraft).toBe('Typed but not added');
+  });
+
+  it('should clear saved defense plan after 24 hours', () => {
+    const now = Date.now();
+    vi.spyOn(Date, 'now').mockReturnValue(now);
+
+    storage.setItem(
+      DEFENSE_PLAN_STORAGE_KEY,
+      JSON.stringify({
+        north: {
+          teams: ['Old Team'],
+          defeated: [false],
+          attackOptions: [['Old Counter']],
+          attackOptionDrafts: ['Old Draft'],
+        },
+      }),
+    );
+    storage.setItem(
+      DEFENSE_PLAN_UPDATED_AT_STORAGE_KEY,
+      String(now - (24 * 60 * 60 * 1000 + 1)),
+    );
+
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    const northSlot = component['zoneCards']().find((zone) => zone.zoneId === 'north')?.teamSlots[0];
+    expect(northSlot?.teamName).toBe('');
+    expect(northSlot?.attackOptions).toEqual([]);
+    expect(northSlot?.attackOptionDraft).toBe('');
   });
 });

@@ -7,6 +7,9 @@ import { isGacMode, isLeague } from '../../gac/type-guards';
 export const GAC_MODE_STORAGE_KEY = 'gac.mode';
 export const LEAGUE_STORAGE_KEY = 'gac.league';
 export const DEFENSE_PLAN_STORAGE_KEY = 'gac.defense-plan';
+export const DEFENSE_PLAN_UPDATED_AT_STORAGE_KEY = 'gac.defense-plan-updated-at';
+
+const DEFENSE_PLAN_TTL_MS = 24 * 60 * 60 * 1000;
 
 interface ZoneSlotState {
   teams: string[];
@@ -85,6 +88,7 @@ export class PlannerSetup {
         DEFENSE_PLAN_STORAGE_KEY,
         JSON.stringify(this.zoneState()),
       );
+      this.writeStorage(DEFENSE_PLAN_UPDATED_AT_STORAGE_KEY, String(Date.now()));
     });
 
     effect(() => {
@@ -225,6 +229,7 @@ export class PlannerSetup {
   protected clearDefenseAndAttackOptions(): void {
     this.zoneState.set(this.buildEmptyZoneState());
     this.removeStorage(DEFENSE_PLAN_STORAGE_KEY);
+    this.removeStorage(DEFENSE_PLAN_UPDATED_AT_STORAGE_KEY);
   }
 
   private areAllZoneTeamsDefeated(zoneId: string): boolean {
@@ -310,6 +315,19 @@ export class PlannerSetup {
       return {};
     }
 
+    const storedUpdatedAt = this.readStorage(DEFENSE_PLAN_UPDATED_AT_STORAGE_KEY);
+    if (storedUpdatedAt) {
+      const updatedAtMs = Number(storedUpdatedAt);
+      if (!Number.isFinite(updatedAtMs) || this.isDefensePlanExpired(updatedAtMs)) {
+        this.removeStorage(DEFENSE_PLAN_STORAGE_KEY);
+        this.removeStorage(DEFENSE_PLAN_UPDATED_AT_STORAGE_KEY);
+        return {};
+      }
+    } else {
+      // Legacy support for existing stored plans that predate timestamp tracking.
+      this.writeStorage(DEFENSE_PLAN_UPDATED_AT_STORAGE_KEY, String(Date.now()));
+    }
+
     try {
       const parsed = JSON.parse(storedPlan);
       if (!parsed || typeof parsed !== 'object') {
@@ -382,5 +400,9 @@ export class PlannerSetup {
     } catch {
       // Ignore storage failures to keep the component usable.
     }
+  }
+
+  private isDefensePlanExpired(updatedAtMs: number): boolean {
+    return Date.now() - updatedAtMs >= DEFENSE_PLAN_TTL_MS;
   }
 }
