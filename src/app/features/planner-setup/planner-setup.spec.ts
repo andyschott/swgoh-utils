@@ -273,6 +273,29 @@ describe('PlannerSetup', () => {
     expect(unlockedSlot?.attackOptions).toEqual(['Jedi Master Kenobi', 'Starkiller']);
   });
 
+  it('should collapse a defeated team and expand it again when selected', () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component['onDefenseDefeatedChanged']('north', 0, { target: { checked: true } } as unknown as Event);
+    fixture.detectChanges();
+
+    const collapsedButton = fixture.nativeElement.querySelector('.collapsed-team') as
+      | HTMLButtonElement
+      | null;
+    expect(collapsedButton?.textContent).toContain('North Team 1');
+    expect(fixture.nativeElement.querySelector('#north-team-0')).toBeNull();
+
+    component['expandCollapsedTeam']('north', 0);
+    fixture.detectChanges();
+
+    expect(component['zoneCards']().find((zone) => zone.zoneId === 'north')?.teamSlots[0]?.defeated).toBe(
+      false,
+    );
+    expect(fixture.nativeElement.querySelector('#north-team-0')).not.toBeNull();
+  });
+
   it('should persist and restore defense teams and attack options from local storage', () => {
     const fixture = TestBed.createComponent(PlannerSetup);
     const component = fixture.componentInstance;
@@ -401,5 +424,23 @@ describe('PlannerSetup', () => {
     fixture.detectChanges();
 
     expect(component['themeMode']()).toBe('dark');
+  });
+
+  it('should collapse and expand zones', () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    const component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component['zoneCards']().find((zone) => zone.zoneId === 'north')?.isCollapsed).toBe(false);
+
+    component['toggleZoneCollapsed']('north');
+    fixture.detectChanges();
+    expect(component['zoneCards']().find((zone) => zone.zoneId === 'north')?.isCollapsed).toBe(true);
+    expect(fixture.nativeElement.querySelector('#zone-body-north')).toBeNull();
+
+    component['toggleZoneCollapsed']('north');
+    fixture.detectChanges();
+    expect(component['zoneCards']().find((zone) => zone.zoneId === 'north')?.isCollapsed).toBe(false);
+    expect(fixture.nativeElement.querySelector('#zone-body-north')).not.toBeNull();
   });
 });

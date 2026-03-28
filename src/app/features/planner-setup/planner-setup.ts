@@ -28,6 +28,7 @@ interface ZoneSlotState {
 }
 
 type ZoneStateMap = Record<string, ZoneSlotState>;
+type ZoneCollapseStateMap = Record<string, boolean>;
 
 const zoneUnlockDependency: Readonly<Record<string, string>> = {
   'south-back': 'south-front',
@@ -58,6 +59,7 @@ export class PlannerSetup {
   protected readonly selectedMode = signal<GacMode>(this.readStoredMode());
   protected readonly selectedLeague = signal<League>(this.readStoredLeague());
   protected readonly zoneState = signal<ZoneStateMap>(this.readStoredZoneState());
+  protected readonly zoneCollapsedState = signal<ZoneCollapseStateMap>({});
   protected readonly themeMode = signal<ThemeMode>(this.getInitialThemeMode());
   protected readonly plannerRules = computed(() =>
     getPlannerRules(this.selectedMode(), this.selectedLeague()),
@@ -76,6 +78,7 @@ export class PlannerSetup {
       return {
         ...zone,
         isUnlocked,
+        isCollapsed: this.zoneCollapsedState()[zone.zoneId] ?? false,
         unlockMessage:
           dependency && !isUnlocked
             ? `Locked until all ${this.formatZoneLabel(dependency)} teams are defeated.`
@@ -90,6 +93,12 @@ export class PlannerSetup {
       };
     }),
   );
+  protected readonly zoneMiniNavCards = computed(() => {
+    const cards = this.zoneCards();
+    const nonShips = cards.filter((zone) => zone.zoneId !== 'ships');
+    const ships = cards.find((zone) => zone.zoneId === 'ships');
+    return ships ? [...nonShips, ships] : nonShips;
+  });
 
   public constructor() {
     this.initializeThemeSync();
@@ -132,6 +141,18 @@ export class PlannerSetup {
               (_, index) => existingState?.attackOptionDrafts[index] ?? '',
             ),
           };
+        }
+
+        return nextState;
+      });
+    });
+
+    effect(() => {
+      const zones = this.plannerRules().zones;
+      this.zoneCollapsedState.update((previousState) => {
+        const nextState: ZoneCollapseStateMap = {};
+        for (const zone of zones) {
+          nextState[zone.zoneId] = previousState[zone.zoneId] ?? false;
         }
 
         return nextState;
@@ -182,6 +203,16 @@ export class PlannerSetup {
     const defeated = (event.target as HTMLInputElement | null)?.checked ?? false;
     this.zoneState.update((currentState) =>
       this.updateZoneSlotState(currentState, zoneId, slotIndex, { defeated }),
+    );
+  }
+
+  protected expandCollapsedTeam(zoneId: string, slotIndex: number): void {
+    if (!this.isZoneUnlocked(zoneId)) {
+      return;
+    }
+
+    this.zoneState.update((currentState) =>
+      this.updateZoneSlotState(currentState, zoneId, slotIndex, { defeated: false }),
     );
   }
 
@@ -246,6 +277,22 @@ export class PlannerSetup {
     this.zoneState.set(this.buildEmptyZoneState());
     this.removeStorage(DEFENSE_PLAN_STORAGE_KEY);
     this.removeStorage(DEFENSE_PLAN_UPDATED_AT_STORAGE_KEY);
+  }
+
+  protected toggleZoneCollapsed(zoneId: string): void {
+    this.zoneCollapsedState.update((currentState) => ({
+      ...currentState,
+      [zoneId]: !(currentState[zoneId] ?? false),
+    }));
+  }
+
+  protected scrollToZone(zoneId: string): void {
+    const zoneElement = globalThis.document?.getElementById(`zone-card-${zoneId}`);
+    if (!zoneElement) {
+      return;
+    }
+
+    zoneElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   private areAllZoneTeamsDefeated(zoneId: string): boolean {
