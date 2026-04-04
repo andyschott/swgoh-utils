@@ -4,9 +4,9 @@
     class="collapsed-team"
     [disabled]="!zoneUnlocked()"
     (click)="onExpandRequested()"
-    [attr.aria-label]="'Expand ' + zoneLabel() + ' Team ' + (slotIndex() + 1)"
+    [attr.aria-label]="'Expand ' + collapsedSlotLabel()"
   >
-    {{ zoneLabel() }} Team {{ slotIndex() + 1 }}
+    {{ collapsedSlotLabel() }}
   </button>
 } @else {
   <div class="team-entry">

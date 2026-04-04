@@ -149,6 +149,24 @@ describe('PlannerSetup', () => {
     expect(host.querySelector('#zone-body-north')).not.toBeNull();
   });
 
+  it('should show defense team name in collapsed team label', () => {
+    const fixture = TestBed.createComponent(PlannerSetup);
+    fixture.detectChanges();
+
+    const host = fixture.nativeElement as HTMLElement;
+    const teamInput = host.querySelector('#north-team-0') as HTMLInputElement;
+    teamInput.value = 'LV';
+    teamInput.dispatchEvent(new Event('input'));
+
+    const defeatedToggle = host.querySelector('#north-defeated-0') as HTMLInputElement;
+    defeatedToggle.checked = true;
+    defeatedToggle.dispatchEvent(new Event('change'));
+    fixture.detectChanges();
+
+    const collapsedButton = host.querySelector('.collapsed-team') as HTMLButtonElement | null;
+    expect(collapsedButton?.textContent?.trim()).toBe('North Team 1 - LV');
+  });
+
   it('should clear defense entries while keeping mode and league selections', () => {
     const fixture = TestBed.createComponent(PlannerSetup);
     fixture.detectChanges();

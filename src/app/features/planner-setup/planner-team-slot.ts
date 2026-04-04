@@ -30,6 +30,12 @@ export class PlannerTeamSlot {
   public readonly slotAttackOptionRemoveRequested = output<ZoneSlotOptionEvent>();
   public readonly slotAttackOptionDraftChanged = output<ZoneSlotDraftEvent>();
 
+  protected collapsedSlotLabel(): string {
+    const teamIndexLabel = `${this.zoneLabel()} Team ${this.slotIndex() + 1}`;
+    const teamName = this.slot().teamName.trim();
+    return teamName ? `${teamIndexLabel} - ${teamName}` : teamIndexLabel;
+  }
+
   protected onExpandRequested(): void {
     this.expandRequested.emit({ zoneId: this.zoneId(), slotIndex: this.slotIndex() });
   }
