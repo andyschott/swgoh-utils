@@ -1,0 +1,72 @@
+:host {
+  display: block;
+}
+
+section {
+  border: 1px solid var(--section-border);
+  border-radius: 0.75rem;
+  background: var(--section-bg);
+  padding: 1rem;
+}
+
+h1 {
+  margin: 0 0 0.75rem;
+}
+
+.intro {
+  margin: 0 0 1rem;
+}
+
+.config-form {
+  display: grid;
+  gap: 0.5rem;
+  max-width: 16rem;
+}
+
+label {
+  font-weight: 600;
+}
+
+select {
+  border: 1px solid var(--field-border);
+  border-radius: 0.375rem;
+  background: var(--field-bg);
+  color: var(--field-text);
+  font-size: 16px;
+  min-height: 2.75rem;
+  padding: 0.4rem 0.6rem;
+}
+
+select:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+@media (max-width: 52rem) {
+  section {
+    padding: 0.75rem;
+  }
+
+  h1 {
+    font-size: 1.375rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .intro {
+    margin-bottom: 0.75rem;
+  }
+
+  .config-form {
+    gap: 0.35rem;
+  }
+}
+
+@media (max-width: 40rem) {
+  section {
+    padding: 0.65rem;
+  }
+
+  select {
+    min-height: 44px;
+  }
+}

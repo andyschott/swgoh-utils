@@ -1,0 +1,40 @@
+<section aria-labelledby="defense-title">
+  <div class="section-header">
+    <h2 id="defense-title">Opponent Defense Entry</h2>
+    <button type="button" class="clear-button" (click)="onClearRequested()">
+      Clear defenses and attack options
+    </button>
+  </div>
+  <p>
+    Enter each defending team and mark it defeated during your run. South Back unlocks after South
+    Front is fully defeated, and Ships unlocks after North is fully defeated.
+  </p>
+
+  <nav class="zone-mini-nav" aria-label="Jump to zone">
+    @for (zone of zoneMiniNavCards(); track zone.zoneId) {
+      <button
+        type="button"
+        class="zone-mini-nav-item"
+        [attr.aria-label]="'Jump to ' + zone.label + ' zone'"
+        (click)="onZoneScrollRequested(zone.zoneId)"
+      >
+        {{ zone.label }}
+      </button>
+    }
+  </nav>
+
+  <div class="zone-grid" role="list" aria-label="Defense zones">
+    @for (zone of zoneCards(); track zone.zoneId) {
+      <app-planner-zone-card
+        [zone]="zone"
+        (zoneCollapsedToggleRequested)="zoneCollapsedToggleRequested.emit($event)"
+        (teamExpandRequested)="teamExpandRequested.emit($event)"
+        (defenseTeamChanged)="defenseTeamChanged.emit($event)"
+        (defenseDefeatedChanged)="defenseDefeatedChanged.emit($event)"
+        (slotAttackOptionAddRequested)="slotAttackOptionAddRequested.emit($event)"
+        (slotAttackOptionRemoveRequested)="slotAttackOptionRemoveRequested.emit($event)"
+        (slotAttackOptionDraftChanged)="slotAttackOptionDraftChanged.emit($event)"
+      ></app-planner-zone-card>
+    }
+  </div>
+</section>

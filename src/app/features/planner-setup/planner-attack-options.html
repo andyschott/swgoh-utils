@@ -1,0 +1,41 @@
+<div class="slot-attack-options">
+  <label [for]="zoneId() + '-attack-option-' + slotIndex()">Attack options</label>
+  <div class="slot-attack-input-row">
+    <input
+      [id]="zoneId() + '-attack-option-' + slotIndex()"
+      type="text"
+      placeholder="Add counter team"
+      [value]="draft()"
+      [disabled]="!editable()"
+      (input)="onDraftChanged($event)"
+    />
+    <button
+      type="button"
+      [attr.aria-label]="'Add attack option for ' + zoneId() + ' team ' + (slotIndex() + 1)"
+      [disabled]="!editable()"
+      (click)="onAddRequested()"
+    >
+      Add
+    </button>
+  </div>
+
+  @if (options().length === 0) {
+    <p class="empty-slot-options">No attack options added.</p>
+  } @else {
+    <ul class="slot-attack-list">
+      @for (option of options(); track option + '-' + $index; let optionIndex = $index) {
+        <li>
+          <span>{{ option }}</span>
+          <button
+            type="button"
+            [attr.aria-label]="'Remove attack option ' + option"
+            [disabled]="!editable()"
+            (click)="onRemoveRequested(optionIndex)"
+          >
+            Remove
+          </button>
+        </li>
+      }
+    </ul>
+  }
+</div>

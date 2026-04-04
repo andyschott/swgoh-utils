@@ -1,182 +1,26 @@
 <main class="layout">
-  <section class="planner-config" aria-labelledby="planner-title">
-    <h1 id="planner-title">GAC Attack Planner Setup</h1>
-    <p class="intro">Choose the active GAC mode and league to load zone requirements.</p>
+  <app-planner-config-panel
+    [gacModes]="gacModes"
+    [leagues]="leagues"
+    [selectedMode]="selectedMode()"
+    [selectedLeague]="selectedLeague()"
+    (modeChanged)="onModeSelected($event)"
+    (leagueChanged)="onLeagueSelected($event)"
+  ></app-planner-config-panel>
 
-    <form class="config-form" aria-label="GAC planner configuration">
-      <label for="gac-mode">GAC Mode</label>
-      <select
-        id="gac-mode"
-        name="gac-mode"
-        [value]="selectedMode()"
-        (change)="onModeChanged($event)"
-      >
-        @for (mode of gacModes; track mode) {
-          <option [value]="mode" [selected]="mode === selectedMode()">{{ mode }}</option>
-        }
-      </select>
-
-      <label for="league">League</label>
-      <select
-        id="league"
-        name="league"
-        [value]="selectedLeague()"
-        (change)="onLeagueChanged($event)"
-      >
-        @for (league of leagues; track league) {
-          <option [value]="league" [selected]="league === selectedLeague()">
-            {{ formatLeague(league) }}
-          </option>
-        }
-      </select>
-    </form>
-  </section>
-
-  <section aria-labelledby="defense-title">
-    <div class="section-header">
-      <h2 id="defense-title">Opponent Defense Entry</h2>
-      <button type="button" class="clear-button" (click)="clearDefenseAndAttackOptions()">
-        Clear defenses and attack options
-      </button>
-    </div>
-    <p>
-      Enter each defending team and mark it defeated during your run. South Back unlocks after
-      South Front is fully defeated, and Ships unlocks after North is fully defeated.
-    </p>
-
-    <nav class="zone-mini-nav" aria-label="Jump to zone">
-      @for (zone of zoneMiniNavCards(); track zone.zoneId) {
-        <button type="button" class="zone-mini-nav-item" (click)="scrollToZone(zone.zoneId)">
-          {{ zone.label }}
-        </button>
-      }
-    </nav>
-
-    <div class="zone-grid" role="list" aria-label="Defense zones">
-      @for (zone of zoneCards(); track zone.zoneId) {
-        <article
-          [id]="'zone-card-' + zone.zoneId"
-          class="zone-card"
-          role="listitem"
-          [class.locked]="!zone.isUnlocked"
-          [attr.data-zone-id]="zone.zoneId"
-        >
-          <div class="zone-header">
-            <h3>{{ zone.label }}</h3>
-            <button
-              type="button"
-              class="zone-toggle"
-              [attr.aria-expanded]="!zone.isCollapsed"
-              [attr.aria-controls]="'zone-body-' + zone.zoneId"
-              (click)="toggleZoneCollapsed(zone.zoneId)"
-            >
-              {{ zone.isCollapsed ? 'Expand' : 'Collapse' }}
-            </button>
-          </div>
-
-          @if (!zone.isCollapsed) {
-            <div [id]="'zone-body-' + zone.zoneId">
-              <p class="zone-meta">{{ zone.slots }} slots • {{ zone.type }}</p>
-
-              @if (zone.unlockMessage) {
-                <p class="lock-message">{{ zone.unlockMessage }}</p>
-              }
-
-              <ol>
-                @for (slot of zone.teamSlots; track $index; let slotIndex = $index) {
-                  <li>
-                    @if (slot.defeated) {
-                      <button
-                        type="button"
-                        class="collapsed-team"
-                        [disabled]="!zone.isUnlocked"
-                        (click)="expandCollapsedTeam(zone.zoneId, slotIndex)"
-                        [attr.aria-label]="'Expand ' + zone.label + ' Team ' + (slotIndex + 1)"
-                      >
-                        {{ zone.label }} Team {{ slotIndex + 1 }}
-                      </button>
-                    } @else {
-                      <div class="team-entry">
-                        <div class="team-entry-header">
-                          <p class="team-entry-title">{{ zone.label }} Team {{ slotIndex + 1 }}</p>
-                          <label
-                            class="defeated-toggle"
-                            [for]="zone.zoneId + '-defeated-' + slotIndex"
-                            aria-label="Mark this defense team as defeated"
-                          >
-                            <input
-                              [id]="zone.zoneId + '-defeated-' + slotIndex"
-                              type="checkbox"
-                              [checked]="slot.defeated"
-                              [disabled]="!zone.isUnlocked"
-                              (change)="onDefenseDefeatedChanged(zone.zoneId, slotIndex, $event)"
-                            />
-                          </label>
-                        </div>
-                        <label [for]="zone.zoneId + '-team-' + slotIndex">Defense team</label>
-                        <input
-                          [id]="zone.zoneId + '-team-' + slotIndex"
-                          type="text"
-                          placeholder="Enter team name"
-                          [value]="slot.teamName"
-                          [disabled]="!slot.isEditable"
-                          (input)="onDefenseTeamChanged(zone.zoneId, slotIndex, $event)"
-                        />
-
-                        <div class="slot-attack-options">
-                          <label [for]="zone.zoneId + '-attack-option-' + slotIndex"
-                            >Attack options</label
-                          >
-                          <div class="slot-attack-input-row">
-                            <input
-                              [id]="zone.zoneId + '-attack-option-' + slotIndex"
-                              type="text"
-                              placeholder="Add counter team"
-                              [value]="slot.attackOptionDraft"
-                              [disabled]="!slot.isEditable"
-                              (input)="onSlotAttackOptionDraftChanged(zone.zoneId, slotIndex, $event)"
-                            />
-                            <button
-                              type="button"
-                              [disabled]="!slot.isEditable"
-                              (click)="addSlotAttackOption(zone.zoneId, slotIndex)"
-                            >
-                              Add
-                            </button>
-                          </div>
-
-                          @if (slot.attackOptions.length === 0) {
-                            <p class="empty-slot-options">No attack options added.</p>
-                          } @else {
-                            <ul class="slot-attack-list">
-                              @for (
-                                option of slot.attackOptions;
-                                track option + '-' + $index;
-                                let optionIndex = $index
-                              ) {
-                                <li>
-                                  <span>{{ option }}</span>
-                                  <button
-                                    type="button"
-                                    [disabled]="!slot.isEditable"
-                                    (click)="removeSlotAttackOption(zone.zoneId, slotIndex, optionIndex)"
-                                  >
-                                    Remove
-                                  </button>
-                                </li>
-                              }
-                            </ul>
-                          }
-                        </div>
-                      </div>
-                    }
-                  </li>
-                }
-              </ol>
-            </div>
-          }
-        </article>
-      }
-    </div>
-  </section>
+  <app-planner-defense-section
+    [zoneCards]="zoneCards()"
+    [zoneMiniNavCards]="zoneMiniNavCards()"
+    (clearRequested)="clearDefenseAndAttackOptions()"
+    (zoneScrollRequested)="scrollToZone($event)"
+    (zoneCollapsedToggleRequested)="toggleZoneCollapsed($event)"
+    (teamExpandRequested)="expandCollapsedTeam($event.zoneId, $event.slotIndex)"
+    (defenseTeamChanged)="onDefenseTeamValueChanged($event)"
+    (defenseDefeatedChanged)="onDefenseDefeatedValueChanged($event)"
+    (slotAttackOptionAddRequested)="addSlotAttackOption($event.zoneId, $event.slotIndex)"
+    (slotAttackOptionRemoveRequested)="
+      removeSlotAttackOption($event.zoneId, $event.slotIndex, $event.optionIndex)
+    "
+    (slotAttackOptionDraftChanged)="onSlotAttackOptionDraftValueChanged($event)"
+  ></app-planner-defense-section>
 </main>

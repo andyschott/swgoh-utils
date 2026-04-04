@@ -1,0 +1,50 @@
+@if (slot().defeated) {
+  <button
+    type="button"
+    class="collapsed-team"
+    [disabled]="!zoneUnlocked()"
+    (click)="onExpandRequested()"
+    [attr.aria-label]="'Expand ' + zoneLabel() + ' Team ' + (slotIndex() + 1)"
+  >
+    {{ zoneLabel() }} Team {{ slotIndex() + 1 }}
+  </button>
+} @else {
+  <div class="team-entry">
+    <div class="team-entry-header">
+      <p class="team-entry-title">{{ zoneLabel() }} Team {{ slotIndex() + 1 }}</p>
+      <label
+        class="defeated-toggle"
+        [for]="zoneId() + '-defeated-' + slotIndex()"
+      >
+        <input
+          [id]="zoneId() + '-defeated-' + slotIndex()"
+          type="checkbox"
+          [checked]="slot().defeated"
+          [attr.aria-label]="'Mark ' + zoneLabel() + ' Team ' + (slotIndex() + 1) + ' as defeated'"
+          [disabled]="!zoneUnlocked()"
+          (change)="onDefenseDefeatedChanged($event)"
+        />
+      </label>
+    </div>
+    <label [for]="zoneId() + '-team-' + slotIndex()">Defense team</label>
+    <input
+      [id]="zoneId() + '-team-' + slotIndex()"
+      type="text"
+      placeholder="Enter team name"
+      [value]="slot().teamName"
+      [disabled]="!slot().isEditable"
+      (input)="onDefenseTeamChanged($event)"
+    />
+
+    <app-planner-attack-options
+      [zoneId]="zoneId()"
+      [slotIndex]="slotIndex()"
+      [draft]="slot().attackOptionDraft"
+      [options]="slot().attackOptions"
+      [editable]="slot().isEditable"
+      (draftChanged)="onSlotAttackOptionDraftChanged($event)"
+      (addRequested)="onSlotAttackOptionAddRequested()"
+      (removeRequested)="onSlotAttackOptionRemoveRequested($event)"
+    ></app-planner-attack-options>
+  </div>
+}

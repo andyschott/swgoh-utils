@@ -1,0 +1,22 @@
+<section class="planner-config" aria-labelledby="planner-title">
+  <h1 id="planner-title">GAC Attack Planner Setup</h1>
+  <p class="intro">Choose the active GAC mode and league to load zone requirements.</p>
+
+  <form class="config-form" aria-label="GAC planner configuration">
+    <label for="gac-mode">GAC Mode</label>
+    <select id="gac-mode" name="gac-mode" [value]="selectedMode()" (change)="onModeChanged($event)">
+      @for (mode of gacModes(); track mode) {
+        <option [value]="mode" [selected]="mode === selectedMode()">{{ mode }}</option>
+      }
+    </select>
+
+    <label for="league">League</label>
+    <select id="league" name="league" [value]="selectedLeague()" (change)="onLeagueChanged($event)">
+      @for (league of leagues(); track league) {
+        <option [value]="league" [selected]="league === selectedLeague()">
+          {{ formatLeague(league) }}
+        </option>
+      }
+    </select>
+  </form>
+</section>

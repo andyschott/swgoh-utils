@@ -1,0 +1,119 @@
+:host {
+  display: block;
+}
+
+h3 {
+  margin: 0 0 0.75rem;
+}
+
+button {
+  border: 1px solid var(--field-border);
+  border-radius: 0.375rem;
+  background: var(--button-bg);
+  color: var(--button-text);
+  min-height: 2.75rem;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--button-bg-hover);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.zone-card {
+  border: 1px solid var(--card-border);
+  border-radius: 0.75rem;
+  padding: 0.75rem;
+  background: var(--card-bg);
+}
+
+.zone-card.locked {
+  border-color: var(--card-locked-border);
+  background: var(--card-locked-bg);
+}
+
+.zone-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.zone-toggle {
+  min-height: auto;
+  padding: 0.3rem 0.6rem;
+}
+
+.zone-meta {
+  margin: 0 0 0.75rem;
+  color: var(--muted-text);
+}
+
+.lock-message {
+  color: var(--warning-text);
+  margin: 0 0 0.75rem;
+}
+
+ol {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+ol li {
+  display: grid;
+  gap: 0.35rem;
+  justify-items: stretch;
+}
+
+@media (max-width: 52rem) {
+  h3 {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .zone-card {
+    padding: 0.6rem;
+  }
+
+  .zone-meta,
+  .lock-message {
+    margin-bottom: 0.55rem;
+  }
+
+  ol {
+    gap: 0.55rem;
+    padding-left: 0;
+  }
+
+  .zone-toggle {
+    padding: 0.25rem 0.55rem;
+  }
+
+  :host([data-zone-id='ships']) {
+    order: 99;
+  }
+}
+
+@media (max-width: 40rem) {
+  button {
+    min-height: 44px;
+  }
+
+  .zone-meta,
+  .lock-message {
+    font-size: 0.92rem;
+  }
+}

@@ -1,0 +1,51 @@
+<article
+  [id]="'zone-card-' + zone().zoneId"
+  class="zone-card"
+  role="listitem"
+  [class.locked]="!zone().isUnlocked"
+  [attr.data-zone-id]="zone().zoneId"
+>
+  <div class="zone-header">
+    <h3>{{ zone().label }}</h3>
+    <button
+      type="button"
+      class="zone-toggle"
+      [attr.aria-expanded]="!zone().isCollapsed"
+      [attr.aria-controls]="'zone-body-' + zone().zoneId"
+      [attr.aria-label]="(zone().isCollapsed ? 'Expand ' : 'Collapse ') + zone().label + ' zone'"
+      (click)="onZoneCollapsedToggleRequested()"
+    >
+      {{ zone().isCollapsed ? 'Expand' : 'Collapse' }}
+    </button>
+  </div>
+
+  @if (!zone().isCollapsed) {
+    <div [id]="'zone-body-' + zone().zoneId">
+      <p class="zone-meta">{{ zone().slots }} slots • {{ zone().type }}</p>
+
+      @if (zone().unlockMessage) {
+        <p class="lock-message">{{ zone().unlockMessage }}</p>
+      }
+
+      <ol>
+        @for (slot of zone().teamSlots; track $index; let slotIndex = $index) {
+          <li>
+            <app-planner-team-slot
+              [zoneId]="zone().zoneId"
+              [zoneLabel]="zone().label"
+              [slotIndex]="slotIndex"
+              [slot]="slot"
+              [zoneUnlocked]="zone().isUnlocked"
+              (expandRequested)="teamExpandRequested.emit($event)"
+              (defenseTeamChanged)="defenseTeamChanged.emit($event)"
+              (defenseDefeatedChanged)="defenseDefeatedChanged.emit($event)"
+              (slotAttackOptionAddRequested)="slotAttackOptionAddRequested.emit($event)"
+              (slotAttackOptionRemoveRequested)="slotAttackOptionRemoveRequested.emit($event)"
+              (slotAttackOptionDraftChanged)="slotAttackOptionDraftChanged.emit($event)"
+            ></app-planner-team-slot>
+          </li>
+        }
+      </ol>
+    </div>
+  }
+</article>
