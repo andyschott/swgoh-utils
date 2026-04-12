@@ -1,0 +1,185 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.raid-score-layout {
+  margin: 0 auto;
+  max-width: 52rem;
+  padding: 2rem 1rem;
+}
+
+.calculator-card {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 1rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.target-score-panel {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.target-score-panel p {
+  margin: 0;
+}
+
+.tier-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.field-row {
+  display: grid;
+  gap: 0.35rem;
+}
+
+label {
+  font-weight: 600;
+}
+
+input {
+  border: 1px solid #94a3b8;
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  font: inherit;
+  color: inherit;
+  background: #ffffff;
+}
+
+input:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.total-teams {
+  margin-top: 1rem;
+}
+
+.error {
+  color: #b91c1c;
+  font-weight: 600;
+  margin: 0;
+}
+
+.target-score-error {
+  min-height: 0;
+  color: #b91c1c;
+  font-weight: 600;
+}
+
+.score {
+  font-size: 1.2rem;
+}
+
+.target-result {
+  border: 1px solid #94a3b8;
+  border-radius: 0.5rem;
+  padding: 0.75rem;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.target-result p {
+  margin: 0;
+}
+
+.materials-section {
+  display: grid;
+  gap: 0.5rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #cbd5e1;
+  padding: 0.45rem 0.55rem;
+  text-align: left;
+}
+
+thead th {
+  background: #f8fafc;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+button {
+  border: 1px solid #1d4ed8;
+  border-radius: 0.5rem;
+  background: #1d4ed8;
+  color: #ffffff;
+  padding: 0.5rem 0.75rem;
+  font: inherit;
+  font-weight: 600;
+  width: fit-content;
+}
+
+button:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+a {
+  color: #1d4ed8;
+  font-weight: 600;
+}
+
+@media (max-width: 48rem) {
+  .tier-form {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .calculator-card {
+    border-color: #334155;
+    background: #0b1220;
+    color: #f8fafc;
+  }
+
+  input {
+    border-color: #64748b;
+    background: #020617;
+  }
+
+  .target-result {
+    border-color: #475569;
+  }
+
+  th,
+  td {
+    border-color: #475569;
+  }
+
+  thead th {
+    background: #1e293b;
+  }
+
+  button {
+    border-color: #60a5fa;
+    background: #2563eb;
+  }
+
+  a {
+    color: #60a5fa;
+  }
+}

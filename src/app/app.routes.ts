@@ -11,4 +11,9 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/planner-setup/planner-setup').then((module) => module.PlannerSetup),
   },
+  {
+    path: 'raid-score-calculator',
+    loadComponent: () =>
+      import('./features/raid-score-calculator/raid-score-calculator').then((module) => module.RaidScoreCalculator),
+  },
 ];

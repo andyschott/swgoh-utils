@@ -1,0 +1,91 @@
+<main class="raid-score-layout">
+  <section class="calculator-card" aria-labelledby="raid-score-title">
+    <h1 id="raid-score-title">Raid Score Calculator</h1>
+    <p>Enter the number of teams for each tier. The score updates as you type.</p>
+
+    <div class="target-score-panel">
+      <label for="targetScore">Target Score</label>
+      <input
+        id="targetScore"
+        [formControl]="targetScoreControl"
+        type="number"
+        min="1"
+        step="1"
+        inputmode="numeric"
+        autocomplete="off"
+        aria-describedby="target-score-error"
+      />
+      <p id="target-score-error" class="target-score-error" aria-live="polite" role="status">
+        @if (targetPlanError(); as targetError) {
+          {{ targetError }}
+        }
+      </p>
+
+      @if (targetPlan(); as plan) {
+        <div class="target-result" aria-live="polite">
+          <p>Suggested Team Mix</p>
+          <p>
+            T0: {{ plan.tier0Teams }}, T1: {{ plan.tier1Teams }}, T2: {{ plan.tier2Teams }},
+            T3: {{ plan.tier3Teams }}, T4: {{ plan.tier4Teams }}, T5: {{ plan.tier5Teams }},
+            T6: {{ plan.tier6Teams }}, T7: {{ plan.tier7Teams }}
+          </p>
+          <p>Achieved Score: {{ plan.achievedScore.toLocaleString('en-US') }}</p>
+          <button type="button" (click)="applyTargetPlan()">Apply Suggested Teams</button>
+        </div>
+      }
+    </div>
+
+    <form class="tier-form" [formGroup]="form" novalidate>
+      @for (tierField of tierFields; track tierField.controlName) {
+        <div class="field-row">
+          <label [for]="tierField.controlName">{{ tierField.label }} - {{ tierField.required }}</label>
+          <input
+            [id]="tierField.controlName"
+            [formControlName]="tierField.controlName"
+            type="number"
+            min="0"
+            max="5"
+            step="1"
+            inputmode="numeric"
+            autocomplete="off"
+            aria-describedby="score-error"
+          />
+        </div>
+      }
+    </form>
+
+    <p class="total-teams">Total Teams: <strong>{{ totalTeams() }}</strong> / 5</p>
+
+    @if (validationError(); as error) {
+      <p id="score-error" class="error" aria-live="polite" role="status">
+        {{ error }}
+      </p>
+    }
+
+    <p class="score" aria-live="polite">Total Score: <strong>{{ formattedScore() }}</strong></p>
+
+    <section class="materials-section" aria-labelledby="materials-title">
+      <h2 id="materials-title">Relic Materials Needed</h2>
+      <p>Based on the current team selection and relic requirements for each tier.</p>
+      <table>
+        <caption class="visually-hidden">Relic material totals</caption>
+        <thead>
+          <tr>
+            <th scope="col">Material</th>
+            <th scope="col">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of relicMaterialRows(); track row.label) {
+            <tr>
+              <th scope="row">{{ row.label }}</th>
+              <td>{{ row.value.toLocaleString('en-US') }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </section>
+
+    <a routerLink="/">Back to Home</a>
+  </section>
+</main>
