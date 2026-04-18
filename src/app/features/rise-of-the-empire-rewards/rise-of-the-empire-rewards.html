@@ -1,0 +1,67 @@
+<main class="rewards-layout">
+  <section class="rewards-card" aria-labelledby="rote-rewards-title">
+    <h1 id="rote-rewards-title">Rise of the Empire Rewards</h1>
+
+    <div class="table-container">
+      <table>
+        <caption class="visually-hidden">
+          Rise of the Empire rewards by star count in descending order
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Stars</th>
+            <th scope="col">GET1</th>
+            <th scope="col">GET2</th>
+            <th scope="col">GET3</th>
+            <th scope="col">Crystals</th>
+            <th scope="col">Fragmented Signal Data</th>
+            <th scope="col">Incomplete Signal Data</th>
+            <th scope="col">Flawed Signal Data</th>
+            <th scope="col">Aurodium Heatsinks</th>
+            <th scope="col">Electrium Conductors</th>
+            <th scope="col">Zinbiddle Cards</th>
+            <th scope="col">Impulse Detectors</th>
+            <th scope="col">Gyrda Keypads</th>
+            <th scope="col">Finishers</th>
+            <th scope="col">Kyro Keypads</th>
+            <th scope="col">Kyro Shock Prods</th>
+            <th scope="col">Gear 12+ Main</th>
+            <th scope="col">Gear 12+ Secondary</th>
+            <th scope="col">Gear 12</th>
+            <th scope="col">Gear 12 Purple</th>
+            <th scope="col">Core Gear</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (reward of rewards(); track reward.stars) {
+            <tr>
+              <th scope="row">{{ formatNumber(reward.stars) }}</th>
+              <td>{{ formatNumber(reward.guildEventCurrencyMk1) }}</td>
+              <td>{{ formatNumber(reward.guildEventCurrencyMk2) }}</td>
+              <td>{{ formatNumber(reward.guildEventCurrencyMk3) }}</td>
+              <td>{{ formatNumber(reward.crystals) }}</td>
+              <td>{{ formatNumber(reward.fragmentedSignalData) }}</td>
+              <td>{{ formatNumber(reward.incompleteSignalData) }}</td>
+              <td>{{ formatNumber(reward.flawedSignalData) }}</td>
+              <td>{{ formatNumber(reward.aurodiumHeatsinks) }}</td>
+              <td>{{ formatNumber(reward.electriumConductors) }}</td>
+              <td>{{ formatNumber(reward.zinbiddleCards) }}</td>
+              <td>{{ formatNumber(reward.impulseDetectors) }}</td>
+              <td>{{ formatNumber(reward.gyrdaKeypads) }}</td>
+              <td>{{ formatRange(reward.finishers) }}</td>
+              <td>{{ formatNumber(reward.kyroKeypads) }}</td>
+              <td>{{ formatNumber(reward.kyroShockProds) }}</td>
+              <td>{{ formatRange(reward.gear12PlusMain) }}</td>
+              <td>{{ formatRange(reward.gear12PlusSecondary) }}</td>
+              <td>{{ formatRange(reward.gear12) }}</td>
+              <td>{{ formatRange(reward.gear12Purple) }}</td>
+              <td>{{ formatRange(reward.coreGear) }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <a routerLink="/">Back to Home</a>
+  </section>
+</main>

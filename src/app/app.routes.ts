@@ -16,4 +16,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/raid-score-calculator/raid-score-calculator').then((module) => module.RaidScoreCalculator),
   },
+  {
+    path: 'rise-of-the-empire-rewards',
+    loadComponent: () =>
+      import('./features/rise-of-the-empire-rewards/rise-of-the-empire-rewards').then(
+        (module) => module.RiseOfTheEmpireRewardsPage,
+      ),
+  },
 ];
