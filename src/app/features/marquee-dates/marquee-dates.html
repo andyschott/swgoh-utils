@@ -31,11 +31,36 @@
           @for (marquee of filteredMarqueeDates(); track marquee.name) {
             <tr>
               <th scope="row">{{ marquee.name }}</th>
-              <td [class.future-date]="isFutureDate(marquee.introduction)">{{ formatDate(marquee.introduction) }}</td>
-              <td [class.future-date]="isFutureDate(marquee.marqueeEvent)">{{ formatDate(marquee.marqueeEvent) }}</td>
-              <td [class.future-date]="isFutureDate(marquee.shipment)">{{ formatDate(marquee.shipment) }}</td>
-              <td [class.future-date]="isFutureDate(marquee.farm)">{{ formatDate(marquee.farm) }}</td>
-              <td [class.future-date]="isFutureDate(marquee.acceleration)">{{ formatDate(marquee.acceleration) }}</td>
+              <td
+                [class.future-date]="isFutureDate(marquee.introduction)"
+                [attr.title]="isFutureDate(marquee.introduction) ? 'Estimated' : null"
+              >
+                {{ formatDate(marquee.introduction) }}
+              </td>
+              <td
+                [class.future-date]="isFutureDate(marquee.marqueeEvent)"
+                [attr.title]="isFutureDate(marquee.marqueeEvent) ? 'Estimated' : null"
+              >
+                {{ formatDate(marquee.marqueeEvent) }}
+              </td>
+              <td
+                [class.future-date]="isFutureDate(marquee.shipment)"
+                [attr.title]="isFutureDate(marquee.shipment) ? 'Estimated' : null"
+              >
+                {{ formatDate(marquee.shipment) }}
+              </td>
+              <td
+                [class.future-date]="isFutureDate(marquee.farm)"
+                [attr.title]="isFutureDate(marquee.farm) ? 'Estimated' : null"
+              >
+                {{ formatDate(marquee.farm) }}
+              </td>
+              <td
+                [class.future-date]="isFutureDate(marquee.acceleration)"
+                [attr.title]="isFutureDate(marquee.acceleration) ? 'Estimated' : null"
+              >
+                {{ formatDate(marquee.acceleration) }}
+              </td>
             </tr>
           } @empty {
             <tr>
