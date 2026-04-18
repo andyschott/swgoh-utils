@@ -23,4 +23,9 @@ export const routes: Routes = [
         (module) => module.RiseOfTheEmpireRewardsPage,
       ),
   },
+  {
+    path: 'marquee-dates',
+    loadComponent: () =>
+      import('./features/marquee-dates/marquee-dates').then((module) => module.MarqueeDatesPage),
+  },
 ];

@@ -66,6 +66,17 @@
   gap: 1rem;
 }
 
+.home-link {
+  color: var(--button-bg);
+  font-weight: 600;
+  width: fit-content;
+}
+
+.home-link:focus-visible {
+  outline: 3px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
 @media (max-width: 52rem) {
   .layout {
     gap: 0.75rem;

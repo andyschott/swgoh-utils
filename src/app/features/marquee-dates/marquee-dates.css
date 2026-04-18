@@ -1,0 +1,175 @@
+:host {
+  display: block;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.rewards-layout {
+  margin: 0 auto;
+  max-width: 100rem;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1rem;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.rewards-card {
+  border: 1px solid #cbd5e1;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  color: #0f172a;
+  box-sizing: border-box;
+  padding: 1rem;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  gap: 1rem;
+  height: 100%;
+  min-height: 0;
+}
+
+.search-control {
+  display: grid;
+  gap: 0.35rem;
+  max-width: 24rem;
+  width: 24rem;
+  align-self: start;
+  justify-self: end;
+}
+
+.search-control input {
+  border: 1px solid #94a3b8;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  min-height: 2.5rem;
+  box-sizing: border-box;
+  font: inherit;
+  color: inherit;
+  background: #ffffff;
+}
+
+.search-control input:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+.table-container {
+  overflow: auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  box-sizing: border-box;
+  height: 100%;
+  min-height: 0;
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  min-width: 56rem;
+}
+
+th,
+td {
+  border-right: 1px solid #cbd5e1;
+  border-bottom: 1px solid #cbd5e1;
+  padding: 0.45rem 0.55rem;
+  text-align: left;
+  white-space: nowrap;
+}
+
+thead th {
+  background: #f8fafc;
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  white-space: normal;
+  line-height: 1.2;
+}
+
+thead th:first-child {
+  left: 0;
+  z-index: 4;
+}
+
+tbody th {
+  background: #f8fafc;
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.future-date {
+  font-style: italic;
+}
+
+@media (max-width: 48rem) {
+  .search-control {
+    justify-self: start;
+    width: 100%;
+  }
+
+  thead th:first-child,
+  tbody th {
+    max-width: 40vw;
+    width: 40vw;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+a {
+  color: #1d4ed8;
+  font-weight: 600;
+  width: fit-content;
+}
+
+a:focus-visible {
+  outline: 3px solid #2563eb;
+  outline-offset: 2px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .rewards-card {
+    border-color: #334155;
+    background: #0b1220;
+    color: #f8fafc;
+  }
+
+  .table-container {
+    border-color: #475569;
+  }
+
+  .search-control input {
+    border-color: #64748b;
+    background: #0f172a;
+    color: #f8fafc;
+  }
+
+  th,
+  td {
+    border-color: #475569;
+  }
+
+  thead th,
+  tbody th {
+    background: #1e293b;
+  }
+
+  a {
+    color: #60a5fa;
+  }
+}

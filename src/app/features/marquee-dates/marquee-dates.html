@@ -1,0 +1,51 @@
+<main class="rewards-layout">
+  <section class="rewards-card" aria-labelledby="marquee-dates-title">
+    <h1 id="marquee-dates-title">Marquee Dates</h1>
+    <div class="search-control">
+      <input
+        id="marquee-search"
+        type="search"
+        aria-label="Search characters"
+        placeholder="Type a character name"
+        [value]="searchTerm()"
+        (input)="onSearchInput($event)"
+      />
+    </div>
+
+    <div class="table-container">
+      <table>
+        <caption class="visually-hidden">
+          Marquee dates sorted by introduction date descending, then marquee event date descending
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Character</th>
+            <th scope="col">Introduction Date</th>
+            <th scope="col">Marquee Event Date</th>
+            <th scope="col">Shipment Date</th>
+            <th scope="col">Farm Date</th>
+            <th scope="col">Acceleration Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (marquee of filteredMarqueeDates(); track marquee.name) {
+            <tr>
+              <th scope="row">{{ marquee.name }}</th>
+              <td [class.future-date]="isFutureDate(marquee.introduction)">{{ formatDate(marquee.introduction) }}</td>
+              <td [class.future-date]="isFutureDate(marquee.marqueeEvent)">{{ formatDate(marquee.marqueeEvent) }}</td>
+              <td [class.future-date]="isFutureDate(marquee.shipment)">{{ formatDate(marquee.shipment) }}</td>
+              <td [class.future-date]="isFutureDate(marquee.farm)">{{ formatDate(marquee.farm) }}</td>
+              <td [class.future-date]="isFutureDate(marquee.acceleration)">{{ formatDate(marquee.acceleration) }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6">No characters match the current search.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <a routerLink="/">Back to Home</a>
+  </section>
+</main>
