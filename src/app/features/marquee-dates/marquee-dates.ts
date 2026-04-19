@@ -59,7 +59,7 @@ export class MarqueeDatesPage {
 
   protected formatDate(value: Date | null): string {
     if (value === null) {
-      return 'TBD';
+      return '';
     }
 
     return value.toLocaleDateString('en-US', {

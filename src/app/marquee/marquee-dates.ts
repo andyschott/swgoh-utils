@@ -2,14 +2,742 @@ import { Injectable } from '@angular/core';
 
 export interface MarqueeDate {
   name: string;
-  introduction: Date | null;
-  marqueeEvent: Date | null;
-  shipment: Date | null;
-  farm: Date | null;
+  introduction: Date;
+  marqueeEvent: Date;
+  shipment: Date;
+  farm: Date;
   acceleration: Date | null;
 }
 
 const marquees: MarqueeDate[] = [
+  {
+    name: 'Sana Starros',
+    introduction: new Date('2022-11-29'),
+    marqueeEvent: new Date('2022-11-30'),
+    shipment: new Date('2022-12-14'),
+    farm: new Date('2023-01-25'),
+    acceleration: new Date('2023-11-29')
+  },
+  {
+    name: '0-0-0',
+    introduction: new Date('2022-10-19'),
+    marqueeEvent: new Date('2022-10-20'),
+    shipment: new Date('2022-11-09'),
+    farm: new Date('2022-12-14'),
+    acceleration: new Date('2023-10-19')
+  },
+  {
+    name: 'BT-1',
+    introduction: new Date('2022-10-19'),
+    marqueeEvent: new Date('2022-10-20'),
+    shipment: new Date('2022-11-09'),
+    farm: new Date('2022-12-14'),
+    acceleration: new Date('2023-10-19')
+  },
+  {
+    name: 'Hondo Ohnaka',
+    introduction: new Date('2022-10-04'),
+    marqueeEvent: new Date('2022-10-05'),
+    shipment: new Date('2022-10-26'),
+    farm: new Date('2022-11-30'),
+    acceleration: new Date('2023-10-04')
+  },
+  {
+    name: 'Boushh (Leia Organa)',
+    introduction: new Date('2022-09-08'),
+    marqueeEvent: new Date('2022-09-09'),
+    shipment: new Date('2022-10-05'),
+    farm: new Date('2022-11-09'),
+    acceleration: new Date('2023-09-08')
+  },
+  {
+    name: 'Skiff Guard (Lando Calrissian)',
+    introduction: new Date('2022-08-17'),
+    marqueeEvent: new Date('2022-08-18'),
+    shipment: new Date('2022-09-07'),
+    farm: new Date('2022-10-19'),
+    acceleration: new Date('2023-08-17')
+  },
+  {
+    name: 'Krrsantan',
+    introduction: new Date('2022-07-20'),
+    marqueeEvent: new Date('2022-07-21'),
+    shipment: new Date('2022-08-17'),
+    farm: new Date('2022-09-21'),
+    acceleration: new Date('2023-07-20')
+  },
+  {
+    name: 'Ravens Claw',
+    introduction: new Date('2022-07-06'),
+    marqueeEvent: new Date('2022-07-07'),
+    shipment: new Date('2022-08-03'),
+    farm: new Date('2022-09-07'),
+    acceleration: null
+  },
+  {
+    name: 'Admiral Raddus',
+    introduction: new Date('2022-06-08'),
+    marqueeEvent: new Date('2022-06-09'),
+    shipment: new Date('2022-07-06'),
+    farm: new Date('2022-08-03'),
+    acceleration: new Date('2023-06-08')
+  },
+  {
+    name: '50R-T',
+    introduction: new Date('2022-05-11'),
+    marqueeEvent: new Date('2022-05-12'),
+    shipment: new Date('2022-06-08'),
+    farm: new Date('2022-07-06'),
+    acceleration: new Date('2023-05-11')
+  },
+  {
+    name: 'Fifth Brother',
+    introduction: new Date('2022-04-27'),
+    marqueeEvent: new Date('2022-04-28'),
+    shipment: new Date('2022-05-25'),
+    farm: new Date('2022-06-08'),
+    acceleration: new Date('2023-04-27')
+  },
+  {
+    name: 'Outrider',
+    introduction: new Date('2022-04-07'),
+    marqueeEvent: new Date('2022-04-08'),
+    shipment: new Date('2022-05-11'),
+    farm: new Date('2022-06-08'),
+    acceleration: null
+  },
+  {
+    name: 'Eighth Brother',
+    introduction: new Date('2022-03-23'),
+    marqueeEvent: new Date('2022-03-24'),
+    shipment: new Date('2022-04-20'),
+    farm: new Date('2022-05-25'),
+    acceleration: new Date('2023-03-23')
+  },
+  {
+    name: 'Seventh Sister',
+    introduction: new Date('2022-03-16'),
+    marqueeEvent: new Date('2022-03-17'),
+    shipment: new Date('2022-04-06'),
+    farm: new Date('2022-05-11'),
+    acceleration: new Date('2023-03-16')
+  },
+  {
+    name: 'TIE Echelon',
+    introduction: new Date('2022-03-03'),
+    marqueeEvent: new Date('2022-03-04'),
+    shipment: new Date('2022-04-06'),
+    farm: new Date('2022-04-27'),
+    acceleration: null
+  },
+  {
+    name: 'MG-100 StarFortress SF-17',
+    introduction: new Date('2022-02-24'),
+    marqueeEvent: new Date('2022-02-25'),
+    shipment: new Date('2022-03-23'),
+    farm: new Date('2022-04-20'),
+    acceleration: null
+  },
+  {
+    name: 'Ninth Sister',
+    introduction: new Date('2022-02-09'),
+    marqueeEvent: new Date('2022-02-10'),
+    shipment: new Date('2022-03-16'),
+    farm: new Date('2022-04-06'),
+    acceleration: new Date('2023-02-09')
+  },
+  {
+    name: 'Second Sister',
+    introduction: new Date('2022-01-26'),
+    marqueeEvent: new Date('2022-01-27'),
+    shipment: new Date('2022-02-23'),
+    farm: new Date('2022-03-23'),
+    acceleration: new Date('2023-01-26')
+  },
+  {
+    name: 'Iden Versio',
+    introduction: new Date('2022-01-12'),
+    marqueeEvent: new Date('2022-01-13'),
+    shipment: new Date('2022-02-09'),
+    farm: new Date('2022-03-16'),
+    acceleration: new Date('2023-01-12')
+  },
+  {
+    name: 'Mara Jade, The Emperor\'s Hand',
+    introduction: new Date('2021-12-08'),
+    marqueeEvent: new Date('2021-12-09'),
+    shipment: new Date('2021-01-12'),
+    farm: new Date('2022-02-09'),
+    acceleration: new Date('2022-12-08')
+  },
+  {
+    name: 'Darth Talon',
+    introduction: new Date('2021-12-01'),
+    marqueeEvent: new Date('2021-12-02'),
+    shipment: new Date('2021-01-12'),
+    farm: new Date('2022-02-02'),
+    acceleration: new Date('2022-12-01')
+  },
+  {
+    name: 'Kyle Katarn',
+    introduction: new Date('2021-11-24'),
+    marqueeEvent: new Date('2021-11-25'),
+    shipment: new Date('2021-12-15'),
+    farm: new Date('2022-01-26'),
+    acceleration: new Date('2022-11-24')
+  },
+  {
+    name: 'Dash Rendar',
+    introduction: new Date('2021-11-17'),
+    marqueeEvent: new Date('2021-11-18'),
+    shipment: new Date('2021-12-15'),
+    farm: new Date('2021-01-12'),
+    acceleration: new Date('2022-11-17')
+  },
+  {
+    name: 'Fennec Shand',
+    introduction: new Date('2021-10-06'),
+    marqueeEvent: new Date('2021-10-07'),
+    shipment: new Date('2021-11-03'),
+    farm: new Date('2021-12-01'),
+    acceleration: new Date('2022-10-06')
+  },
+  {
+    name: 'Omega',
+    introduction: new Date('2021-07-14'),
+    marqueeEvent: new Date('2021-07-15'),
+    shipment: new Date('2021-08-11'),
+    farm: new Date('2021-09-08'),
+    acceleration: new Date('2022-07-14')
+  },
+  {
+    name: 'Echo',
+    introduction: new Date('2021-05-04'),
+    marqueeEvent: new Date('2021-05-05'),
+    shipment: new Date('2021-06-09'),
+    farm: new Date('2021-07-14'),
+    acceleration: new Date('2022-05-04')
+  },
+  {
+    name: 'Wrecker',
+    introduction: new Date('2021-04-28'),
+    marqueeEvent: new Date('2021-04-29'),
+    shipment: new Date('2021-05-26'),
+    farm: new Date('2021-06-30'),
+    acceleration: new Date('2022-04-28')
+  },
+  {
+    name: 'Tech',
+    introduction: new Date('2021-04-14'),
+    marqueeEvent: new Date('2021-04-15'),
+    shipment: new Date('2021-05-19'),
+    farm: new Date('2021-06-16'),
+    acceleration: new Date('2022-04-14')
+  },
+  {
+    name: 'Hunter',
+    introduction: new Date('2021-04-07'),
+    marqueeEvent: new Date('2021-04-08'),
+    shipment: new Date('2021-05-04'),
+    farm: new Date('2021-06-09'),
+    acceleration: new Date('2022-04-07')
+  },
+  {
+    name: 'Bo-Katan Kryze',
+    introduction: new Date('2021-03-17'),
+    marqueeEvent: new Date('2021-03-18'),
+    shipment: new Date('2021-04-14'),
+    farm: new Date('2021-05-19'),
+    acceleration: new Date('2022-03-17')
+  },
+  {
+    name: 'Dark Trooper',
+    introduction: new Date('2021-03-03'),
+    marqueeEvent: new Date('2021-03-04'),
+    shipment: new Date('2021-04-05'),
+    farm: new Date('2021-05-04'),
+    acceleration: new Date('2022-03-03')
+  },
+  {
+    name: 'The Armorer',
+    introduction: new Date('2021-01-13'),
+    marqueeEvent: new Date('2021-01-14'),
+    shipment: new Date('2021-02-10'),
+    farm: new Date('2021-03-17'),
+    acceleration: new Date('2022-01-13')
+  },
+  {
+    name: 'Moff Gideon',
+    introduction: new Date('2020-12-02'),
+    marqueeEvent: new Date('2020-12-03'),
+    shipment: new Date('2021-01-06'),
+    farm: new Date('2021-02-10'),
+    acceleration: new Date('2021-12-02')
+  },
+  {
+    name: 'Admiral Piett',
+    introduction: new Date('2020-08-26'),
+    marqueeEvent: new Date('2020-08-27'),
+    shipment: new Date('2020-09-16'),
+    farm: new Date('2020-10-07'),
+    acceleration: new Date('2021-08-26')
+  },
+  {
+    name: 'Mon Mothma',
+    introduction: new Date('2020-07-26'),
+    marqueeEvent: new Date('2020-07-27'),
+    shipment: new Date('2020-08-26'),
+    farm: new Date('2020-09-23'),
+    acceleration: new Date('2021-07-26')
+  },
+  {
+    name: 'Threepio & Chewie',
+    introduction: new Date('2020-07-15'),
+    marqueeEvent: new Date('2020-07-16'),
+    shipment: new Date('2020-08-12'),
+    farm: new Date('2020-09-09'),
+    acceleration: new Date('2021-07-15')
+  },
+  {
+    name: 'Imperial TIE Bomber',
+    introduction: new Date('2020-06-03'),
+    marqueeEvent: new Date('2020-06-04'),
+    shipment: new Date('2020-07-09'),
+    farm: new Date('2020-08-12'),
+    acceleration: null
+  },
+  {
+    name: 'Rebel Y-wing',
+    introduction: new Date('2020-05-20'),
+    marqueeEvent: new Date('2020-05-21'),
+    shipment: new Date('2020-06-22'),
+    farm: new Date('2020-07-23'),
+    acceleration: null
+  },
+  {
+    name: 'The Mandalorian',
+    introduction: new Date('2020-04-29'),
+    marqueeEvent: new Date('2020-04-30'),
+    shipment: new Date('2020-06-03'),
+    farm: new Date('2020-07-09'),
+    acceleration: new Date('2021-04-29')
+  },
+  {
+    name: 'Greef Karga',
+    introduction: new Date('2020-04-26'),
+    marqueeEvent: new Date('2020-04-27'),
+    shipment: new Date('2020-06-03'),
+    farm: new Date('2020-07-09'),
+    acceleration: new Date('2021-04-26')
+  },
+  {
+    name: 'Cara Dune',
+    introduction: new Date('2020-04-22'),
+    marqueeEvent: new Date('2020-04-23'),
+    shipment: new Date('2020-06-03'),
+    farm: new Date('2020-07-09'),
+    acceleration: new Date('2021-04-22')
+  },
+  {
+    name: 'Resistance Hero Poe',
+    introduction: new Date('2020-01-22'),
+    marqueeEvent: new Date('2020-01-23'),
+    shipment: new Date('2020-03-10'),
+    farm: new Date('2020-03-25'),
+    acceleration: new Date('2021-01-22')
+  },
+  {
+    name: 'Resistance Hero Finn',
+    introduction: new Date('2019-12-18'),
+    marqueeEvent: new Date('2019-12-19'),
+    shipment: new Date('2020-01-29'),
+    farm: new Date('2020-02-27'),
+    acceleration: new Date('2020-12-18')
+  },
+  {
+    name: 'Sith Trooper',
+    introduction: new Date('2019-12-12'),
+    marqueeEvent: new Date('2019-12-13'),
+    shipment: new Date('2020-01-29'),
+    farm: new Date('2020-02-12'),
+    acceleration: new Date('2020-12-12')
+  },
+  {
+    name: 'General Hux',
+    introduction: new Date('2019-12-10'),
+    marqueeEvent: new Date('2019-12-11'),
+    shipment: new Date('2020-01-29'),
+    farm: new Date('2020-02-12'),
+    acceleration: new Date('2020-12-10')
+  },
+  {
+    name: 'BTL-B Y-wing Starfighter',
+    introduction: new Date('2019-11-13'),
+    marqueeEvent: new Date('2019-11-14'),
+    shipment: new Date('2019-12-18'),
+    farm: new Date('2020-01-29'),
+    acceleration: null
+  },
+  {
+    name: 'Hyena Bomber',
+    introduction: new Date('2019-10-31'),
+    marqueeEvent: new Date('2019-11-01'),
+    shipment: new Date('2019-12-10'),
+    farm: new Date('2020-01-22'),
+    acceleration: null
+  },
+  {
+    name: 'Vulture Droid',
+    introduction: new Date('2019-08-01'),
+    marqueeEvent: new Date('2019-08-02'),
+    shipment: new Date('2019-09-11'),
+    farm: new Date('2019-10-30'),
+    acceleration: null
+  },
+  {
+    name: 'Shaak Ti',
+    introduction: new Date('2019-06-05'),
+    marqueeEvent: new Date('2019-06-06'),
+    shipment: new Date('2019-07-16'),
+    farm: new Date('2019-08-23'),
+    acceleration: new Date('2020-06-05')
+  },
+  {
+    name: 'Ebon Hawk',
+    introduction: new Date('2019-03-07'),
+    marqueeEvent: new Date('2019-03-08'),
+    shipment: new Date('2019-04-11'),
+    farm: new Date('2019-05-15'),
+    acceleration: new Date('2020-03-07')
+  },
+  {
+    name: 'Droideka',
+    introduction: new Date('2019-02-20'),
+    marqueeEvent: new Date('2019-02-21'),
+    shipment: new Date('2019-03-27'),
+    farm: new Date('2019-04-24'),
+    acceleration: new Date('2020-02-20')
+  },
+  {
+    name: 'B1 Battle Droid',
+    introduction: new Date('2019-02-13'),
+    marqueeEvent: new Date('2019-02-14'),
+    shipment: new Date('2019-03-25'),
+    farm: new Date('2019-04-24'),
+    acceleration: new Date('2020-02-13')
+  },
+  {
+    name: 'Emperors Shuttle',
+    introduction: new Date('2019-02-07'),
+    marqueeEvent: new Date('2019-02-08'),
+    shipment: new Date('2019-03-25'),
+    farm: new Date('2019-05-01'),
+    acceleration: null
+  },
+  {
+    name: 'Carth Onasi',
+    introduction: new Date('2018-11-30'),
+    marqueeEvent: new Date('2018-12-01'),
+    shipment: new Date('2019-01-09'),
+    farm: new Date('2019-02-20'),
+    acceleration: new Date('2019-11-30')
+  },
+  {
+    name: 'Juhani',
+    introduction: new Date('2018-11-29'),
+    marqueeEvent: new Date('2018-11-30'),
+    shipment: new Date('2019-01-09'),
+    farm: new Date('2019-02-20'),
+    acceleration: new Date('2019-11-29')
+  },
+  {
+    name: 'Canderous Ordo',
+    introduction: new Date('2018-11-15'),
+    marqueeEvent: new Date('2018-11-16'),
+    shipment: new Date('2018-12-13'),
+    farm: new Date('2019-01-16'),
+    acceleration: new Date('2019-11-15')
+  },
+  {
+    name: 'Bastila Shan (Fallen)',
+    introduction: new Date('2018-11-14'),
+    marqueeEvent: new Date('2018-11-15'),
+    shipment: new Date('2018-12-13'),
+    farm: new Date('2019-01-16'),
+    acceleration: new Date('2019-11-14')
+  },
+  {
+    name: 'Eta-2 Starfighter',
+    introduction: new Date('2018-10-31'),
+    marqueeEvent: new Date('2018-11-01'),
+    shipment: new Date('2018-12-05'),
+    farm: new Date('2019-01-16'),
+    acceleration: new Date('2019-10-31')
+  },
+  {
+    name: 'B-28 Extinction-class Bomber',
+    introduction: new Date('2018-10-24'),
+    marqueeEvent: new Date('2018-10-25'),
+    shipment: new Date('2018-11-29'),
+    farm: new Date('2019-01-09'),
+    acceleration: null
+  },
+  {
+    name: 'IG-2000',
+    introduction: new Date('2018-09-27'),
+    marqueeEvent: new Date('2018-09-28'),
+    shipment: new Date('2018-10-31'),
+    farm: new Date('2018-12-05'),
+    acceleration: null
+  },
+  {
+    name: 'Jango Fett',
+    introduction: new Date('2018-09-19'),
+    marqueeEvent: new Date('2018-09-20'),
+    shipment: new Date('2018-10-31'),
+    farm: new Date('2018-12-05'),
+    acceleration: new Date('2019-09-19')
+  },
+  {
+    name: 'Xanadu Blood Ship',
+    introduction: new Date('2018-09-12'),
+    marqueeEvent: new Date('2018-09-13'),
+    shipment: new Date('2018-10-17'),
+    farm: new Date('2018-11-29'),
+    acceleration: null
+  },
+  {
+    name: 'Aurra Sing',
+    introduction: new Date('2018-08-23'),
+    marqueeEvent: new Date('2018-08-24'),
+    shipment: new Date('2018-09-26'),
+    farm: new Date('2018-10-31'),
+    acceleration: new Date('2019-08-23')
+  },
+  {
+    name: 'Hounds Tooth',
+    introduction: new Date('2018-08-22'),
+    marqueeEvent: new Date('2018-08-23'),
+    shipment: new Date('2018-09-26'),
+    farm: new Date('2018-10-31'),
+    acceleration: null
+  },
+  {
+    name: 'Embo',
+    introduction: new Date('2018-08-08'),
+    marqueeEvent: new Date('2018-08-09'),
+    shipment: new Date('2018-09-12'),
+    farm: new Date('2018-10-17'),
+    acceleration: new Date('2019-08-08')
+  },
+  {
+    name: 'Zaalbar',
+    introduction: new Date('2018-07-26'),
+    marqueeEvent: new Date('2018-07-27'),
+    shipment: new Date('2018-08-30'),
+    farm: new Date('2018-09-26'),
+    acceleration: new Date('2019-07-26')
+  },
+  {
+    name: 'Mission Vao',
+    introduction: new Date('2018-07-26'),
+    marqueeEvent: new Date('2018-07-27'),
+    shipment: new Date('2018-08-30'),
+    farm: new Date('2018-09-26'),
+    acceleration: new Date('2019-07-26')
+  },
+  {
+    name: 'Sith Fighter',
+    introduction: new Date('2018-07-25'),
+    marqueeEvent: new Date('2018-07-26'),
+    shipment: new Date('2018-08-30'),
+    farm: new Date('2018-10-10'),
+    acceleration: null
+  },
+  {
+    name: 'T3-M4',
+    introduction: new Date('2018-07-25'),
+    marqueeEvent: new Date('2018-07-26'),
+    shipment: new Date('2018-08-30'),
+    farm: new Date('2018-09-26'),
+    acceleration: new Date('2019-07-25')
+  },
+  {
+    name: 'Jolee Bindo',
+    introduction: new Date('2018-07-12'),
+    marqueeEvent: new Date('2018-07-13'),
+    shipment: new Date('2018-08-09'),
+    farm: new Date('2018-09-12'),
+    acceleration: new Date('2019-07-12')
+  },
+  {
+    name: 'Bastila Shan',
+    introduction: new Date('2018-07-11'),
+    marqueeEvent: new Date('2018-07-12'),
+    shipment: new Date('2018-08-09'),
+    farm: new Date('2018-09-12'),
+    acceleration: new Date('2019-07-11')
+  },
+  {
+    name: 'Range Trooper',
+    introduction: new Date('2018-06-21'),
+    marqueeEvent: new Date('2018-06-22'),
+    shipment: new Date('2018-07-25'),
+    farm: new Date('2018-08-22'),
+    acceleration: new Date('2019-06-21')
+  },
+  {
+    name: 'Lando\'s Millennium Falcon',
+    introduction: new Date('2018-06-06'),
+    marqueeEvent: new Date('2018-06-07'),
+    shipment: new Date('2018-07-25'),
+    farm: new Date('2018-08-22'),
+    acceleration: null
+  },
+  {
+    name: 'L3-37',
+    introduction: new Date('2018-06-06'),
+    marqueeEvent: new Date('2018-06-07'),
+    shipment: new Date('2018-07-25'),
+    farm: new Date('2018-08-22'),
+    acceleration: new Date('2019-06-06')
+  },
+  {
+    name: 'Young Lando Calrissian',
+    introduction: new Date('2018-06-06'),
+    marqueeEvent: new Date('2018-06-07'),
+    shipment: new Date('2018-07-25'),
+    farm: new Date('2018-08-22'),
+    acceleration: new Date('2019-06-06')
+  },
+  {
+    name: 'Enfys Nest',
+    introduction: new Date('2018-05-29'),
+    marqueeEvent: new Date('2018-05-30'),
+    shipment: new Date('2018-07-11'),
+    farm: new Date('2018-08-22'),
+    acceleration: new Date('2019-05-29')
+  },
+  {
+    name: 'Qi\'ra',
+    introduction: new Date('2018-05-24'),
+    marqueeEvent: new Date('2018-05-25'),
+    shipment: new Date('2018-07-11'),
+    farm: new Date('2018-08-09'),
+    acceleration: new Date('2019-05-24')
+  },
+  {
+    name: 'Vandor Chewbacca',
+    introduction: new Date('2018-05-16'),
+    marqueeEvent: new Date('2018-05-17'),
+    shipment: new Date('2018-06-21'),
+    farm: new Date('2018-07-25'),
+    acceleration: new Date('2019-05-16')
+  },
+  {
+    name: 'Young Han Solo',
+    introduction: new Date('2018-05-16'),
+    marqueeEvent: new Date('2018-05-17'),
+    shipment: new Date('2018-06-21'),
+    farm: new Date('2018-07-25'),
+    acceleration: new Date('2019-05-16')
+  },
+  {
+    name: 'Bossk',
+    introduction: new Date('2018-05-03'),
+    marqueeEvent: new Date('2018-05-04'),
+    shipment: new Date('2018-06-07'),
+    farm: new Date('2018-07-11'),
+    acceleration: new Date('2019-05-03')
+  },
+  {
+    name: 'Darth Sion',
+    introduction: new Date('2018-02-28'),
+    marqueeEvent: new Date('2018-03-01'),
+    shipment: new Date('2018-04-11'),
+    farm: new Date('2018-05-23'),
+    acceleration: new Date('2019-02-28')
+  },
+  {
+    name: 'Visas Marr',
+    introduction: new Date('2018-02-28'),
+    marqueeEvent: new Date('2018-03-01'),
+    shipment: new Date('2018-04-11'),
+    farm: new Date('2018-05-23'),
+    acceleration: new Date('2019-02-28')
+  },
+  {
+    name: 'Sith Marauder',
+    introduction: new Date('2018-02-13'),
+    marqueeEvent: new Date('2018-02-14'),
+    shipment: new Date('2018-04-11'),
+    farm: new Date('2018-05-14'),
+    acceleration: new Date('2019-02-13')
+  },
+  {
+    name: 'Amilyn Holdo',
+    introduction: new Date('2018-01-26'),
+    marqueeEvent: new Date('2018-01-27'),
+    shipment: new Date('2018-03-21'),
+    farm: new Date('2018-04-25'),
+    acceleration: new Date('2019-01-26')
+  },
+  {
+    name: 'Rose Tico',
+    introduction: new Date('2018-01-26'),
+    marqueeEvent: new Date('2018-01-27'),
+    shipment: new Date('2018-03-21'),
+    farm: new Date('2018-04-25'),
+    acceleration: new Date('2019-01-26')
+  },
+  {
+    name: 'First Order Executioner',
+    introduction: new Date('2018-01-10'),
+    marqueeEvent: new Date('2018-01-11'),
+    shipment: new Date('2018-03-01'),
+    farm: new Date('2018-04-11'),
+    acceleration: new Date('2019-01-10')
+  },
+  {
+    name: 'Kylo Ren (Unmasked)',
+    introduction: new Date('2017-11-08'),
+    marqueeEvent: new Date('2017-11-09'),
+    shipment: new Date('2017-12-14'),
+    farm: new Date('2018-01-25'),
+    acceleration: new Date('2018-11-08')
+  },
+  {
+    name: 'TIE Silencer',
+    introduction: new Date('2017-11-08'),
+    marqueeEvent: new Date('2017-11-09'),
+    shipment: new Date('2017-12-14'),
+    farm: new Date('2018-01-25'),
+    acceleration: null
+  },
+  {
+    name: 'First Order SF Tie Fighter',
+    introduction: new Date('2017-11-08'),
+    marqueeEvent: new Date('2017-11-09'),
+    shipment: new Date('2017-12-14'),
+    farm: new Date('2018-01-25'),
+    acceleration: null
+  },
+  {
+    name: 'First Order SF Tie Pilot',
+    introduction: new Date('2017-11-08'),
+    marqueeEvent: new Date('2017-11-09'),
+    shipment: new Date('2017-12-14'),
+    farm: new Date('2018-01-25'),
+    acceleration: null
+  },
+  {
+    name: 'Mother Talzin',
+    introduction: new Date('2017-10-19'),
+    marqueeEvent: new Date('2017-10-20'),
+    shipment: new Date('2018-01-23'),
+    farm: new Date('2018-04-11'),
+    acceleration: new Date('2018-10-19')
+  },
   {
     name: 'Zorii Bliss',
     introduction: new Date('2023-01-11'),
@@ -17,6 +745,14 @@ const marquees: MarqueeDate[] = [
     shipment: new Date('2023-02-08'),
     farm: new Date('2023-03-08'),
     acceleration: new Date('2024-01-11'),
+  },
+  {
+    name: 'Tie Defender',
+    introduction: new Date('2023-01-26'),
+    marqueeEvent: new Date('2023-01-27'),
+    shipment: new Date('2023-02-22'),
+    farm: new Date('2023-03-22'),
+    acceleration: null
   },
   {
     name: 'Tusken Chieftan',
@@ -73,6 +809,22 @@ const marquees: MarqueeDate[] = [
     shipment: new Date('2023-05-24'),
     farm: new Date('2023-06-07'),
     acceleration: new Date('2024-05-02'),
+  },
+  {
+    name: 'Mark VI Interceptor',
+    introduction: new Date('2023-06-08'),
+    marqueeEvent: new Date('2023-06-09'),
+    shipment: new Date('2023-07-06'),
+    farm: new Date('2023-07-19'),
+    acceleration: null
+  },
+  {
+    name: 'TIE Dagger',
+    introduction: new Date('2023-05-25'),
+    marqueeEvent: new Date('2023-05-26'),
+    shipment: new Date('2023-06-21'),
+    farm: new Date('2023-07-19'),
+    acceleration: null
   },
   {
     name: 'Captain Rex',
