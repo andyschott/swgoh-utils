@@ -11,6 +11,54 @@ export interface MarqueeDate {
 
 const marquees: MarqueeDate[] = [
   {
+    name: 'R5-D4',
+    introduction: new Date('2026-04-29'),
+    marqueeEvent: new Date('2026-05-05'),
+    shipment: new Date('2026-08-05'),
+    farm: new Date('2026-08-05'),
+    acceleration: new Date('2027-04-29')
+  },
+  {
+    name: 'Zeb Orrelios (New Republic Pilot)',
+    introduction: new Date('2026-04-29'),
+    marqueeEvent: new Date('2026-05-19'),
+    shipment: new Date('2026-08-05'),
+    farm: new Date('2026-08-19'),
+    acceleration: new Date('2027-04-29')
+  },
+  {
+    name: 'Colonel Ward',
+    introduction: new Date('2026-04-29'),
+    marqueeEvent: new Date('2026-06-02'),
+    shipment: new Date('2026-08-05'),
+    farm: new Date('2026-09-02'),
+    acceleration: new Date('2027-04-29')
+  },
+  {
+    name: 'Captain Carson Teva',
+    introduction: new Date('2026-04-29'),
+    marqueeEvent: new Date('2026-06-16'),
+    shipment: new Date('2026-08-05'),
+    farm: new Date('2026-09-16'),
+    acceleration: new Date('2027-04-29')
+  },
+  {
+    name: 'Grogu & Anzellans',
+    introduction: new Date('2026-04-29'),
+    marqueeEvent: new Date('2026-06-30'),
+    shipment: new Date('2026-08-05'),
+    farm: new Date('2026-06-30'),
+    acceleration: new Date('2027-04-29')
+  },
+  {
+    name: 'Imperial Snowtrooper Commander',
+    introduction: new Date('2026-04-29'),
+    marqueeEvent: new Date('2026-07-14'),
+    shipment: new Date('2026-08-05'),
+    farm: new Date('2026-10-14'),
+    acceleration: new Date('2027-04-29')
+  },
+  {
     name: 'Sana Starros',
     introduction: new Date('2022-11-29'),
     marqueeEvent: new Date('2022-11-30'),
