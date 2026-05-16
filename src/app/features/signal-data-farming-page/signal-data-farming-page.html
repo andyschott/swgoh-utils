@@ -1,0 +1,79 @@
+<main class="signal-data-layout">
+  <section class="signal-data-card" aria-labelledby="signal-data-title">
+    <h1 id="signal-data-title">Signal Data Farming</h1>
+    <p>Enter your current and target signal data amounts</p>
+
+    <div class="signal-data-form" [formGroup]="form">
+      <table>
+        <caption class="visually-hidden">
+          Current, target, and remaining amounts for each signal data type
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Type</th>
+            <th scope="col">Current</th>
+            <th scope="col">Target</th>
+            <th scope="col">Remaining</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of rows; track row.key) {
+            <tr>
+              <th scope="row">{{ row.label }}</th>
+              <td data-label="Current">
+                <label class="visually-hidden" [for]="row.currentControlName">
+                  {{ row.label }} current amount
+                </label>
+                <input
+                  [id]="row.currentControlName"
+                  [formControlName]="row.currentControlName"
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  autocomplete="off"
+                />
+              </td>
+              <td data-label="Target">
+                <label class="visually-hidden" [for]="row.targetControlName">
+                  {{ row.label }} target amount
+                </label>
+                <input
+                  [id]="row.targetControlName"
+                  [formControlName]="row.targetControlName"
+                  type="number"
+                  min="0"
+                  step="1"
+                  inputmode="numeric"
+                  autocomplete="off"
+                />
+              </td>
+              <td data-label="Remaining" aria-live="polite">
+                {{ remainingByType()[row.key].toLocaleString('en-US') }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    @if (hasRemainingSignalData()) {
+      <section class="farming-plan" aria-live="polite" aria-labelledby="farming-plan-title">
+        <h2 id="farming-plan-title">Farming Plan</h2>
+        <p>Estimated Days: <strong>{{ farmingPlan().days }}</strong></p>
+        <p>Nodes to Farm:</p>
+        <ol>
+          @for (node of farmingPlan().nodesToFarm; track node) {
+            <li>{{ node }}</li>
+          }
+        </ol>
+      </section>
+    } @else {
+      <p class="no-remaining-signal-data" aria-live="polite">
+        You have no remaining signal data to farm.
+      </p>
+    }
+
+    <a routerLink="/">Back to Home</a>
+  </section>
+</main>

@@ -23,7 +23,7 @@ describe('MarqueeDatesPage', () => {
       marqueeDates: () => ReadonlyArray<{ name: string }>;
     };
 
-    expect(page.marqueeDates()[0]?.name).toBe('KX Droid');
+    expect(page.marqueeDates()[0]?.name).toBe('Imperial Snowtrooper Commander');
   });
 
   it('should mark future dates', () => {

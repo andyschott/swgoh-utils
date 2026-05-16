@@ -28,4 +28,11 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/marquee-dates/marquee-dates').then((module) => module.MarqueeDatesPage),
   },
+  {
+    path: 'signal-data-farming',
+    loadComponent: () =>
+      import('./features/signal-data-farming-page/signal-data-farming-page').then(
+        (module) => module.SignalDataFarmingPage,
+      ),
+  },
 ];
