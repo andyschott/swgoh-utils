@@ -1,0 +1,3 @@
+display_name: Update Marquee Characters
+short_description: Compute and insert six marquee character dates
+default_prompt: Collect six names, one introduction date, and the first marquee date; compute all derived marquee fields and update src/app/marquee/marquee-dates.ts.
