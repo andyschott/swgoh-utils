@@ -1,1 +1,53 @@
-<router-outlet></router-outlet>
+<div class="app-shell">
+  <header class="mobile-header">
+    <button
+      type="button"
+      class="menu-button"
+      aria-label="Open navigation menu"
+      [attr.aria-expanded]="mobileMenuOpen()"
+      aria-controls="site-navigation"
+      (click)="toggleMobileMenu()"
+    >
+      <span aria-hidden="true">☰</span>
+      <span>Menu</span>
+    </button>
+    <span class="mobile-title">SWGOH Utilities</span>
+  </header>
+
+  <div class="shell-body">
+    <div
+      class="mobile-backdrop"
+      [class.mobile-backdrop-open]="mobileMenuOpen()"
+      (click)="closeMobileMenu()"
+    ></div>
+
+    <nav
+      id="site-navigation"
+      class="site-nav"
+      [class.site-nav-open]="mobileMenuOpen()"
+      aria-label="Primary"
+      (keydown)="onNavKeydown($event)"
+    >
+      <p class="site-nav-title">SWGOH Utilities</p>
+      <ul class="site-nav-list">
+        @for (navItem of navItems(); track navItem.path) {
+          <li>
+            <a
+              class="site-nav-link"
+              [routerLink]="navItem.path === '' ? '/' : '/' + navItem.path"
+              routerLinkActive="site-nav-link-active"
+              [routerLinkActiveOptions]="{ exact: navItem.path === '' }"
+              (click)="closeMobileMenu()"
+            >
+              {{ navItem.label }}
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <main class="page-content" id="main-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

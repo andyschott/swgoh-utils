@@ -88,7 +88,7 @@ button:disabled {
     justify-content: center;
     overflow-x: auto;
     position: sticky;
-    top: 0.5rem;
+    top: 4rem;
     z-index: 5;
     padding: 0.45rem;
     margin: 0 0 0.75rem;
@@ -117,6 +117,6 @@ button:disabled {
 
   .zone-mini-nav {
     margin-bottom: 0.6rem;
-    top: 0.35rem;
+    top: 3.85rem;
   }
 }

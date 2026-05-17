@@ -2,10 +2,31 @@
   <section aria-labelledby="home-title">
     <h1 id="home-title">SWGOH Utilities</h1>
     <p>Tools for planning and tracking your Galaxy of Heroes gameplay.</p>
-    <a routerLink="/gac-planner">Open GAC Planner</a>
-    <a routerLink="/raid-score-calculator">Open Raid Score Calculator</a>
-    <a routerLink="/rise-of-the-empire-rewards">Open Rise of the Empire Rewards</a>
-    <a routerLink="/marquee-dates">Open Marquee Dates</a>
-    <a routerLink="/signal-data-farming">Open Signal Data Farming</a>
+    <p>Use the navigation menu to open any tool.</p>
+  </section>
+
+  <section aria-labelledby="today-title">
+    <h2 id="today-title">Today</h2>
+
+    <div class="today-item">
+      <h3>Next Upcoming Marquee</h3>
+      @if (nextUpcomingMarquee(); as marquee) {
+        <p>
+          <strong>{{ marquee.name }}</strong> on {{ formatDate(marquee.marqueeEvent) }}
+        </p>
+      } @else {
+        <p>No upcoming marquees found.</p>
+      }
+    </div>
+
+    @if (hasRemainingSignalData()) {
+      <div class="today-item">
+        <h3>Signal Data Farming Plan</h3>
+        @if (signalDataFarmingPlan(); as plan) {
+          <p>Estimated Days: <strong>{{ plan.days }}</strong></p>
+          <p>Nodes to Farm: {{ plan.nodesToFarm.join(', ') }}</p>
+        }
+      </div>
+    }
   </section>
 </main>

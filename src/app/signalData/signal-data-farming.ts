@@ -11,12 +11,12 @@ const Fragemented8C = 1.41;
 const Incomplete8F = 0.91;
 const Flawed8G = 0.61;
 
-const Fragmented9B = 1.2845;
-const Fragmented9D = 1.3171;
-const Incomplete9B = 0.5522;
-const Incomplete9F = 0.8546;
-const Flawed9D = 0.3689;
-const Flawed9F = 0.4984;
+const Fragmented9B = 1.2710;
+const Fragmented9D = 1.2870;
+const Incomplete9B = 0.5838;
+const Incomplete9F = 0.8497;
+const Flawed9D = 0.4135;
+const Flawed9F = 0.4999;
 
 const Tier8SimsPerDay = 32;
 const Tier9SimsPerDay = 26;

@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { startWith } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { RaidScores, RaidTeamPlan } from '../../raid/raid-scores';
@@ -54,7 +53,7 @@ const materialDefinitions = [
 
 @Component({
   selector: 'app-raid-score-calculator',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: './raid-score-calculator.html',
   styleUrl: './raid-score-calculator.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

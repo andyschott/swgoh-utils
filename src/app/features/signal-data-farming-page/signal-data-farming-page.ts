@@ -1,7 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, effect, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
 import { startWith } from 'rxjs';
 import { SignalDataFarming } from '../../signalData/signal-data-farming';
 
@@ -55,7 +54,7 @@ const SIGNAL_DATA_FARMING_STORAGE_KEY = 'signal-data-farming.inputs';
 
 @Component({
   selector: 'app-signal-data-farming-page',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule],
   templateUrl: './signal-data-farming-page.html',
   styleUrl: './signal-data-farming-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

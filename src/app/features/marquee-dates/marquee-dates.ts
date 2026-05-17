@@ -1,5 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { MarqueeDate, MarqueeDates } from '../../marquee/marquee-dates';
 
 interface MarqueeDateRow extends MarqueeDate {
@@ -8,7 +7,6 @@ interface MarqueeDateRow extends MarqueeDate {
 
 @Component({
   selector: 'app-marquee-dates',
-  imports: [RouterLink],
   templateUrl: './marquee-dates.html',
   styleUrl: './marquee-dates.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

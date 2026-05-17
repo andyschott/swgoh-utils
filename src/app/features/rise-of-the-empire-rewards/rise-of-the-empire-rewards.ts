@@ -1,10 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { RiseOfTheEmpire, RiseOfTheEmpireRewards } from '../../tb/rise-of-the-empire';
 
 @Component({
   selector: 'app-rise-of-the-empire-rewards',
-  imports: [RouterLink],
   templateUrl: './rise-of-the-empire-rewards.html',
   styleUrl: './rise-of-the-empire-rewards.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
