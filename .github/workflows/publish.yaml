@@ -31,6 +31,12 @@ jobs:
           ContainerRepository: ${{ github.repository }}
         run: dotnet publish SwgohApi/SwgohApi.csproj --os linux --arch x64 /t:PublishContainer
         working-directory: ./api
+      - name: Upload SQL Migrations
+        uses: actions/upload-artifact@v7
+        with:
+          name: 'migrartions'
+          path: './api/sql'
+          retention-days: 14
 
   ui:
     runs-on: ubuntu-latest
