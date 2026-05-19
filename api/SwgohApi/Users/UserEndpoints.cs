@@ -10,7 +10,8 @@ public static class UserEndpoints
   public static WebApplication MapUserEndpoints(this WebApplication app)
   {
     app.MapGet("/users", GetUsers);
-    app.MapPost("/users", CreateUser);
+    // Disable for now until I get security figured out
+    // app.MapPost("/users", CreateUser);
 
     return app;
   }

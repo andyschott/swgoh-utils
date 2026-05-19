@@ -15,4 +15,11 @@
     <ProjectReference Include="..\SwgohApi.Infrastructure\SwgohApi.Infrastructure.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <ContainerRegistry>ghcr.io</ContainerRegistry>
+    <ContainerImageTag>$(GITHUB_SHA)</ContainerImageTag>
+  </PropertyGroup>
+  <ItemGroup>
+    <ContainerLabel Include="com.docker.extension.publisher-url" Value="$(GITHUB_SERVER_URL)/$(GITHUB_REPOSITORY_OWNER)" />
+  </ItemGroup>
 </Project>

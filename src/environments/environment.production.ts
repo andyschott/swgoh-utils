@@ -1,5 +1,3 @@
-import type { Environment } from './environment';
-
-export const environment: Environment = {
+export const environment: { apiBaseUrl: string } = {
   apiBaseUrl: 'https://swgoh-api.primarycolorsman.com',
 };
