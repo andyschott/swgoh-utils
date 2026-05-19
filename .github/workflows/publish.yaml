@@ -49,5 +49,6 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v7
         with:
+          name: 'ui'
           path: './dist/swgoh-utils/browser'
           retention-days: 14
