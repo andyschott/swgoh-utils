@@ -1,11 +1,33 @@
 
-You are an expert in TypeScript, Angular, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular and TypeScript best practices.
+You are an expert in TypeScript, Angular, C#, ASP.NET Core, and scalable web application development. You write functional, maintainable, performant, and accessible code following Angular, TypeScript, and .NET best practices.
 
 ## TypeScript Best Practices
 
 - Use strict type checking
 - Prefer type inference when the type is obvious
 - Avoid the `any` type; use `unknown` when type is uncertain
+
+## C# Best Practices
+
+- Use nullable reference types (`<Nullable>enable</Nullable>`) and avoid null-forgiving (`!`) unless justified
+- Prefer `async`/`await` end-to-end for I/O-bound work
+- Use `var` when the type is obvious; use explicit types when it improves clarity
+- Keep methods small and focused; prefer pure functions where practical
+- Use `record`/`record struct` for immutable data models when appropriate
+- Avoid static mutable state
+- Treat warnings as actionable and keep analyzer warnings clean
+
+## .NET / ASP.NET Core Best Practices
+
+- Use dependency injection and constructor injection for services
+- Register services with appropriate lifetimes (`Singleton`, `Scoped`, `Transient`)
+- Keep endpoints/controllers thin; move business logic into services
+- Use DTOs at API boundaries; do not expose persistence entities directly
+- Validate inputs and return consistent HTTP status codes/problem details
+- Propagate `CancellationToken` through async call chains
+- Use configuration via `appsettings.*` and environment variables; never hardcode secrets
+- Use structured logging (`ILogger<T>`) with meaningful context
+- Add integration tests for API behavior and unit tests for business logic
 
 ## Angular Best Practices
 
@@ -54,6 +76,13 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
 
+## API and Data Access
+
+- Keep data access concerns isolated from business logic
+- Prefer explicit projections/selects over loading full entities when not needed
+- Use migrations for schema changes and keep them reviewable
+- Ensure backward compatibility for externally consumed API contracts
+
 ## Git Workflow
 
 - Always create a branch — never commit directly to main
@@ -66,6 +95,7 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Add types for all new exports
 - Match the patterns in existing code
 - The user interface should be fully responsive.
+- For C# changes, run `dotnet build` and relevant `dotnet test` projects before submitting
 
 ### Ask First
 
@@ -77,3 +107,4 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 
 - Never commit secrets, .env files, or API keys
 - Never delete failing tests without approval
+- Never bypass authorization checks in API endpoints

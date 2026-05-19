@@ -1,6 +1,8 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { MarqueeDates } from '../../marquee/marquee-dates';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { catchError, of } from 'rxjs';
 import { SignalDataFarming } from '../../signalData/signal-data-farming';
+import { UserApiService } from '../../users/user-api.service';
 
 interface SignalDataFarmStorage {
   fragmentedCurrent: string;
@@ -20,20 +22,13 @@ const SIGNAL_DATA_FARMING_STORAGE_KEY = 'signal-data-farming.inputs';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Home {
-  private readonly marqueeDates = inject(MarqueeDates);
   private readonly signalDataFarming = inject(SignalDataFarming);
-
-  protected readonly nextUpcomingMarquee = computed(() => {
-    const now = Date.now();
-    const upcoming = this.marqueeDates
-      .getNames()
-      .map((name) => this.marqueeDates.getDates(name))
-      .filter((item): item is NonNullable<typeof item> => item !== null)
-      .filter((item) => item.marqueeEvent.getTime() >= now)
-      .sort((left, right) => left.marqueeEvent.getTime() - right.marqueeEvent.getTime());
-
-    return upcoming[0] ?? null;
-  });
+  private readonly userApiService = inject(UserApiService);
+  private readonly users = toSignal(
+    this.userApiService.getUsers().pipe(catchError(() => of([]))),
+    { initialValue: [] },
+  );
+  protected readonly userCount = computed(() => this.users().length);
 
   protected readonly signalDataRemaining = computed(() => {
     const inputs = this.readStoredInputs();
@@ -57,14 +52,6 @@ export class Home {
       remaining.flawed,
     );
   });
-
-  protected formatDate(value: Date): string {
-    return value.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
-  }
 
   private calculateRemaining(currentRaw: unknown, targetRaw: unknown): number {
     const current = this.parseNonNegativeNumber(currentRaw);

@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="SwgohApi.Infrastructure.Tests/SwgohApi.Infrastructure.Tests.csproj" />
+  <Project Path="SwgohApi.Infrastructure/SwgohApi.Infrastructure.csproj" />
+  <Project Path="SwgohApi.Tests/SwgohApi.Tests.csproj" />
+  <Project Path="SwgohApi/SwgohApi.csproj" />
+</Solution>

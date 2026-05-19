@@ -9,14 +9,8 @@
     <h2 id="today-title">Today</h2>
 
     <div class="today-item">
-      <h3>Next Upcoming Marquee</h3>
-      @if (nextUpcomingMarquee(); as marquee) {
-        <p>
-          <strong>{{ marquee.name }}</strong> on {{ formatDate(marquee.marqueeEvent) }}
-        </p>
-      } @else {
-        <p>No upcoming marquees found.</p>
-      }
+      <h3>Users</h3>
+      <p>Registered Users: <strong>{{ userCount() }}</strong></p>
     </div>
 
     @if (hasRemainingSignalData()) {
