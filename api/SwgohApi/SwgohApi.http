@@ -4,7 +4,19 @@ POST {{SwgohApi_HostAddress}}/users
 Content-Type: application/json
 
 {
-  "email": "andy@andyschott.com",
+  "email": "test@example.com",
   "password": "my-awesome-password"
 }
+###
+
+PUT {{SwgohApi_HostAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24da
+Content-Type: application/json
+
+{
+  "password": "my-awesome-password"
+}
+###
+
+DELETE {{SwgohApi_HostAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24d
+
 ###

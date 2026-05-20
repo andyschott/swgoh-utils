@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq.EntityFrameworkCore;
 using SwgohApi.Infrastructure.Models;
@@ -11,16 +12,19 @@ public class PostgresUserRepositoryTests
 
   private readonly Mock<IPostgresDbContext> _mockDbContext;
   private readonly Mock<IIdGenerator> _mockIdGenerator;
+  private readonly Mock<IPasswordHasher<User>> _mockPasswordHasher;
 
   private readonly PostgresUserRepository _userRepository;
 
   public PostgresUserRepositoryTests()
   {
     _mockDbContext = _mockRepository.Create<IPostgresDbContext>(MockBehavior.Loose);
-    _mockIdGenerator = new Mock<IIdGenerator>();
+    _mockIdGenerator = _mockRepository.Create<IIdGenerator>();
+    _mockPasswordHasher = _mockRepository.Create<IPasswordHasher<User>>();
 
     _userRepository = new PostgresUserRepository(_mockDbContext.Object,
-      _mockIdGenerator.Object);
+      _mockIdGenerator.Object,
+      _mockPasswordHasher.Object);
   }
 
   [Theory, AutoData]
@@ -42,10 +46,15 @@ public class PostgresUserRepositoryTests
   [Theory, AutoData]
   public async Task CreateUser_Successful(string id,
     string email,
-    string password)
+    string password,
+    string hashedPassword)
   {
     _mockIdGenerator.Setup(idGenerator => idGenerator.CreateId())
       .Returns(id);
+    _mockPasswordHasher.Setup(hasher => hasher.HashPassword(
+      It.Is<User>(user => VerifyUser(user, id, email, string.Empty)),
+      password))
+      .Returns(hashedPassword);
 
     var mockUsersDb = _mockRepository.Create<DbSet<User>>(MockBehavior.Loose);
     _mockDbContext.Setup(dbContext => dbContext.Users)
@@ -55,8 +64,98 @@ public class PostgresUserRepositoryTests
 
     Assert.Equal(id, result.Id);
     Assert.Equal(email, result.Email);
-    Assert.Equal(password, result.Password);
+    Assert.Equal(hashedPassword, result.Password);
 
     _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
+  }
+
+  [Theory, AutoData]
+  public async Task GetUserByEmail_Successful(User user)
+  {
+    _mockDbContext.Setup(dbContext => dbContext.Users)
+      .ReturnsDbSet([user]);
+
+    var result = await _userRepository.GetUserByEmail(user.Email);
+
+    Assert.Same(user, result);
+  }
+
+  [Theory, AutoData]
+  public async Task GetUserByEmail_NotFound_ReturnsNull(User user,
+    string email)
+  {
+    _mockDbContext.Setup(dbContext => dbContext.Users)
+      .ReturnsDbSet([user]);
+
+    var result = await _userRepository.GetUserByEmail(email);
+
+    Assert.Null(result);
+  }
+
+  [Theory, AutoData]
+  public async Task GetUserById_Successful(User user)
+  {
+    _mockDbContext.Setup(dbContext => dbContext.Users)
+      .ReturnsDbSet([user]);
+
+    var result = await _userRepository.GetUserById(user.Id);
+
+    Assert.Same(user, result);
+  }
+
+  [Theory, AutoData]
+  public async Task GetUserById_NotFound_ReturnsNull(User user,
+    string id)
+  {
+    _mockDbContext.Setup(dbContext => dbContext.Users)
+      .ReturnsDbSet([user]);
+
+    var result = await _userRepository.GetUserById(id);
+
+    Assert.Null(result);
+  }
+
+  [Theory, AutoData]
+  public async Task SaveUser_Successful(User user)
+  {
+    _mockDbContext.Setup(dbContext => dbContext.Users)
+      .ReturnsDbSet([user]);
+
+    var exception = await Record.ExceptionAsync(() => _userRepository.SaveUser(user));
+
+    Assert.Null(exception);
+    _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
+  }
+
+  [Theory, AutoData]
+  public async Task DeleteUser_Successful(User user)
+  {
+    _mockDbContext.Setup(dbContext => dbContext.Users)
+      .ReturnsDbSet([user]);
+
+    var result = await _userRepository.DeleteUser(user.Id);
+
+    Assert.True(result);
+  }
+
+  [Theory, AutoData]
+  public async Task DeleteUser_NotFound_ReturnsFalse(User user, string id)
+  {
+    _mockDbContext.Setup(dbContext => dbContext.Users)
+      .ReturnsDbSet([user]);
+
+    var result = await _userRepository.DeleteUser(id);
+
+    Assert.False(result);
+  }
+
+  private static bool VerifyUser(User user,
+    string id,
+    string email,
+    string password)
+  {
+    return user.Id == id &&
+           user.Email == email &&
+           user.Password == password;
   }
 }

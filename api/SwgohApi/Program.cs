@@ -1,3 +1,6 @@
+using System.Net;
+using Microsoft.AspNetCore.Identity;
+using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
 using SwgohApi.Infrastructure.Utilities;
 using SwgohApi.Users;
@@ -21,6 +24,9 @@ builder.Services.AddCors(options =>
   });
 });
 
+builder.Services.AddSingleton<IPasswordHasher<User>>(_ =>
+  new PasswordHasher<User>());
+
 var postgresConfig = builder.Configuration.GetSection("Postgres")
   .Get<PostgresConfiguration>();
 if (postgresConfig is null)
@@ -30,13 +36,29 @@ if (postgresConfig is null)
 builder.Services.AddPostgres(postgresConfig)
   .AddUtilityServices();
 
-// Add services to the container.
 builder.Services.AddOpenApi();
+
+var allowCreatingUsers = builder.Configuration.GetSection("AllowCreatingUsers")
+  .Get<bool>();
 
 var app = builder.Build();
 
 app.UseCors(CorsPolicy);
-app.MapUserEndpoints();
+
+app.UseExceptionHandler(exceptionApp =>
+{
+  exceptionApp.Run(async context =>
+  {
+    context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+
+    await context.Response.WriteAsJsonAsync(new
+    {
+      Error = "Internal Server Error"
+    });
+  });
+});
+
+app.MapUserEndpoints(allowCreatingUsers);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
