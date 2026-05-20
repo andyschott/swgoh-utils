@@ -9,8 +9,18 @@ Content-Type: application/json
 }
 ###
 
+POST {{SwgohApi_HostAddress}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "my-awesome-password"
+}
+###
+
 PUT {{SwgohApi_HostAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24da
 Content-Type: application/json
+Authorization: Bearer {{access_token}}
 
 {
   "password": "my-awesome-password"
@@ -18,5 +28,25 @@ Content-Type: application/json
 ###
 
 DELETE {{SwgohApi_HostAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24d
+Authorization: Bearer {{access_token}}
 
 ###
+
+POST {{SwgohApi_HostAddress}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+###
+
+POST {{SwgohApi_HostAddress}}/auth/revoke
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+###
+
+POST {{SwgohApi_HostAddress}}/auth/revoke-all
+Authorization: Bearer {{access_token}}

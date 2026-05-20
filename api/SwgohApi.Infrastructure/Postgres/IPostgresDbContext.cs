@@ -6,6 +6,7 @@ namespace SwgohApi.Infrastructure.Postgres;
 public interface IPostgresDbContext
 {
   DbSet<User> Users { get; }
+  DbSet<RefreshToken> RefreshTokens { get; }
 
   Task<int> SaveChangesAsync();
 }

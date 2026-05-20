@@ -1,7 +1,12 @@
 using System.Net;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
+using SwgohApi.Auth;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
+using SwgohApi.Services;
 using SwgohApi.Infrastructure.Utilities;
 using SwgohApi.Users;
 
@@ -25,7 +30,8 @@ builder.Services.AddCors(options =>
 });
 
 builder.Services.AddSingleton<IPasswordHasher<User>>(_ =>
-  new PasswordHasher<User>());
+  new PasswordHasher<User>())
+  .AddSingleton(TimeProvider.System);
 
 var postgresConfig = builder.Configuration.GetSection("Postgres")
   .Get<PostgresConfiguration>();
@@ -36,6 +42,34 @@ if (postgresConfig is null)
 builder.Services.AddPostgres(postgresConfig)
   .AddUtilityServices();
 
+builder.Services.AddOptions<JwtOptions>()
+  .Bind(builder.Configuration.GetSection("Jwt"))
+  .ValidateDataAnnotations()
+  .ValidateOnStart();
+
+builder.Services.AddSingleton<ITokenService, JwtTokenService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+  .AddJwtBearer(options =>
+  {
+    var jwtOptions = builder.Configuration.GetSection("Jwt")
+      .Get<JwtOptions>()
+      ?? throw new Exception("Jwt configuration is missing");
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+      ValidateIssuer = true,
+      ValidateAudience = true,
+      ValidateIssuerSigningKey = true,
+      ValidateLifetime = true,
+      ValidIssuer = jwtOptions.Issuer,
+      ValidAudience = jwtOptions.Audience,
+      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey)),
+      ClockSkew = TimeSpan.FromSeconds(30)
+    };
+  });
+builder.Services.AddAuthorization();
+
 builder.Services.AddOpenApi();
 
 var allowCreatingUsers = builder.Configuration.GetSection("AllowCreatingUsers")
@@ -44,6 +78,8 @@ var allowCreatingUsers = builder.Configuration.GetSection("AllowCreatingUsers")
 var app = builder.Build();
 
 app.UseCors(CorsPolicy);
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.UseExceptionHandler(exceptionApp =>
 {
@@ -59,6 +95,7 @@ app.UseExceptionHandler(exceptionApp =>
 });
 
 app.MapUserEndpoints(allowCreatingUsers);
+app.MapAuthEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

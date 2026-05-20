@@ -12,13 +12,17 @@ public static class UserEndpoints
   public static WebApplication MapUserEndpoints(this WebApplication app,
     bool allowCreatingUsers)
   {
-    app.MapGet("/users", GetUsers);
+    var users = app.MapGroup("/users")
+      .RequireAuthorization();
+
+    users.MapGet(string.Empty, GetUsers);
     if (allowCreatingUsers)
     {
-      app.MapPost("/users", CreateUser);
+      users.MapPost(string.Empty, CreateUser)
+        .AllowAnonymous();
     }
-    app.MapPut("/users/{id}", UpdateUser);
-    app.MapDelete("/users/{id}", DeleteUser);
+    users.MapPut("/{id}", UpdateUser);
+    users.MapDelete("/{id}", DeleteUser);
 
     return app;
   }
