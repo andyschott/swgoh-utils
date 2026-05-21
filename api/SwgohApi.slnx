@@ -1,6 +1,8 @@
 <Solution>
   <Project Path="SwgohApi.Infrastructure.Tests/SwgohApi.Infrastructure.Tests.csproj" />
   <Project Path="SwgohApi.Infrastructure/SwgohApi.Infrastructure.csproj" />
+  <Project Path="SwgohApi.Models.TypeGen/SwgohApi.Models.TypeGen.csproj" />
+  <Project Path="SwgohApi.Models/SwgohApi.Models.csproj" />
   <Project Path="SwgohApi.Tests/SwgohApi.Tests.csproj" />
   <Project Path="SwgohApi/SwgohApi.csproj" />
 </Solution>

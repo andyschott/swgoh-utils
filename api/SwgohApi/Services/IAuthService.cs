@@ -1,4 +1,4 @@
-using SwgohApi.Auth;
+using SwgohApi.Models.Auth;
 
 namespace SwgohApi.Services;
 

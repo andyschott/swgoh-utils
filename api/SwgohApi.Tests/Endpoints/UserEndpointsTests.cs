@@ -1,11 +1,12 @@
 ﻿using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using SwgohApi.Endpoints;
 using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
-using SwgohApi.Users;
+using SwgohApi.Models.Users;
 
-namespace SwgohApi.Tests;
+namespace SwgohApi.Tests.Endpoints;
 
 public sealed class UserEndpointsTests : IDisposable
 {

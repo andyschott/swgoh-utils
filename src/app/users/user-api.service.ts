@@ -2,16 +2,8 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
-
-export interface UserDto {
-  id: string;
-  email: string;
-}
-
-export interface CreateUserRequest {
-  email: string;
-  password: string;
-}
+import { UserDto } from '../apiModels/user-dto';
+import { CreateUserRequest } from '../apiModels/create-user-request';
 
 @Injectable({
   providedIn: 'root',

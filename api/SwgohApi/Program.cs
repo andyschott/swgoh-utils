@@ -3,12 +3,12 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
-using SwgohApi.Auth;
+using SwgohApi.Configuration;
+using SwgohApi.Endpoints;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
 using SwgohApi.Services;
 using SwgohApi.Infrastructure.Utilities;
-using SwgohApi.Users;
 
 const string CorsPolicy = "AllowedOrigins";
 

@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using SwgohApi.Auth;
+using SwgohApi.Configuration;
 using SwgohApi.Infrastructure.Models;
 
 namespace SwgohApi.Services;

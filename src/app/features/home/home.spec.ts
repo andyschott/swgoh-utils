@@ -1,7 +1,8 @@
 import { TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
 import { Home } from './home';
-import { UserApiService, type UserDto } from '../../users/user-api.service';
+import { UserApiService } from '../../users/user-api.service';
+import { UserDto } from '../../apiModels/user-dto';
 
 describe('Home', () => {
   beforeEach(async () => {

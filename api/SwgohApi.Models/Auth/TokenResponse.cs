@@ -1,4 +1,4 @@
-namespace SwgohApi.Auth;
+namespace SwgohApi.Models.Auth;
 
 public record TokenResponse(string AccessToken,
   string TokenType,
