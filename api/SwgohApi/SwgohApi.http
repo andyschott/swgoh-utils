@@ -16,11 +16,16 @@ Content-Type: application/json
   "email": "test@example.com",
   "password": "my-awesome-password"
 }
+
+> {%
+  client.global.set("auth_token", response.body.accessToken);
+  client.global.set("refresh_token", response.body.refreshToken);
+%}
 ###
 
 PUT {{SwgohApi_HostAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24da
 Content-Type: application/json
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{auth_token}}
 
 {
   "password": "my-awesome-password"
@@ -28,7 +33,7 @@ Authorization: Bearer {{access_token}}
 ###
 
 DELETE {{SwgohApi_HostAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24d
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{auth_token}}
 
 ###
 
@@ -38,6 +43,11 @@ Content-Type: application/json
 {
   "refreshToken": "{{refresh_token}}"
 }
+
+> {%
+  client.global.set("auth_token", response.body.accessToken);
+  client.global.set("refresh_token", response.body.refreshToken);
+%}
 ###
 
 POST {{SwgohApi_HostAddress}}/auth/revoke
@@ -49,4 +59,24 @@ Content-Type: application/json
 ###
 
 POST {{SwgohApi_HostAddress}}/auth/revoke-all
-Authorization: Bearer {{access_token}}
+Authorization: Bearer {{auth_token}}
+###
+
+POST {{SwgohApi_HostAddress}}/characters
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "name": "Cassian Andor",
+  "isAccelerated": true,
+  "locations": [
+    "SquadArenaShipments"
+  ]
+}
+###
+
+GET {{SwgohApi_HostAddress}}/characters
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+###

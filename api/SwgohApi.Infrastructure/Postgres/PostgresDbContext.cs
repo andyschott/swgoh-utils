@@ -12,6 +12,8 @@ public class PostgresDbContext : DbContext, IPostgresDbContext
 
   public DbSet<User> Users { get; set; }
   public DbSet<RefreshToken> RefreshTokens { get; set; }
+  public DbSet<Character> Characters { get; set; }
+  public DbSet<Ship> Ships { get; set; }
 
   Task<int> IPostgresDbContext.SaveChangesAsync() => base.SaveChangesAsync();
 
@@ -29,5 +31,13 @@ public class PostgresDbContext : DbContext, IPostgresDbContext
 
     modelBuilder.Entity<RefreshToken>()
       .HasIndex(token => new { token.UserId, token.RevokedAtUtc, token.ExpiresAtUtc });
+
+    modelBuilder.Entity<Character>()
+      .HasIndex(character => character.Name)
+      .IsUnique();
+
+    modelBuilder.Entity<Ship>()
+      .HasIndex(ship => ship.Name)
+      .IsUnique();
   }
 }

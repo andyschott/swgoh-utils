@@ -6,20 +6,14 @@ using SwgohApi.Infrastructure.Postgres;
 
 namespace SwgohApi.Infrastructure.Tests.Postgres;
 
-public class PostgresUserRepositoryTests
+public class PostgresUserRepositoryTests : AbstractPostgresRepositoryTests
 {
-  private readonly MockRepository _mockRepository = new(MockBehavior.Strict);
-
-  private readonly Mock<IPostgresDbContext> _mockDbContext;
-  private readonly Mock<IIdGenerator> _mockIdGenerator;
   private readonly Mock<IPasswordHasher<User>> _mockPasswordHasher;
 
   private readonly PostgresUserRepository _userRepository;
 
   public PostgresUserRepositoryTests()
   {
-    _mockDbContext = _mockRepository.Create<IPostgresDbContext>(MockBehavior.Loose);
-    _mockIdGenerator = _mockRepository.Create<IIdGenerator>();
     _mockPasswordHasher = _mockRepository.Create<IPasswordHasher<User>>();
 
     _userRepository = new PostgresUserRepository(_mockDbContext.Object,
@@ -30,8 +24,7 @@ public class PostgresUserRepositoryTests
   [Theory, AutoData]
   public async Task GetUsers_Successful(User[] users)
   {
-    _mockDbContext.Setup(dbContext => dbContext.Users)
-      .ReturnsDbSet(users);
+    SetupMockEntities(dbContext => dbContext.Users, users);
 
     var result = (await _userRepository.GetUsers())
       .ToArray();
@@ -56,9 +49,7 @@ public class PostgresUserRepositoryTests
       password))
       .Returns(hashedPassword);
 
-    var mockUsersDb = _mockRepository.Create<DbSet<User>>(MockBehavior.Loose);
-    _mockDbContext.Setup(dbContext => dbContext.Users)
-      .Returns(mockUsersDb.Object);
+    CreateMockDbSet(dbContext => dbContext.Users);
 
     var result = await _userRepository.CreateUser(email, password);
 
@@ -72,8 +63,7 @@ public class PostgresUserRepositoryTests
   [Theory, AutoData]
   public async Task GetUserByEmail_Successful(User user)
   {
-    _mockDbContext.Setup(dbContext => dbContext.Users)
-      .ReturnsDbSet([user]);
+    SetupMockEntities(dbContext => dbContext.Users, [user]);
 
     var result = await _userRepository.GetUserByEmail(user.Email);
 
@@ -84,8 +74,7 @@ public class PostgresUserRepositoryTests
   public async Task GetUserByEmail_NotFound_ReturnsNull(User user,
     string email)
   {
-    _mockDbContext.Setup(dbContext => dbContext.Users)
-      .ReturnsDbSet([user]);
+    SetupMockEntities(dbContext => dbContext.Users, [user]);
 
     var result = await _userRepository.GetUserByEmail(email);
 
@@ -95,8 +84,7 @@ public class PostgresUserRepositoryTests
   [Theory, AutoData]
   public async Task GetUserById_Successful(User user)
   {
-    _mockDbContext.Setup(dbContext => dbContext.Users)
-      .ReturnsDbSet([user]);
+    SetupMockEntities(dbContext => dbContext.Users, [user]);
 
     var result = await _userRepository.GetUserById(user.Id);
 
@@ -107,8 +95,7 @@ public class PostgresUserRepositoryTests
   public async Task GetUserById_NotFound_ReturnsNull(User user,
     string id)
   {
-    _mockDbContext.Setup(dbContext => dbContext.Users)
-      .ReturnsDbSet([user]);
+    SetupMockEntities(dbContext => dbContext.Users, [user]);
 
     var result = await _userRepository.GetUserById(id);
 
@@ -118,8 +105,7 @@ public class PostgresUserRepositoryTests
   [Theory, AutoData]
   public async Task SaveUser_Successful(User user)
   {
-    _mockDbContext.Setup(dbContext => dbContext.Users)
-      .ReturnsDbSet([user]);
+    SetupMockEntities(dbContext => dbContext.Users, [user]);
 
     var exception = await Record.ExceptionAsync(() => _userRepository.SaveUser(user));
 
@@ -130,8 +116,7 @@ public class PostgresUserRepositoryTests
   [Theory, AutoData]
   public async Task DeleteUser_Successful(User user)
   {
-    _mockDbContext.Setup(dbContext => dbContext.Users)
-      .ReturnsDbSet([user]);
+    SetupMockEntities(dbContext => dbContext.Users, [user]);
 
     var result = await _userRepository.DeleteUser(user.Id);
 
@@ -141,8 +126,7 @@ public class PostgresUserRepositoryTests
   [Theory, AutoData]
   public async Task DeleteUser_NotFound_ReturnsFalse(User user, string id)
   {
-    _mockDbContext.Setup(dbContext => dbContext.Users)
-      .ReturnsDbSet([user]);
+    SetupMockEntities(dbContext => dbContext.Users, [user]);
 
     var result = await _userRepository.DeleteUser(id);
 

@@ -11,13 +11,13 @@ namespace SwgohApi.Endpoints;
 public static class UserEndpoints
 {
   public static WebApplication MapUserEndpoints(this WebApplication app,
-    bool allowCreatingUsers)
+    bool allowCreation)
   {
     var users = app.MapGroup("/users")
       .RequireAuthorization();
 
     users.MapGet(string.Empty, GetUsers);
-    if (allowCreatingUsers)
+    if (allowCreation)
     {
       users.MapPost(string.Empty, CreateUser)
         .AllowAnonymous();

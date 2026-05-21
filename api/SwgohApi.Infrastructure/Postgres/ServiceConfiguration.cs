@@ -25,6 +25,7 @@ public static class ServiceConfiguration
 
     services.AddScoped<IUserRepository, PostgresUserRepository>();
     services.AddScoped<ITokenRepository, PostgresTokenRepository>();
+    services.AddScoped<ICharacterRepository, PostgresCharacterRepository>();
 
     return services;
   }

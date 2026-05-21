@@ -1,5 +1,6 @@
 using System.Net;
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
@@ -9,6 +10,7 @@ using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
 using SwgohApi.Services;
 using SwgohApi.Infrastructure.Utilities;
+using SwgohApi.Mapping;
 
 const string CorsPolicy = "AllowedOrigins";
 
@@ -29,6 +31,11 @@ builder.Services.AddCors(options =>
   });
 });
 
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+  options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 builder.Services.AddSingleton<IPasswordHasher<User>>(_ =>
   new PasswordHasher<User>())
   .AddSingleton(TimeProvider.System);
@@ -47,8 +54,9 @@ builder.Services.AddOptions<JwtOptions>()
   .ValidateDataAnnotations()
   .ValidateOnStart();
 
-builder.Services.AddSingleton<ITokenService, JwtTokenService>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddSingleton<ITokenService, JwtTokenService>()
+  .AddScoped<IAuthService, AuthService>()
+  .AddMappers();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
   .AddJwtBearer(options =>
@@ -72,7 +80,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddOpenApi();
 
-var allowCreatingUsers = builder.Configuration.GetSection("AllowCreatingUsers")
+var allowCreation = builder.Configuration.GetSection("AllowCreation")
   .Get<bool>();
 
 var app = builder.Build();
@@ -94,8 +102,9 @@ app.UseExceptionHandler(exceptionApp =>
   });
 });
 
-app.MapUserEndpoints(allowCreatingUsers);
-app.MapAuthEndpoints();
+app.MapUserEndpoints(allowCreation)
+  .MapAuthEndpoints()
+  .MapCharacterEndpoints(allowCreation);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
