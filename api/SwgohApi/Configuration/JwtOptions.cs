@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace SwgohApi.Auth;
+namespace SwgohApi.Configuration;
 
 public class JwtOptions
 {

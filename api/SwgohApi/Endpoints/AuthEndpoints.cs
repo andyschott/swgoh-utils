@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using SwgohApi.Models.Auth;
 using SwgohApi.Services;
 
-namespace SwgohApi.Auth;
+namespace SwgohApi.Endpoints;
 
 public static class AuthEndpoints
 {

@@ -2,11 +2,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
-using SwgohApi.Auth;
+using SwgohApi.Endpoints;
 using SwgohApi.Models.Auth;
 using SwgohApi.Services;
 
-namespace SwgohApi.Tests;
+namespace SwgohApi.Tests.Endpoints;
 
 public class AuthEndpointsTests : IDisposable
 {

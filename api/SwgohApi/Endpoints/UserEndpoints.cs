@@ -6,7 +6,7 @@ using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Models.Users;
 
-namespace SwgohApi.Users;
+namespace SwgohApi.Endpoints;
 
 public static class UserEndpoints
 {
