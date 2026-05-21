@@ -14,6 +14,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SwgohApi.Infrastructure\SwgohApi.Infrastructure.csproj" />
+    <ProjectReference Include="..\SwgohApi.Models\SwgohApi.Models.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

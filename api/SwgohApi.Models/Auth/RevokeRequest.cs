@@ -1,3 +1,3 @@
-namespace SwgohApi.Auth;
+namespace SwgohApi.Models.Auth;
 
 public record RevokeRequest(string RefreshToken);

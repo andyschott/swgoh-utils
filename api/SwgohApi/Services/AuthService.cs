@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using SwgohApi.Auth;
 using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
+using SwgohApi.Models.Auth;
 
 namespace SwgohApi.Services;
 

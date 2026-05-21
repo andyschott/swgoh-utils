@@ -1,5 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Http.HttpResults;
+using SwgohApi.Models.Auth;
 using SwgohApi.Services;
 
 namespace SwgohApi.Auth;

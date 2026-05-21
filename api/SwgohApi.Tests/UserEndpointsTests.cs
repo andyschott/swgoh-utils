@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
+using SwgohApi.Models.Users;
 using SwgohApi.Users;
 
 namespace SwgohApi.Tests;
