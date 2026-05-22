@@ -11,6 +11,7 @@ using SwgohApi.Infrastructure.Postgres;
 using SwgohApi.Services;
 using SwgohApi.Infrastructure.Utilities;
 using SwgohApi.Mapping;
+using SwgohApi.Middleware;
 
 const string CorsPolicy = "AllowedOrigins";
 
@@ -101,6 +102,8 @@ app.UseExceptionHandler(exceptionApp =>
     });
   });
 });
+
+app.UseMiddleware<RequestingUserMiddleware>();
 
 app.MapUserEndpoints(allowCreation)
   .MapAuthEndpoints()

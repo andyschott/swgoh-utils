@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
+using SwgohApi.Filters;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
@@ -16,10 +17,8 @@ public static class ShipEndpoints
     var ships = app.MapGroup("/ships")
       .RequireAuthorization();
 
-    if (allowCreation)
-    {
-      ships.MapPost(string.Empty, CreateShip);
-    }
+    ships.MapPost(string.Empty, CreateShip)
+      .AddEndpointFilter<RequireAdminEndpointFilter>();
 
     ships.MapGet(string.Empty,  GetShips);
 

@@ -1,9 +1,9 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Net;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using SwgohApi.Extensions;
+using SwgohApi.Filters;
 using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Mapping;
@@ -27,7 +27,8 @@ public static class UserEndpoints
         .AllowAnonymous();
     }
     users.MapPut("/{id}", UpdateUser);
-    users.MapPut("/{id}/updateAdmin", UpdateAdmin);
+    users.MapPut("/{id}/updateAdmin", UpdateAdmin)
+      .AddEndpointFilter<RequireAdminEndpointFilter>();
     users.MapDelete("/{id}", DeleteUser);
 
     return app;
@@ -65,10 +66,9 @@ public static class UserEndpoints
     IUserRepository userRepository,
     IPasswordHasher<User> passwordHasher,
     IMapper<User, UserDto> userMapper,
-    ITokenService tokenService,
     HttpContext httpContext)
   {
-    var requestingUser = await GetUser(httpContext, tokenService, userRepository);
+    var requestingUser = httpContext.RequestingUser;
     if (requestingUser is null)
     {
       return TypedResults.Problem(statusCode: (int)HttpStatusCode.Forbidden);
@@ -117,8 +117,26 @@ public static class UserEndpoints
 
   public static async Task<Results<Ok, ProblemHttpResult>> DeleteUser(
     [FromRoute(Name = "id")] string userId,
-    IUserRepository userRepository)
+    IUserRepository userRepository,
+    IAuthService authService,
+    HttpContext httpContext)
   {
+    var requestingUser = httpContext.RequestingUser;
+    if (requestingUser is null)
+    {
+      return TypedResults.Problem(statusCode: (int)HttpStatusCode.Forbidden);
+    }
+
+    // Only Admins or the actual user can delete the user.
+    if (!(requestingUser.Id == userId ||
+        requestingUser.IsAdmin))
+    {
+      return TypedResults.Problem(statusCode: (int)HttpStatusCode.Forbidden);
+    }
+
+    // Revoke all the user's refresh tokens
+    await authService.RevokeAll(userId);
+
     var result = await userRepository.DeleteUser(userId);
     if (!result)
     {
@@ -133,16 +151,8 @@ public static class UserEndpoints
     [FromRoute(Name = "id")] string userId,
     UpdateAdminRequest request,
     IUserRepository userRepository,
-    IMapper<User, UserDto> userMapper,
-    ITokenService tokenService,
-    HttpContext httpContext)
+    IMapper<User, UserDto> userMapper)
   {
-    var requestingUser = await GetUser(httpContext, tokenService, userRepository);
-    if (requestingUser?.IsAdmin != true)
-    {
-      return TypedResults.Problem(statusCode: (int)HttpStatusCode.Forbidden);
-    }
-
     var user =  await userRepository.GetUserById(userId);
     if (user is null)
     {
@@ -153,19 +163,5 @@ public static class UserEndpoints
     user.IsAdmin = request.IsAdmin;
     await userRepository.SaveUser(user);
     return TypedResults.Ok(userMapper.MapTo(user));
-  }
-
-  private static async Task<User?> GetUser(HttpContext httpContext,
-    ITokenService tokenService,
-    IUserRepository userRepository)
-  {
-    var claims = await tokenService.GetClaims(httpContext);
-    var userId = claims?.GetValueOrDefault(JwtRegisteredClaimNames.Sub);
-    if (userId is null)
-    {
-      return null;
-    }
-
-    return await userRepository.GetUserById(userId.Value);
   }
 }

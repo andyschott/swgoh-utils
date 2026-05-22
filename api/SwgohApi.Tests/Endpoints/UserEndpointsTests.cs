@@ -1,11 +1,10 @@
-﻿using System.IdentityModel.Tokens.Jwt;
-using System.Net;
-using System.Security.Claims;
+﻿using System.Net;
 using AutoFixture;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using SwgohApi.Endpoints;
+using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Mapping;
@@ -21,7 +20,7 @@ public sealed class UserEndpointsTests : IDisposable
   private readonly Mock<IUserRepository> _mockUserRepository;
   private readonly Mock<IPasswordHasher<User>> _mockPasswordHasher;
   private readonly Mock<IMapper<User, UserDto>> _mockUserMapper;
-  private readonly Mock<ITokenService> _mockTokenService;
+  private readonly Mock<IAuthService> _mockAuthService;
 
   private readonly HttpContext _httpContext = new DefaultHttpContext();
 
@@ -30,7 +29,7 @@ public sealed class UserEndpointsTests : IDisposable
     _mockUserRepository = _mockRepository.Create<IUserRepository>();
     _mockPasswordHasher = _mockRepository.Create<IPasswordHasher<User>>();
     _mockUserMapper = _mockRepository.Create<IMapper<User, UserDto>>();
-    _mockTokenService = _mockRepository.Create<ITokenService>();
+    _mockAuthService = _mockRepository.Create<IAuthService>();
   }
 
   public void Dispose() => _mockRepository.VerifyAll();
@@ -104,21 +103,13 @@ public sealed class UserEndpointsTests : IDisposable
 
   [Theory, AutoData]
   public async Task UpdateUser_UserDoesNotExist_ReturnsNotFound(string userId,
-    string requestingUserId,
     UpdateUserRequest request,
     IFixture fixture)
   {
-    _mockTokenService.Setup(service => service.GetClaims(_httpContext))
-      .ReturnsAsync(new Dictionary<string, Claim>
-      {
-        [JwtRegisteredClaimNames.Sub] = new(JwtRegisteredClaimNames.Sub, requestingUserId),
-      });
-
     var requestingUser = fixture.Build<User>()
       .With(user => user.IsAdmin, true)
       .Create();
-    _mockUserRepository.Setup(repository => repository.GetUserById(requestingUserId))
-      .ReturnsAsync(requestingUser);
+    _httpContext.RequestingUser = requestingUser;
 
     _mockUserRepository.Setup(repository => repository.GetUserById(userId))
       .ReturnsAsync((User?)null);
@@ -128,7 +119,6 @@ public sealed class UserEndpointsTests : IDisposable
       _mockUserRepository.Object,
       _mockPasswordHasher.Object,
       _mockUserMapper.Object,
-      _mockTokenService.Object,
       _httpContext);
 
     var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
@@ -144,17 +134,10 @@ public sealed class UserEndpointsTests : IDisposable
     UserDto responseUser,
     IFixture fixture)
   {
-    _mockTokenService.Setup(service => service.GetClaims(_httpContext))
-      .ReturnsAsync(new Dictionary<string, Claim>
-      {
-        [JwtRegisteredClaimNames.Sub] = new(JwtRegisteredClaimNames.Sub, userId),
-      });
-
     var user = fixture.Build<User>()
       .With(user => user.Id, userId)
       .Create();
-    _mockUserRepository.Setup(repository => repository.GetUserById(userId))
-      .ReturnsAsync(user);
+    _httpContext.RequestingUser = user;
     _mockUserMapper.Setup(mapper => mapper.MapTo(user))
       .Returns(responseUser);
 
@@ -165,7 +148,6 @@ public sealed class UserEndpointsTests : IDisposable
       _mockUserRepository.Object,
       _mockPasswordHasher.Object,
       _mockUserMapper.Object,
-      _mockTokenService.Object,
       _httpContext);
 
     var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
@@ -182,17 +164,10 @@ public sealed class UserEndpointsTests : IDisposable
     UserDto responseUser,
     IFixture fixture)
   {
-    _mockTokenService.Setup(service => service.GetClaims(_httpContext))
-      .ReturnsAsync(new Dictionary<string, Claim>
-      {
-        [JwtRegisteredClaimNames.Sub] = new(JwtRegisteredClaimNames.Sub, userId),
-      });
-
     var user = fixture.Build<User>()
       .With(user => user.Id, userId)
       .Create();
-    _mockUserRepository.Setup(repository => repository.GetUserById(userId))
-      .ReturnsAsync(user);
+    _httpContext.RequestingUser = user;
     _mockPasswordHasher.Setup(hasher => hasher.HashPassword(user, password))
       .Returns(hashedPassword);
     _mockUserRepository.Setup(repository => repository.SaveUser(user))
@@ -207,7 +182,6 @@ public sealed class UserEndpointsTests : IDisposable
       _mockUserRepository.Object,
       _mockPasswordHasher.Object,
       _mockUserMapper.Object,
-      _mockTokenService.Object,
       _httpContext);
 
     var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
@@ -219,27 +193,18 @@ public sealed class UserEndpointsTests : IDisposable
   [Theory, AutoData]
   public async Task UpdateUser_RequestingUserIsNotAdmin_ReturnsForbidden(string userId,
     UpdateUserRequest request,
-    string requestingUserId,
     IFixture fixture)
   {
-    _mockTokenService.Setup(service => service.GetClaims(_httpContext))
-      .ReturnsAsync(new Dictionary<string, Claim>
-      {
-        [JwtRegisteredClaimNames.Sub] = new(JwtRegisteredClaimNames.Sub, requestingUserId),
-      });
-
     var requestingUser = fixture.Build<User>()
       .With(user => user.IsAdmin, false)
       .Create();
-    _mockUserRepository.Setup(repository => repository.GetUserById(requestingUserId))
-      .ReturnsAsync(requestingUser);
+    _httpContext.RequestingUser = requestingUser;
 
     var response = await UserEndpoints.UpdateUser(userId,
       request,
       _mockUserRepository.Object,
       _mockPasswordHasher.Object,
       _mockUserMapper.Object,
-      _mockTokenService.Object,
       _httpContext);
 
     var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
@@ -250,24 +215,13 @@ public sealed class UserEndpointsTests : IDisposable
 
   [Theory, AutoData]
   public async Task UpdateUser_RequestingUserNotFound_ReturnsForbidden(string userId,
-    UpdateUserRequest request,
-    string requestingUserId)
+    UpdateUserRequest request)
   {
-    _mockTokenService.Setup(service => service.GetClaims(_httpContext))
-      .ReturnsAsync(new Dictionary<string, Claim>
-      {
-        [JwtRegisteredClaimNames.Sub] = new(JwtRegisteredClaimNames.Sub, requestingUserId),
-      });
-
-    _mockUserRepository.Setup(repository => repository.GetUserById(requestingUserId))
-      .ReturnsAsync((User?)null);
-
     var response = await UserEndpoints.UpdateUser(userId,
       request,
       _mockUserRepository.Object,
       _mockPasswordHasher.Object,
       _mockUserMapper.Object,
-      _mockTokenService.Object,
       _httpContext);
 
     var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
@@ -277,24 +231,71 @@ public sealed class UserEndpointsTests : IDisposable
   }
 
   [Theory, AutoData]
-  public async Task DeleteUser_Successful(string userId)
+  public async Task DeleteUser_RequestingUserIsNotAdmin_ReturnsForbidden(string userId,
+    UpdateUserRequest request,
+    IFixture fixture)
   {
+    var requestingUser = fixture.Build<User>()
+      .With(user => user.IsAdmin, false)
+      .Create();
+    _httpContext.RequestingUser = requestingUser;
+
+    var response = await UserEndpoints.UpdateUser(userId,
+      request,
+      _mockUserRepository.Object,
+      _mockPasswordHasher.Object,
+      _mockUserMapper.Object,
+      _httpContext);
+
+    var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
+    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
+
+    Assert.Equal((int)HttpStatusCode.Forbidden, problemResult.StatusCode);
+  }
+
+  [Theory, AutoData]
+  public async Task DeleteUser_Successful(string userId,
+    IFixture fixture)
+  {
+    var requestingUser = fixture.Build<User>()
+      .With(user => user.Id, userId)
+      .Create();
+    _httpContext.RequestingUser = requestingUser;
+
     _mockUserRepository.Setup(repository => repository.DeleteUser(userId))
       .ReturnsAsync(true);
 
-    var response = await UserEndpoints.DeleteUser(userId, _mockUserRepository.Object);
+    _mockAuthService.Setup(service => service.RevokeAll(userId))
+      .Returns(Task.CompletedTask);
+
+    var response = await UserEndpoints.DeleteUser(userId,
+      _mockUserRepository.Object,
+      _mockAuthService.Object,
+      _httpContext);
 
     var result = Assert.IsType<Results<Ok, ProblemHttpResult>>(response);
     Assert.IsType<Ok>(result.Result);
   }
 
   [Theory, AutoData]
-  public async Task DeleteUser_UserDoesNotExist_ReturnsNotFound(string userId)
+  public async Task DeleteUser_UserDoesNotExist_ReturnsNotFound(string userId,
+    IFixture fixture)
   {
+    var requestingUser = fixture.Build<User>()
+      .With(user => user.IsAdmin, true)
+      .Create();
+    _httpContext.RequestingUser = requestingUser;
+
     _mockUserRepository.Setup(repository => repository.DeleteUser(userId))
       .ReturnsAsync(false);
 
-    var response = await UserEndpoints.DeleteUser(userId, _mockUserRepository.Object);
+    _mockAuthService.Setup(service => service.RevokeAll(userId))
+      .Returns(Task.CompletedTask);
+
+    var response = await UserEndpoints.DeleteUser(userId,
+      _mockUserRepository.Object,
+      _mockAuthService.Object,
+      _httpContext);
 
     var result = Assert.IsType<Results<Ok, ProblemHttpResult>>(response);
     var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
@@ -305,27 +306,14 @@ public sealed class UserEndpointsTests : IDisposable
   }
 
   [Theory, AutoData]
-  public async Task UpdateAdmin_Successful(string requestingUserId,
-    string updatingUserId,
+  public async Task UpdateAdmin_Successful(string userId,
     UserDto responseUser,
     IFixture fixture)
   {
-    _mockTokenService.Setup(service => service.GetClaims(_httpContext))
-      .ReturnsAsync(new Dictionary<string, Claim>
-      {
-        [JwtRegisteredClaimNames.Sub] = new(JwtRegisteredClaimNames.Sub, requestingUserId),
-      });
-
-    var requestingUser = fixture.Build<User>()
-      .With(user => user.IsAdmin, true)
-      .Create();
-    _mockUserRepository.Setup(repository => repository.GetUserById(requestingUserId))
-      .ReturnsAsync(requestingUser);
-
     var updatingUser = fixture.Build<User>()
       .With(user => user.IsAdmin, false)
       .Create();
-    _mockUserRepository.Setup(repository => repository.GetUserById(updatingUserId))
+    _mockUserRepository.Setup(repository => repository.GetUserById(userId))
       .ReturnsAsync(updatingUser);
 
     _mockUserRepository.Setup(repository => repository.SaveUser(
@@ -335,12 +323,10 @@ public sealed class UserEndpointsTests : IDisposable
     _mockUserMapper.Setup(mapper => mapper.MapTo(updatingUser))
       .Returns(responseUser);
 
-    var response = await UserEndpoints.UpdateAdmin(updatingUserId,
+    var response = await UserEndpoints.UpdateAdmin(userId,
       new UpdateAdminRequest(true),
       _mockUserRepository.Object,
-      _mockUserMapper.Object,
-      _mockTokenService.Object,
-      _httpContext);
+      _mockUserMapper.Object);
 
     var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
     var okResult = Assert.IsType<Ok<UserDto>>(result.Result);
@@ -349,31 +335,15 @@ public sealed class UserEndpointsTests : IDisposable
   }
 
   [Theory, AutoData]
-  public async Task UpdateAdmin_UserDoesNotExist_ReturnsNotFound(string requestingUserId,
-    string updatingUserId,
-    IFixture fixture)
+  public async Task UpdateAdmin_UserDoesNotExist_ReturnsNotFound(string userId)
   {
-    _mockTokenService.Setup(service => service.GetClaims(_httpContext))
-      .ReturnsAsync(new Dictionary<string, Claim>
-      {
-        [JwtRegisteredClaimNames.Sub] = new(JwtRegisteredClaimNames.Sub, requestingUserId),
-      });
-
-    var requestingUser = fixture.Build<User>()
-      .With(user => user.IsAdmin, true)
-      .Create();
-    _mockUserRepository.Setup(repository => repository.GetUserById(requestingUserId))
-      .ReturnsAsync(requestingUser);
-
-    _mockUserRepository.Setup(repository => repository.GetUserById(updatingUserId))
+    _mockUserRepository.Setup(repository => repository.GetUserById(userId))
       .ReturnsAsync((User?)null);
 
-    var response = await UserEndpoints.UpdateAdmin(updatingUserId,
+    var response = await UserEndpoints.UpdateAdmin(userId,
       new UpdateAdminRequest(true),
       _mockUserRepository.Object,
-      _mockUserMapper.Object,
-      _mockTokenService.Object,
-      _httpContext);
+      _mockUserMapper.Object);
 
     var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
     var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
@@ -381,61 +351,5 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.NotNull(problemResult.ProblemDetails.Detail);
     Assert.NotEmpty(problemResult.ProblemDetails.Detail);
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
-  }
-
-  [Theory, AutoData]
-  public async Task UpdateAdmin_RequestingUserIsNotAdmin_ReturnsForbidden(string requestingUserId,
-    string updatingUserId,
-    IFixture fixture)
-  {
-    _mockTokenService.Setup(service => service.GetClaims(_httpContext))
-      .ReturnsAsync(new Dictionary<string, Claim>
-      {
-        [JwtRegisteredClaimNames.Sub] = new(JwtRegisteredClaimNames.Sub, requestingUserId),
-      });
-
-    var requestingUser = fixture.Build<User>()
-      .With(user => user.IsAdmin, false)
-      .Create();
-    _mockUserRepository.Setup(repository => repository.GetUserById(requestingUserId))
-      .ReturnsAsync(requestingUser);
-
-    var response = await UserEndpoints.UpdateAdmin(updatingUserId,
-      new UpdateAdminRequest(true),
-      _mockUserRepository.Object,
-      _mockUserMapper.Object,
-      _mockTokenService.Object,
-      _httpContext);
-
-    var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
-    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
-
-    Assert.Equal((int)HttpStatusCode.Forbidden, problemResult.StatusCode);
-  }
-
-  [Theory, AutoData]
-  public async Task UpdateAdmin_RequestingUserDoesNotExist_ReturnsForbidden(string requestingUserId,
-    string updatingUserId)
-  {
-    _mockTokenService.Setup(service => service.GetClaims(_httpContext))
-      .ReturnsAsync(new Dictionary<string, Claim>
-      {
-        [JwtRegisteredClaimNames.Sub] = new(JwtRegisteredClaimNames.Sub, requestingUserId),
-      });
-
-    _mockUserRepository.Setup(repository => repository.GetUserById(requestingUserId))
-      .ReturnsAsync((User?)null);
-
-    var response = await UserEndpoints.UpdateAdmin(updatingUserId,
-      new UpdateAdminRequest(true),
-      _mockUserRepository.Object,
-      _mockUserMapper.Object,
-      _mockTokenService.Object,
-      _httpContext);
-
-    var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
-    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
-
-    Assert.Equal((int)HttpStatusCode.Forbidden, problemResult.StatusCode);
   }
 }

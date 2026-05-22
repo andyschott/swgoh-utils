@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
+using SwgohApi.Filters;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
@@ -16,10 +17,8 @@ public static class CharacterEndpoints
     var characters = app.MapGroup("/characters")
       .RequireAuthorization();
 
-    if (allowCreation)
-    {
-      characters.MapPost(string.Empty, CreateCharacter);
-    }
+    characters.MapPost(string.Empty, CreateCharacter)
+      .AddEndpointFilter<RequireAdminEndpointFilter>();
 
     characters.MapGet(string.Empty,  GetCharacters);
 
