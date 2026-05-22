@@ -8,11 +8,6 @@
   <section aria-labelledby="today-title">
     <h2 id="today-title">Today</h2>
 
-    <div class="today-item">
-      <h3>Users</h3>
-      <p>Registered Users: <strong>{{ userCount() }}</strong></p>
-    </div>
-
     @if (hasRemainingSignalData()) {
       <div class="today-item">
         <h3>Signal Data Farming Plan</h3>

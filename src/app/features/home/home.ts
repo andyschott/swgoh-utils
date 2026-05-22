@@ -1,6 +1,4 @@
 import { ChangeDetectionStrategy, Component, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { catchError, of } from 'rxjs';
 import { SignalDataFarming } from '../../signalData/signal-data-farming';
 import { UserApiService } from '../../users/user-api.service';
 
@@ -24,12 +22,6 @@ const SIGNAL_DATA_FARMING_STORAGE_KEY = 'signal-data-farming.inputs';
 export class Home {
   private readonly signalDataFarming = inject(SignalDataFarming);
   private readonly userApiService = inject(UserApiService);
-  private readonly users = toSignal(
-    this.userApiService.getUsers().pipe(catchError(() => of([]))),
-    { initialValue: [] },
-  );
-  protected readonly userCount = computed(() => this.users().length);
-
   protected readonly signalDataRemaining = computed(() => {
     const inputs = this.readStoredInputs();
     return {
