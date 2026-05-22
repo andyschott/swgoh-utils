@@ -23,9 +23,10 @@ public static class ServiceConfiguration
     services.AddScoped<IPostgresDbContext>(provider =>
       provider.GetRequiredService<PostgresDbContext>());
 
-    services.AddScoped<IUserRepository, PostgresUserRepository>();
-    services.AddScoped<ITokenRepository, PostgresTokenRepository>();
-    services.AddScoped<ICharacterRepository, PostgresCharacterRepository>();
+    services.AddScoped<IUserRepository, PostgresUserRepository>()
+      .AddScoped<ITokenRepository, PostgresTokenRepository>()
+      .AddScoped<ICharacterRepository, PostgresCharacterRepository>()
+      .AddScoped<IShipRepository, PostgresShipRepository>();
 
     return services;
   }

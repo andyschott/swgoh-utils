@@ -104,7 +104,8 @@ app.UseExceptionHandler(exceptionApp =>
 
 app.MapUserEndpoints(allowCreation)
   .MapAuthEndpoints()
-  .MapCharacterEndpoints(allowCreation);
+  .MapCharacterEndpoints(allowCreation)
+  .MapShipEndpoints(allowCreation);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
