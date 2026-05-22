@@ -1,4 +1,5 @@
 namespace SwgohApi.Models.Users;
 
 public record UserDto(string Id,
-  string Email);
+  string Email,
+  bool IsAdmin);
