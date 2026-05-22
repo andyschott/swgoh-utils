@@ -1,0 +1,14 @@
+GET {{SwgohApi.BaseAddress}}/characters
+Authorization: Bearer {{auth_token}}
+###
+
+POST {{SwgohApi.BaseAddress}}/characters
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "name": "JynErso",
+  "locations": ["CantinaShipments"],
+  "isAccelerated": true
+}
+###

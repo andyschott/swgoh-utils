@@ -1,0 +1,37 @@
+POST {{SwgohApi.BaseAddress}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "test@example.com",
+  "password": "my-awesome-password"
+}
+
+> {%
+  client.global.set("auth_token", response.body.accessToken);
+  client.global.set("refresh_token", response.body.refreshToken);
+%}
+###
+
+POST {{SwgohApi.BaseAddress}}/auth/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+
+> {%
+  client.global.set("auth_token", response.body.accessToken);
+  client.global.set("refresh_token", response.body.refreshToken);
+%}
+###
+POST {{SwgohApi.BaseAddress}}/auth/revoke
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+###
+
+POST {{SwgohApi.BaseAddress}}/auth/revoke-all
+Authorization: Bearer {{auth_token}}
+###

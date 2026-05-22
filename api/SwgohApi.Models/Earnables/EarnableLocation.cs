@@ -18,7 +18,7 @@ public enum EarnableLocation
   GuildEventMark1Shipments,
   GuildEventMark2Shipments,
   GuildEventMark3Shipments,
-  ShardShipCurrency,
+  ShardShopCurrency,
   LegendTokens,
   ConquestMainReward,
   ConquestSecondaryReward,

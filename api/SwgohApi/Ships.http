@@ -1,0 +1,13 @@
+GET {{SwgohApi.BaseAddress}}/ships
+Authorization: Bearer {{auth_token}}
+###
+
+POST {{SwgohApi.BaseAddress}}/ships
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "name": "TIE Advanced x1",
+  "locations": ["ShardShopCurrency"]
+}
+###

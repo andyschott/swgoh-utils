@@ -1,0 +1,31 @@
+POST {{SwgohApi.BaseAddress}}/users
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "email": "test@example.com",
+  "password": "my-awesome-password"
+}
+###
+
+PUT {{SwgohApi.BaseAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24da
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "password": "my-awesome-password"
+}
+###
+
+DELETE {{SwgohApi.BaseAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24d
+Authorization: Bearer {{auth_token}}
+###
+
+PUT {{SwgohApi.BaseAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24d/updateAdmin
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "isAdmin": true
+}
+###
