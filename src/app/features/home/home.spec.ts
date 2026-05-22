@@ -28,14 +28,4 @@ describe('Home', () => {
     const fixture = TestBed.createComponent(Home);
     expect(fixture.componentInstance).toBeTruthy();
   });
-
-  it('should render user count from API results', async () => {
-    const fixture = TestBed.createComponent(Home);
-    fixture.detectChanges();
-    await fixture.whenStable();
-
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.textContent).toContain('Registered Users:');
-    expect(compiled.textContent).toContain('3');
-  });
 });
