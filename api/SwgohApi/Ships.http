@@ -25,3 +25,7 @@ Authorization: Bearer {{auth_token}}
 }
 
 ###
+
+GET {{SwgohApi.BaseAddress}}//ships/name/Executor
+
+###
