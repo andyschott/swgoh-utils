@@ -54,7 +54,7 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
   }
 
   [Theory, AutoData]
-  public async Task GetCharacterBy_Successful(Character character)
+  public async Task GetCharacter_Successful(Character character)
   {
     SetupMockEntities(dbContext => dbContext.Characters, [character]);
 
