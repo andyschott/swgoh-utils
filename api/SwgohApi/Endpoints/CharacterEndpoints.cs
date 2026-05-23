@@ -35,6 +35,7 @@ public static class CharacterEndpoints
   public static async Task<Results<Ok<Character>, ProblemHttpResult>> CreateCharacter(
     CreateCharacterRequest request,
     ICharacterRepository characterRepository,
+    IMarqueeRepository marqueeRepository,
     IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
     IMapper<InternalCharacter, Character> characterMapper)
   {
@@ -48,11 +49,22 @@ public static class CharacterEndpoints
     var locations = request.Locations.Select(earnableLocationMapper.MapFrom)
       .ToList();
 
-    // TODO: Allow setting marquee eventually
     var character = await characterRepository.CreateCharacter(request.Name,
       locations,
       request.IsAccelerated,
       null);
+
+    if (request.Marquee is not null)
+    {
+      var marquee = await marqueeRepository.CreateMarquee(character,
+        request.Marquee.IntroductionDate,
+        request.Marquee.MarqueeEventDate,
+        request.Marquee.ShipmentDate,
+        request.Marquee.FarmDate,
+        request.Marquee.AccelerationDate);
+
+      character.Marquee = marquee;
+    }
 
     return TypedResults.Ok(characterMapper.MapTo(character));
   }
