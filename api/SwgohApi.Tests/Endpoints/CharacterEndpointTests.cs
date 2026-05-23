@@ -143,4 +143,60 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.NotEmpty(problemResult.ProblemDetails.Detail);
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
   }
+
+  [Theory, AutoData]
+  public async Task UpdateCharacter_Successful(InternalCharacter internalCharacter,
+    UpdateCharacterRequest request,
+    InternalEarnableLocation[] internalLocations,
+    Character character)
+  {
+    _mockCharacterRepository.Setup(repository => repository.GetCharacter(internalCharacter.Id))
+      .ReturnsAsync(internalCharacter);
+
+    foreach (var (src, dest) in request.Locations!.Zip(internalLocations))
+    {
+      _mockEarnableLocationMapper.Setup(mapper => mapper.MapFrom(src))
+        .Returns(dest);
+    }
+
+    _mockCharacterRepository.Setup(repository => repository.SaveCharacter(
+      It.Is<InternalCharacter>(c => c.IsAccelerated == request.IsAccelerated &&
+                                    c.Locations.SequenceEqual(internalLocations))))
+      .Returns(Task.CompletedTask);
+
+    _mockCharacterMapper.Setup(mapper => mapper.MapTo(internalCharacter))
+      .Returns(character);
+
+    var response = await CharacterEndpoints.UpdateCharacter(internalCharacter.Id,
+      request,
+      _mockCharacterRepository.Object,
+      _mockCharacterMapper.Object,
+      _mockEarnableLocationMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Character>>(result.Result);
+
+    Assert.Same(character, okResult.Value);
+  }
+
+  [Theory, AutoData]
+  public async Task UpdateCharacter_CharacterNotFound_ReturnsNotFound(string id,
+    UpdateCharacterRequest request)
+  {
+    _mockCharacterRepository.Setup(repository => repository.GetCharacter(id))
+      .ReturnsAsync((InternalCharacter?)null);
+
+    var response = await CharacterEndpoints.UpdateCharacter(id,
+      request,
+      _mockCharacterRepository.Object,
+      _mockCharacterMapper.Object,
+      _mockEarnableLocationMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
+
+    Assert.NotNull(problemResult.ProblemDetails.Detail);
+    Assert.NotEmpty(problemResult.ProblemDetails.Detail);
+    Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
+  }
 }

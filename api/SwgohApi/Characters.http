@@ -16,3 +16,13 @@ Authorization: Bearer {{auth_token}}
 GET {{SwgohApi.BaseAddress}}/characters/2abe6d0a-52ad-4321-9d93-c65978f7ce52
 
 ###
+
+PUT {{SwgohApi.BaseAddress}}/characters/f310b7cc-0087-4f70-872f-596ce7fe175f
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "isAccelerated": true
+}
+
+###

@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
+using SwgohApi.Extensions;
 using SwgohApi.Filters;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
@@ -17,12 +18,14 @@ public static class CharacterEndpoints
       .RequireAuthorization();
 
     characters.MapPost(string.Empty, CreateCharacter)
-      .AddEndpointFilter<RequireAdminEndpointFilter>();
+      .RequireAdmin();
 
     characters.MapGet(string.Empty, GetCharacters)
       .AllowAnonymous();
     characters.MapGet("/{id}", GetCharacter)
       .AllowAnonymous();
+    characters.MapPut("/{id}",  UpdateCharacter)
+      .RequireAdmin();
 
     return app;
   }
@@ -71,5 +74,33 @@ public static class CharacterEndpoints
     }
 
     return TypedResults.Ok(characterMapper.MapTo(character));
+  }
+
+  public static async Task<Results<Ok<Character>, ProblemHttpResult>> UpdateCharacter(string id,
+    UpdateCharacterRequest request,
+    ICharacterRepository characterRepository,
+    IMapper<InternalCharacter, Character> characterMapper,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
+  {
+    var internalCharacter = await characterRepository.GetCharacter(id);
+    if (internalCharacter is null)
+    {
+      return TypedResults.Problem(detail:"No character with that ID exists.",
+        statusCode:(int)HttpStatusCode.NotFound);
+    }
+
+    if (request.Locations is not null)
+    {
+      internalCharacter.Locations = request.Locations.Select(earnableLocationMapper.MapFrom)
+        .ToList();
+    }
+
+    if (request.IsAccelerated is not null)
+    {
+      internalCharacter.IsAccelerated = request.IsAccelerated.Value;
+    }
+
+    await characterRepository.SaveCharacter(internalCharacter);
+    return TypedResults.Ok(characterMapper.MapTo(internalCharacter));
   }
 }

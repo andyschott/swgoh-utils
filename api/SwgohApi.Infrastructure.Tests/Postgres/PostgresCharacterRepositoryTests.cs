@@ -73,4 +73,15 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
 
     Assert.Null(result);
   }
+
+  [Theory, AutoData]
+  public async Task SaveUser_Successful(Character character)
+  {
+    SetupMockEntities(dbContext => dbContext.Characters, [character]);
+
+    var exception = await Record.ExceptionAsync(() => _repository.SaveCharacter(character));
+
+    Assert.Null(exception);
+    _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
+  }
 }

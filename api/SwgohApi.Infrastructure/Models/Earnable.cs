@@ -15,5 +15,5 @@ public abstract record Earnable
 
   public string Id { get; init; }
   public string Name { get; init; }
-  public List<EarnableLocation> Locations { get; init; }
+  public List<EarnableLocation> Locations { get; set; }
 }
