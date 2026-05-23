@@ -30,7 +30,7 @@
             <tr>
               <th scope="row">{{ row.name }}</th>
               <td>{{ row.isAccelerated ? 'Yes' : 'No' }}</td>
-              <td>{{ row.locations }}</td>
+              <td>{{ row.locations | earnableLocations }}</td>
             </tr>
           } @empty {
             <tr>
