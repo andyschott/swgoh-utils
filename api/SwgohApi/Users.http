@@ -3,8 +3,9 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "email": "test@example.com",
-  "password": "my-awesome-password"
+  "email": "admin@example.com",
+  "password": "my-awesome-password",
+  "key": "e8a64643-7001-4735-899a-dd4405b56cc8"
 }
 ###
 
@@ -21,7 +22,7 @@ DELETE {{SwgohApi.BaseAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24d
 Authorization: Bearer {{auth_token}}
 ###
 
-PUT {{SwgohApi.BaseAddress}}/users/f3ddd778-f384-46ac-b284-8a47466bf24d/updateAdmin
+PUT {{SwgohApi.BaseAddress}}/users/77b024d2-c77c-44e2-8ab7-25810111d5f5/updateAdmin
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
