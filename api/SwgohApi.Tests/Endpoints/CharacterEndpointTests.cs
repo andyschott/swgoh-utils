@@ -51,8 +51,7 @@ public sealed class CharacterEndpointTests : IDisposable
     _mockCharacterRepository.Setup(repository => repository.CreateCharacter(
       request.Name,
       internalLocations,
-      request.IsAccelerated,
-      null))
+      request.IsAccelerated))
       .ReturnsAsync(internalCharacter);
 
     _mockMarqueeRepository.Setup(repository => repository.CreateMarquee(internalCharacter,
@@ -101,8 +100,7 @@ public sealed class CharacterEndpointTests : IDisposable
     _mockCharacterRepository.Setup(repository => repository.CreateCharacter(
         request.Name,
         internalLocations,
-        request.IsAccelerated,
-        null))
+        request.IsAccelerated))
       .ReturnsAsync(internalCharacter);
 
     _mockCharacterMapper.Setup(mapper => mapper.MapTo(internalCharacter))

@@ -51,8 +51,7 @@ public static class CharacterEndpoints
 
     var character = await characterRepository.CreateCharacter(request.Name,
       locations,
-      request.IsAccelerated,
-      null);
+      request.IsAccelerated);
 
     if (request.Marquee is not null)
     {

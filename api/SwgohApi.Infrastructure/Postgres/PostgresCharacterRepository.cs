@@ -17,8 +17,7 @@ public class PostgresCharacterRepository : ICharacterRepository
 
   public async Task<Character> CreateCharacter(string name,
     IEnumerable<EarnableLocation> locations,
-    bool isAccelerated,
-    Marquee? marquee)
+    bool isAccelerated)
   {
     var character = new Character
     {
@@ -26,7 +25,7 @@ public class PostgresCharacterRepository : ICharacterRepository
       Name = name,
       Locations = locations.ToList(),
       IsAccelerated = isAccelerated,
-      Marquee = marquee
+      Marquee = null
     };
 
     await _dbContext.Characters.AddAsync(character);
