@@ -19,10 +19,13 @@ public class PostgresShipRepository : IShipRepository
     IEnumerable<EarnableLocation> locations,
     Marquee? marquee)
   {
-    var ship = new Ship(_idGenerator.CreateId(),
-      name,
-      locations.ToList(),
-      marquee);
+    var ship = new Ship
+    {
+      Id = _idGenerator.CreateId(),
+      Name = name,
+      Locations = locations.ToList(),
+      Marquee = marquee
+    };
 
     await _dbContext.Ships.AddAsync(ship);
     await _dbContext.SaveChangesAsync();

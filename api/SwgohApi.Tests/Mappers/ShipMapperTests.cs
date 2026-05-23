@@ -68,15 +68,8 @@ public sealed class ShipMapperTests : IDisposable
     {
       var fixture = new Fixture();
 
-      fixture.Register(() =>
-      {
-        var id = fixture.Create<string>();
-        var name = fixture.Create<string>();
-        var locations = fixture.CreateMany<InternalEarnableLocation>()
-          .ToList();
-
-        return new InternalShip(id, name, locations, null);
-      });
+      fixture.Customize<InternalShip>(composer => composer
+        .Without(s => s.Marquee));
 
       return fixture;
     }

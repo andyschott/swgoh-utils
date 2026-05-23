@@ -20,11 +20,14 @@ public class PostgresCharacterRepository : ICharacterRepository
     bool isAccelerated,
     Marquee? marquee)
   {
-    var character = new Character(_idGenerator.CreateId(),
-      name,
-      locations.ToList(),
-      isAccelerated,
-      marquee);
+    var character = new Character
+    {
+      Id = _idGenerator.CreateId(),
+      Name = name,
+      Locations = locations.ToList(),
+      IsAccelerated = isAccelerated,
+      Marquee = marquee
+    };
 
     await _dbContext.Characters.AddAsync(character);
     await _dbContext.SaveChangesAsync();

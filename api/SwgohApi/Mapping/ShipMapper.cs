@@ -21,9 +21,11 @@ public class ShipMapper : EarnableMapper<InternalShip, Ship>
   protected override InternalShip Create(Ship earnable, List<InternalEarnableLocation> earnableLocations)
   {
     // TODO: Map marquee eventually
-    return new InternalShip(earnable.Id,
-      earnable.Name,
-      earnableLocations,
-      null);
+    return new InternalShip
+    {
+      Id = earnable.Id,
+      Name = earnable.Name,
+      Locations = earnableLocations
+    };
   }
 }

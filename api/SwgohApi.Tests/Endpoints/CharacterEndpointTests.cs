@@ -253,16 +253,8 @@ public sealed class CharacterEndpointTests : IDisposable
     {
       var fixture = new Fixture();
 
-      fixture.Register(() =>
-      {
-        var id = fixture.Create<string>();
-        var name = fixture.Create<string>();
-        var locations = fixture.CreateMany<InternalEarnableLocation>()
-          .ToList();
-        var isAccelerated = fixture.Create<bool>();
-
-        return new InternalCharacter(id, name, locations, isAccelerated, null);
-      });
+      fixture.Customize<InternalCharacter>(composer => composer
+        .Without(c => c.Marquee));
 
       return fixture;
     }

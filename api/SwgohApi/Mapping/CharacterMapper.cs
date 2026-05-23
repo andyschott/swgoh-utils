@@ -24,10 +24,12 @@ public class CharacterMapper : EarnableMapper<InternalCharacter, Character>
     List<InternalEarnableLocation> earnableLocations)
   {
     // TODO: Map marquee eventually
-    return new InternalCharacter(earnable.Id,
-      earnable.Name,
-      earnableLocations,
-      earnable.IsAccelerated,
-      null);
+    return new InternalCharacter
+    {
+      Id = earnable.Id,
+      Name = earnable.Name,
+      Locations = earnableLocations,
+      IsAccelerated = earnable.IsAccelerated,
+    };
   }
 }
