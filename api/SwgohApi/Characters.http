@@ -24,12 +24,19 @@ GET {{SwgohApi.BaseAddress}}/characters/2abe6d0a-52ad-4321-9d93-c65978f7ce52
 
 ###
 
-PUT {{SwgohApi.BaseAddress}}/characters/f310b7cc-0087-4f70-872f-596ce7fe175f
+PUT {{SwgohApi.BaseAddress}}/characters/d0b3502b-3055-4154-bb63-560c691e27a4
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "isAccelerated": true
+  "isAccelerated": true,
+  "marquee": {
+    "introductionDate": "2026-01-01",
+    "marqueeEventDate": "2026-01-02",
+    "shipmentDate": "2026-01-03",
+    "farmDate": "2026-01-04",
+    "accelerationDate": "2026-01-05"
+  }
 }
 
 ###

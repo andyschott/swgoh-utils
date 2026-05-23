@@ -86,7 +86,7 @@ public sealed class CharacterEndpointTests : IDisposable
     IFixture fixture)
   {
     var request = fixture.Build<CreateCharacterRequest>()
-      .With(request => request.Marquee, (CreateCharacterMarqueeRequest?)null)
+      .With(request => request.Marquee, (CharacterMarqueeRequest?)null)
       .Create();
 
     _mockCharacterRepository.Setup(repository => repository.GetCharacterByName(request.Name))
@@ -223,12 +223,108 @@ public sealed class CharacterEndpointTests : IDisposable
                                     c.Locations.SequenceEqual(internalLocations))))
       .Returns(Task.CompletedTask);
 
+    _mockMarqueeRepository.Setup(repository => repository.SaveMarquee(internalCharacter.Marquee!))
+      .Returns(Task.CompletedTask);
+
     _mockCharacterMapper.Setup(mapper => mapper.MapTo(internalCharacter))
       .Returns(character);
 
     var response = await CharacterEndpoints.UpdateCharacter(internalCharacter.Id,
       request,
       _mockCharacterRepository.Object,
+      _mockMarqueeRepository.Object,
+      _mockCharacterMapper.Object,
+      _mockEarnableLocationMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Character>>(result.Result);
+
+    Assert.Same(character, okResult.Value);
+  }
+
+  [Theory, AutoDomainData]
+  public async Task UpdateCharacter_CreatingMarquee_Successful(UpdateCharacterRequest request,
+    InternalEarnableLocation[] internalLocations,
+    InternalMarquee internalMarquee,
+    Character character,
+    IFixture fixture)
+  {
+    var internalCharacter = fixture.Build<InternalCharacter>()
+      .With(c => c.Marquee, (InternalMarquee?)null)
+      .Create();
+
+    _mockCharacterRepository.Setup(repository => repository.GetCharacter(internalCharacter.Id))
+      .ReturnsAsync(internalCharacter);
+
+    foreach (var (src, dest) in request.Locations!.Zip(internalLocations))
+    {
+      _mockEarnableLocationMapper.Setup(mapper => mapper.MapFrom(src))
+        .Returns(dest);
+    }
+
+    _mockCharacterRepository.Setup(repository => repository.SaveCharacter(
+        It.Is<InternalCharacter>(c => c.IsAccelerated == request.IsAccelerated &&
+                                      c.Locations.SequenceEqual(internalLocations))))
+      .Returns(Task.CompletedTask);
+
+    _mockMarqueeRepository.Setup(repository => repository.CreateMarquee(
+      internalCharacter,
+      request.Marquee!.IntroductionDate,
+      request.Marquee.MarqueeEventDate,
+      request.Marquee.ShipmentDate,
+      request.Marquee.FarmDate,
+      request.Marquee.AccelerationDate))
+      .ReturnsAsync(internalMarquee);
+
+    _mockCharacterMapper.Setup(mapper => mapper.MapTo(internalCharacter))
+      .Returns(character);
+
+    var response = await CharacterEndpoints.UpdateCharacter(internalCharacter.Id,
+      request,
+      _mockCharacterRepository.Object,
+      _mockMarqueeRepository.Object,
+      _mockCharacterMapper.Object,
+      _mockEarnableLocationMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Character>>(result.Result);
+
+    Assert.Same(character, okResult.Value);
+  }
+
+  [Theory, AutoDomainData]
+  public async Task UpdateCharacter_NotAMarquee_Successful(InternalEarnableLocation[] internalLocations,
+    Character character,
+    IFixture fixture)
+  {
+    var internalCharacter = fixture.Build<InternalCharacter>()
+      .With(c => c.Marquee, (InternalMarquee?)null)
+      .Create();
+    var request = fixture.Build<UpdateCharacterRequest>()
+      .With(request => request.Marquee, (CharacterMarqueeRequest?)null)
+      .Create();
+
+    _mockCharacterRepository.Setup(repository => repository.GetCharacter(internalCharacter.Id))
+      .ReturnsAsync(internalCharacter);
+
+    foreach (var (src, dest) in request.Locations!.Zip(internalLocations))
+    {
+      _mockEarnableLocationMapper.Setup(mapper => mapper.MapFrom(src))
+        .Returns(dest);
+    }
+
+    _mockCharacterRepository.Setup(repository => repository.SaveCharacter(
+        It.Is<InternalCharacter>(c => c.IsAccelerated == request.IsAccelerated &&
+                                      c.Locations.SequenceEqual(internalLocations))))
+      .Returns(Task.CompletedTask);
+
+    _mockCharacterMapper.Setup(mapper => mapper.MapTo(internalCharacter))
+      .Returns(character);
+
+    var response = await CharacterEndpoints.UpdateCharacter(internalCharacter.Id,
+      request,
+      _mockCharacterRepository.Object,
+      _mockMarqueeRepository.Object,
       _mockCharacterMapper.Object,
       _mockEarnableLocationMapper.Object);
 
@@ -248,6 +344,7 @@ public sealed class CharacterEndpointTests : IDisposable
     var response = await CharacterEndpoints.UpdateCharacter(id,
       request,
       _mockCharacterRepository.Object,
+      _mockMarqueeRepository.Object,
       _mockCharacterMapper.Object,
       _mockEarnableLocationMapper.Object);
 
