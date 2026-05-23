@@ -35,6 +35,7 @@ public static class CharacterEndpoints
   public static async Task<Results<Ok<Character>, ProblemHttpResult>> CreateCharacter(
     CreateCharacterRequest request,
     ICharacterRepository characterRepository,
+    IMarqueeRepository marqueeRepository,
     IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
     IMapper<InternalCharacter, Character> characterMapper)
   {
@@ -51,6 +52,18 @@ public static class CharacterEndpoints
     var character = await characterRepository.CreateCharacter(request.Name,
       locations,
       request.IsAccelerated);
+
+    if (request.Marquee is not null)
+    {
+      var marquee = await marqueeRepository.CreateMarquee(character,
+        request.Marquee.IntroductionDate,
+        request.Marquee.MarqueeEventDate,
+        request.Marquee.ShipmentDate,
+        request.Marquee.FarmDate,
+        request.Marquee.AccelerationDate);
+
+      character.Marquee = marquee;
+    }
 
     return TypedResults.Ok(characterMapper.MapTo(character));
   }
@@ -81,6 +94,7 @@ public static class CharacterEndpoints
   public static async Task<Results<Ok<Character>, ProblemHttpResult>> UpdateCharacter(string id,
     UpdateCharacterRequest request,
     ICharacterRepository characterRepository,
+    IMarqueeRepository marqueeRepository,
     IMapper<InternalCharacter, Character> characterMapper,
     IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
   {
@@ -103,6 +117,31 @@ public static class CharacterEndpoints
     }
 
     await characterRepository.SaveCharacter(internalCharacter);
+
+    if (request.Marquee is not null)
+    {
+      if (internalCharacter.Marquee is not null)
+      {
+        internalCharacter.Marquee.IntroductionDate = request.Marquee.IntroductionDate;
+        internalCharacter.Marquee.MarqueeEventDate = request.Marquee.MarqueeEventDate;
+        internalCharacter.Marquee.ShipmentDate = request.Marquee.ShipmentDate;
+        internalCharacter.Marquee.FarmDate = request.Marquee.FarmDate;
+        internalCharacter.Marquee.AccelerationDate = request.Marquee.AccelerationDate;
+
+        await marqueeRepository.SaveMarquee(internalCharacter.Marquee);
+      }
+      else
+      {
+        internalCharacter.Marquee = await marqueeRepository.CreateMarquee(
+          internalCharacter,
+          request.Marquee.IntroductionDate,
+          request.Marquee.MarqueeEventDate,
+          request.Marquee.ShipmentDate,
+          request.Marquee.FarmDate,
+          request.Marquee.AccelerationDate);
+      }
+    }
+
     return TypedResults.Ok(characterMapper.MapTo(internalCharacter));
   }
 

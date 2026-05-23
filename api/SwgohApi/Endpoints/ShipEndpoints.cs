@@ -35,6 +35,7 @@ public static class ShipEndpoints
   public static async Task<Results<Ok<Ship>, ProblemHttpResult>> CreateShip(
     CreateShipRequest request,
     IShipRepository shipRepository,
+    IMarqueeRepository marqueeRepository,
     IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
     IMapper<InternalShip, Ship> shipMapper)
   {
@@ -49,7 +50,20 @@ public static class ShipEndpoints
       .ToList();
 
     var ship = await shipRepository.CreateShip(request.Name,
-      locations);
+      locations,
+      null);
+
+    if (request.Marquee is not null)
+    {
+      var marquee = await marqueeRepository.CreateMarquee(ship,
+        request.Marquee.IntroductionDate,
+        request.Marquee.MarqueeEventDate,
+        request.Marquee.ShipmentDate,
+        request.Marquee.FarmDate,
+        null);
+
+      ship.Marquee = marquee;
+    }
 
     return TypedResults.Ok(shipMapper.MapTo(ship));
   }
@@ -80,6 +94,7 @@ public static class ShipEndpoints
   public static async Task<Results<Ok<Ship>, ProblemHttpResult>> UpdateShip(string id,
     UpdateShipRequest request,
     IShipRepository shipRepository,
+    IMarqueeRepository marqueeRepository,
     IMapper<InternalShip, Ship> shipMapper,
     IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
   {
@@ -97,6 +112,31 @@ public static class ShipEndpoints
     }
 
     await shipRepository.SaveShip(internalShip);
+
+    if (request.Marquee is not null)
+    {
+      if (internalShip.Marquee is not null)
+      {
+        internalShip.Marquee.IntroductionDate = request.Marquee.IntroductionDate;
+        internalShip.Marquee.MarqueeEventDate = request.Marquee.MarqueeEventDate;
+        internalShip.Marquee.ShipmentDate = request.Marquee.ShipmentDate;
+        internalShip.Marquee.FarmDate = request.Marquee.FarmDate;
+        internalShip.Marquee.AccelerationDate = null;
+
+        await marqueeRepository.SaveMarquee(internalShip.Marquee);
+      }
+      else
+      {
+        internalShip.Marquee = await marqueeRepository.CreateMarquee(
+          internalShip,
+          request.Marquee.IntroductionDate,
+          request.Marquee.MarqueeEventDate,
+          request.Marquee.ShipmentDate,
+          request.Marquee.FarmDate,
+          null);
+      }
+    }
+
     return TypedResults.Ok(shipMapper.MapTo(internalShip));
   }
 

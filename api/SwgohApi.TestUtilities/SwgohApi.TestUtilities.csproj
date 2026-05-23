@@ -1,0 +1,8 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <PackageReference Include="AutoFixture" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SwgohApi.Infrastructure\SwgohApi.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

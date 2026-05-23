@@ -15,12 +15,18 @@ public class PostgresCharacterRepository : ICharacterRepository
     _idGenerator = idGenerator;
   }
 
-  public async Task<Character> CreateCharacter(string name, IEnumerable<EarnableLocation> locations, bool isAccelerated)
+  public async Task<Character> CreateCharacter(string name,
+    IEnumerable<EarnableLocation> locations,
+    bool isAccelerated)
   {
-    var character = new Character(_idGenerator.CreateId(),
-      name,
-      locations.ToList(),
-      isAccelerated);
+    var character = new Character
+    {
+      Id = _idGenerator.CreateId(),
+      Name = name,
+      Locations = locations.ToList(),
+      IsAccelerated = isAccelerated,
+      Marquee = null
+    };
 
     await _dbContext.Characters.AddAsync(character);
     await _dbContext.SaveChangesAsync();
@@ -30,6 +36,7 @@ public class PostgresCharacterRepository : ICharacterRepository
   public async Task<Character?> GetCharacterByName(string name)
   {
     return await _dbContext.Characters
+      .Include(c => c.Marquee)
       .FirstOrDefaultAsync(c => c.Name == name);
   }
 
@@ -41,6 +48,7 @@ public class PostgresCharacterRepository : ICharacterRepository
   public async Task<Character?> GetCharacter(string id)
   {
     return await _dbContext.Characters
+      .Include(c => c.Marquee)
       .FirstOrDefaultAsync(c => c.Id == id);
   }
 
