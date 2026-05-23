@@ -1,9 +1,13 @@
 using System.Net;
+using AutoFixture;
+using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SwgohApi.Endpoints;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
+using Character = SwgohApi.Models.Earnables.Character;
+using EarnableLocation = SwgohApi.Models.Earnables.EarnableLocation;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
 
@@ -26,7 +30,7 @@ public sealed class CharacterEndpointTests : IDisposable
 
   public void Dispose() => _mockRepository.VerifyAll();
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public async Task CreateCharacter_Successful(CreateCharacterRequest request,
     InternalEarnableLocation[] internalLocations,
     InternalCharacter internalCharacter,
@@ -43,7 +47,8 @@ public sealed class CharacterEndpointTests : IDisposable
     _mockCharacterRepository.Setup(repository => repository.CreateCharacter(
       request.Name,
       internalLocations,
-      request.IsAccelerated))
+      request.IsAccelerated,
+      null))
       .ReturnsAsync(internalCharacter);
 
     _mockCharacterMapper.Setup(mapper => mapper.MapTo(internalCharacter))
@@ -62,7 +67,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public async Task CreateCharacter_CharacterAlreadyExists_ReturnsBadRequest(
     CreateCharacterRequest request,
     InternalCharacter internalCharacter)
@@ -84,7 +89,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Equal((int)HttpStatusCode.BadRequest, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public async Task GetCharacters_Successful(InternalCharacter[] internalCharacters,
     Character[] characters)
   {
@@ -107,7 +112,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Equal(characters, okResult.Value);
   }
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public async Task GetCharacter_Successful(InternalCharacter internalCharacter,
     Character character)
   {
@@ -126,7 +131,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public async Task GetCharacter_CharacterNotFound_ReturnsNotFound(string id)
   {
     _mockCharacterRepository.Setup(repository => repository.GetCharacter(id))
@@ -144,7 +149,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public async Task UpdateCharacter_Successful(InternalCharacter internalCharacter,
     UpdateCharacterRequest request,
     InternalEarnableLocation[] internalLocations,
@@ -179,7 +184,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public async Task UpdateCharacter_CharacterNotFound_ReturnsNotFound(string id,
     UpdateCharacterRequest request)
   {
@@ -200,7 +205,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public async Task GetCharacterByName_Successful(InternalCharacter internalCharacter,
     Character character)
   {
@@ -219,7 +224,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public async Task GetCharacter_CharacterByNameNotFound_ReturnsNotFound(string name)
   {
     _mockCharacterRepository.Setup(repository => repository.GetCharacter(name))
@@ -235,5 +240,31 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.NotNull(problemResult.ProblemDetails.Detail);
     Assert.NotEmpty(problemResult.ProblemDetails.Detail);
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
+  }
+
+  class AutoDomainDataAttribute : AutoDataAttribute
+  {
+    public AutoDomainDataAttribute()
+    : base(Customize)
+    {
+    }
+
+    private static IFixture Customize()
+    {
+      var fixture = new Fixture();
+
+      fixture.Register(() =>
+      {
+        var id = fixture.Create<string>();
+        var name = fixture.Create<string>();
+        var locations = fixture.CreateMany<InternalEarnableLocation>()
+          .ToList();
+        var isAccelerated = fixture.Create<bool>();
+
+        return new InternalCharacter(id, name, locations, isAccelerated, null);
+      });
+
+      return fixture;
+    }
   }
 }

@@ -5,8 +5,9 @@ public record Character: Earnable
   public Character(string id,
     string name,
     List<EarnableLocation> locations,
-    bool isAccelerated)
-  : base(id, name, locations)
+    bool isAccelerated,
+    Marquee? marquee)
+  : base(id, name, locations, marquee)
   {
     IsAccelerated = isAccelerated;
   }

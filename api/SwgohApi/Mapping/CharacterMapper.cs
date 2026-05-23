@@ -23,9 +23,11 @@ public class CharacterMapper : EarnableMapper<InternalCharacter, Character>
   protected override InternalCharacter Create(Character earnable,
     List<InternalEarnableLocation> earnableLocations)
   {
+    // TODO: Map marquee eventually
     return new InternalCharacter(earnable.Id,
       earnable.Name,
       earnableLocations,
-      earnable.IsAccelerated);
+      earnable.IsAccelerated,
+      null);
   }
 }

@@ -48,9 +48,11 @@ public static class CharacterEndpoints
     var locations = request.Locations.Select(earnableLocationMapper.MapFrom)
       .ToList();
 
+    // TODO: Allow setting marquee eventually
     var character = await characterRepository.CreateCharacter(request.Name,
       locations,
-      request.IsAccelerated);
+      request.IsAccelerated,
+      null);
 
     return TypedResults.Ok(characterMapper.MapTo(character));
   }

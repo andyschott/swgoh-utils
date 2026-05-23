@@ -15,12 +15,16 @@ public class PostgresCharacterRepository : ICharacterRepository
     _idGenerator = idGenerator;
   }
 
-  public async Task<Character> CreateCharacter(string name, IEnumerable<EarnableLocation> locations, bool isAccelerated)
+  public async Task<Character> CreateCharacter(string name,
+    IEnumerable<EarnableLocation> locations,
+    bool isAccelerated,
+    Marquee? marquee)
   {
     var character = new Character(_idGenerator.CreateId(),
       name,
       locations.ToList(),
-      isAccelerated);
+      isAccelerated,
+      marquee);
 
     await _dbContext.Characters.AddAsync(character);
     await _dbContext.SaveChangesAsync();

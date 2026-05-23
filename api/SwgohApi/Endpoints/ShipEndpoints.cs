@@ -48,8 +48,10 @@ public static class ShipEndpoints
     var locations = request.Locations.Select(earnableLocationMapper.MapFrom)
       .ToList();
 
+    // TODO: Allow setting marquee eventually
     var ship = await shipRepository.CreateShip(request.Name,
-      locations);
+      locations,
+      null);
 
     return TypedResults.Ok(shipMapper.MapTo(ship));
   }

@@ -15,15 +15,18 @@ public class PostgresShipRepository : IShipRepository
     _idGenerator = idGenerator;
   }
 
-  public async Task<Ship> CreateShip(string name, IEnumerable<EarnableLocation> locations)
+  public async Task<Ship> CreateShip(string name,
+    IEnumerable<EarnableLocation> locations,
+    Marquee? marquee)
   {
-    var Ship = new Ship(_idGenerator.CreateId(),
+    var ship = new Ship(_idGenerator.CreateId(),
       name,
-      locations.ToList());
+      locations.ToList(),
+      marquee);
 
-    await _dbContext.Ships.AddAsync(Ship);
+    await _dbContext.Ships.AddAsync(ship);
     await _dbContext.SaveChangesAsync();
-    return Ship;
+    return ship;
   }
 
   public async Task<Ship?> GetShipByName(string name)

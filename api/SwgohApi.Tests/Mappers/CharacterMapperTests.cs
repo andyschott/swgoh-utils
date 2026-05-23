@@ -1,3 +1,4 @@
+using AutoFixture;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
@@ -22,7 +23,7 @@ public sealed class CharacterMapperTests : IDisposable
 
   public void Dispose() =>  _mockRepository.VerifyAll();
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public void MapTo_Successful(InternalCharacter source,
     EarnableLocation[] destinationLocations)
   {
@@ -40,7 +41,7 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Equal(source.IsAccelerated, result.IsAccelerated);
   }
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public void MapFrom_Successful(Character source,
     InternalEarnableLocation[] destinationLocations)
   {
@@ -56,5 +57,31 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Equal(source.Name, result.Name);
     Assert.Equal(destinationLocations, result.Locations);
     Assert.Equal(source.IsAccelerated, result.IsAccelerated);
+  }
+
+  class AutoDomainDataAttribute : AutoDataAttribute
+  {
+    public AutoDomainDataAttribute()
+      : base(Customize)
+    {
+    }
+
+    private static IFixture Customize()
+    {
+      var fixture = new Fixture();
+
+      fixture.Register(() =>
+      {
+        var id = fixture.Create<string>();
+        var name = fixture.Create<string>();
+        var locations = fixture.CreateMany<InternalEarnableLocation>()
+          .ToList();
+        var isAccelerated = fixture.Create<bool>();
+
+        return new InternalCharacter(id, name, locations, isAccelerated, null);
+      });
+
+      return fixture;
+    }
   }
 }

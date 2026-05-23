@@ -1,3 +1,4 @@
+using AutoFixture;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
@@ -22,7 +23,7 @@ public sealed class ShipMapperTests : IDisposable
 
   public void Dispose() => _mockRepository.VerifyAll();
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public void MapTo_Successful(InternalShip source,
     EarnableLocation[] destinationLocations)
   {
@@ -39,7 +40,7 @@ public sealed class ShipMapperTests : IDisposable
     Assert.Equal(destinationLocations, result.Locations);
   }
 
-  [Theory, AutoData]
+  [Theory, AutoDomainData]
   public void MapFrom_Successful(Ship source,
     InternalEarnableLocation[] destinationLocations)
   {
@@ -54,5 +55,30 @@ public sealed class ShipMapperTests : IDisposable
     Assert.Equal(source.Id, result.Id);
     Assert.Equal(source.Name, result.Name);
     Assert.Equal(destinationLocations, result.Locations);
+  }
+
+  class AutoDomainDataAttribute : AutoDataAttribute
+  {
+    public AutoDomainDataAttribute()
+      : base(Customize)
+    {
+    }
+
+    private static IFixture Customize()
+    {
+      var fixture = new Fixture();
+
+      fixture.Register(() =>
+      {
+        var id = fixture.Create<string>();
+        var name = fixture.Create<string>();
+        var locations = fixture.CreateMany<InternalEarnableLocation>()
+          .ToList();
+
+        return new InternalShip(id, name, locations, null);
+      });
+
+      return fixture;
+    }
   }
 }

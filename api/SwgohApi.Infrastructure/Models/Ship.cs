@@ -4,8 +4,9 @@ public record Ship : Earnable
 {
   public Ship(string id,
     string name,
-    List<EarnableLocation> locations)
-  : base(id, name, locations)
+    List<EarnableLocation> locations,
+    Marquee? marquee)
+  : base(id, name, locations, marquee)
   {
   }
 
