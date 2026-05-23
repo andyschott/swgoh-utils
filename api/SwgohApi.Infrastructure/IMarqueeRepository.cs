@@ -11,4 +11,5 @@ public interface IMarqueeRepository
     DateOnly farmDate,
     DateOnly? accelerationDate);
   Task<Marquee?> GetMarquee(string id);
+  Task SaveMarquee(Marquee marquee);
 }

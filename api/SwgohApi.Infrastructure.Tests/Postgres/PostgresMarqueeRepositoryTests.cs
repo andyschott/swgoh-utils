@@ -106,6 +106,18 @@ public class PostgresMarqueeRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(result);
   }
 
+  [Theory, AutoDomainData]
+  public async Task SaveMarquee_Successful(Marquee marquee)
+  {
+    var mockMarqueesDbSet = CreateMockDbSet(dbContext => dbContext.Marquees);
+
+    var exception = await Record.ExceptionAsync(() => _repository.SaveMarquee(marquee));
+
+    Assert.Null(exception);
+    mockMarqueesDbSet.Verify(dbSet => dbSet.Update(marquee), Times.Once);
+    _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
+  }
+
   class AutoDomainDataAttribute : AutoDataAttribute
   {
     public AutoDomainDataAttribute()
