@@ -1,6 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
-using SwgohApi.Filters;
+using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
@@ -17,9 +17,17 @@ public static class ShipEndpoints
       .RequireAuthorization();
 
     ships.MapPost(string.Empty, CreateShip)
-      .AddEndpointFilter<RequireAdminEndpointFilter>();
+      .RequireAdmin();
 
-    ships.MapGet(string.Empty,  GetShips);
+    ships.MapGet(string.Empty, GetShips)
+      .AllowAnonymous();
+    ships.MapGet("/{id}",  GetShip)
+      .AllowAnonymous();
+    ships.MapGet("/name/{name}", GetShipByName)
+      .AllowAnonymous();
+
+    ships.MapPut("/{id}", UpdateShip)
+      .RequireAdmin();
 
     return app;
   }
@@ -53,5 +61,56 @@ public static class ShipEndpoints
     var ships = await shipRepository.GetShips();
 
     return TypedResults.Ok(ships.Select(shipMapper.MapTo));
+  }
+
+  public static async Task<Results<Ok<Ship>, ProblemHttpResult>> GetShip(string id,
+    IShipRepository shipRepository,
+    IMapper<InternalShip, Ship> shipMapper)
+  {
+    var ship = await shipRepository.GetShip(id);
+    if (ship is null)
+    {
+      return TypedResults.Problem(detail:"No ship with that ID exists.",
+        statusCode:(int)HttpStatusCode.NotFound);
+    }
+
+    return TypedResults.Ok(shipMapper.MapTo(ship));
+  }
+
+  public static async Task<Results<Ok<Ship>, ProblemHttpResult>> UpdateShip(string id,
+    UpdateShipRequest request,
+    IShipRepository shipRepository,
+    IMapper<InternalShip, Ship> shipMapper,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
+  {
+    var internalShip = await shipRepository.GetShip(id);
+    if (internalShip is null)
+    {
+      return TypedResults.Problem(detail:"No ship with that ID exists.",
+        statusCode:(int)HttpStatusCode.NotFound);
+    }
+
+    if (request.Locations is not null)
+    {
+      internalShip.Locations = request.Locations.Select(earnableLocationMapper.MapFrom)
+        .ToList();
+    }
+
+    await shipRepository.SaveShip(internalShip);
+    return TypedResults.Ok(shipMapper.MapTo(internalShip));
+  }
+
+  public static async Task<Results<Ok<Ship>, ProblemHttpResult>> GetShipByName(string name,
+    IShipRepository shipRepository,
+    IMapper<InternalShip, Ship> shipMapper)
+  {
+    var character = await shipRepository.GetShipByName(name);
+    if (character is null)
+    {
+      return TypedResults.Problem(detail:"No ship with that name exists.",
+        statusCode:(int)HttpStatusCode.NotFound);
+    }
+
+    return TypedResults.Ok(shipMapper.MapTo(character));
   }
 }

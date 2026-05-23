@@ -26,7 +26,7 @@ public static class UserEndpoints
       .AllowAnonymous();
     users.MapPut("/{id}", UpdateUser);
     users.MapPut("/{id}/updateAdmin", UpdateAdmin)
-      .AddEndpointFilter<RequireAdminEndpointFilter>();
+      .RequireAdmin();
     users.MapDelete("/{id}", DeleteUser);
 
     return app;

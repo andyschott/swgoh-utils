@@ -1,6 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
-using SwgohApi.Filters;
+using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
@@ -17,9 +17,17 @@ public static class CharacterEndpoints
       .RequireAuthorization();
 
     characters.MapPost(string.Empty, CreateCharacter)
-      .AddEndpointFilter<RequireAdminEndpointFilter>();
+      .RequireAdmin();
 
-    characters.MapGet(string.Empty,  GetCharacters);
+    characters.MapGet(string.Empty, GetCharacters)
+      .AllowAnonymous();
+    characters.MapGet("/{id}", GetCharacter)
+      .AllowAnonymous();
+    characters.MapGet("/name/{name}", GetCharacterByName)
+      .AllowAnonymous();
+
+    characters.MapPut("/{id}",  UpdateCharacter)
+      .RequireAdmin();
 
     return app;
   }
@@ -54,5 +62,61 @@ public static class CharacterEndpoints
     var characters = await characterRepository.GetCharacters();
 
     return TypedResults.Ok(characters.Select(characterMapper.MapTo));
+  }
+
+  public static async Task<Results<Ok<Character>, ProblemHttpResult>> GetCharacter(string id,
+    ICharacterRepository characterRepository,
+    IMapper<InternalCharacter, Character> characterMapper)
+  {
+    var character = await characterRepository.GetCharacter(id);
+    if (character is null)
+    {
+      return TypedResults.Problem(detail:"No character with that ID exists.",
+        statusCode:(int)HttpStatusCode.NotFound);
+    }
+
+    return TypedResults.Ok(characterMapper.MapTo(character));
+  }
+
+  public static async Task<Results<Ok<Character>, ProblemHttpResult>> UpdateCharacter(string id,
+    UpdateCharacterRequest request,
+    ICharacterRepository characterRepository,
+    IMapper<InternalCharacter, Character> characterMapper,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
+  {
+    var internalCharacter = await characterRepository.GetCharacter(id);
+    if (internalCharacter is null)
+    {
+      return TypedResults.Problem(detail:"No character with that ID exists.",
+        statusCode:(int)HttpStatusCode.NotFound);
+    }
+
+    if (request.Locations is not null)
+    {
+      internalCharacter.Locations = request.Locations.Select(earnableLocationMapper.MapFrom)
+        .ToList();
+    }
+
+    if (request.IsAccelerated is not null)
+    {
+      internalCharacter.IsAccelerated = request.IsAccelerated.Value;
+    }
+
+    await characterRepository.SaveCharacter(internalCharacter);
+    return TypedResults.Ok(characterMapper.MapTo(internalCharacter));
+  }
+
+  public static async Task<Results<Ok<Character>, ProblemHttpResult>> GetCharacterByName(string name,
+    ICharacterRepository characterRepository,
+    IMapper<InternalCharacter, Character> characterMapper)
+  {
+    var character = await characterRepository.GetCharacterByName(name);
+    if (character is null)
+    {
+      return TypedResults.Problem(detail:"No character with that name exists.",
+        statusCode:(int)HttpStatusCode.NotFound);
+    }
+
+    return TypedResults.Ok(characterMapper.MapTo(character));
   }
 }

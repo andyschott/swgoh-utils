@@ -105,4 +105,78 @@ public sealed class ShipEndpointTests : IDisposable
 
     Assert.Equal(ships, okResult.Value);
   }
+
+  [Theory, AutoData]
+  public async Task GetShip_Successful(InternalShip internalShip,
+    Ship ship)
+  {
+    _mockShipRepository.Setup(repository => repository.GetShip(internalShip.Id))
+      .ReturnsAsync(internalShip);
+    _mockShipMapper.Setup(mapper => mapper.MapTo(internalShip))
+      .Returns(ship);
+
+    var response = await ShipEndpoints.GetShip(internalShip.Id,
+      _mockShipRepository.Object,
+      _mockShipMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Ship>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Ship>>(result.Result);
+
+    Assert.Same(ship, okResult.Value);
+  }
+
+  [Theory, AutoData]
+  public async Task GetShip_ShipNotFound_ReturnsNotFound(string id)
+  {
+    _mockShipRepository.Setup(repository => repository.GetShip(id))
+      .ReturnsAsync((InternalShip?)null);
+
+    var response = await ShipEndpoints.GetShip(id,
+      _mockShipRepository.Object,
+      _mockShipMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Ship>, ProblemHttpResult>>(response);
+    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
+
+    Assert.NotNull(problemResult.ProblemDetails.Detail);
+    Assert.NotEmpty(problemResult.ProblemDetails.Detail);
+    Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
+  }
+
+  [Theory, AutoData]
+  public async Task GetShipByName_Successful(InternalShip internalShip,
+    Ship ship)
+  {
+    _mockShipRepository.Setup(repository => repository.GetShipByName(internalShip.Name))
+      .ReturnsAsync(internalShip);
+    _mockShipMapper.Setup(mapper => mapper.MapTo(internalShip))
+      .Returns(ship);
+
+    var response = await ShipEndpoints.GetShipByName(internalShip.Name,
+      _mockShipRepository.Object,
+      _mockShipMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Ship>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Ship>>(result.Result);
+
+    Assert.Same(ship, okResult.Value);
+  }
+
+  [Theory, AutoData]
+  public async Task GetShip_ShipByNameNotFound_ReturnsNotFound(string name)
+  {
+    _mockShipRepository.Setup(repository => repository.GetShipByName(name))
+      .ReturnsAsync((InternalShip?)null);
+
+    var response = await ShipEndpoints.GetShipByName(name,
+      _mockShipRepository.Object,
+      _mockShipMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Ship>, ProblemHttpResult>>(response);
+    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
+
+    Assert.NotNull(problemResult.ProblemDetails.Detail);
+    Assert.NotEmpty(problemResult.ProblemDetails.Detail);
+    Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
+  }
 }

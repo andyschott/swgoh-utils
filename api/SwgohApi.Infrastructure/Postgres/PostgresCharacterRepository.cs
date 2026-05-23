@@ -37,4 +37,16 @@ public class PostgresCharacterRepository : ICharacterRepository
   {
     return await _dbContext.Characters.ToListAsync();
   }
+
+  public async Task<Character?> GetCharacter(string id)
+  {
+    return await _dbContext.Characters
+      .FirstOrDefaultAsync(c => c.Id == id);
+  }
+
+  public async Task SaveCharacter(Character character)
+  {
+    _dbContext.Characters.Update(character);
+    await _dbContext.SaveChangesAsync();
+  }
 }
