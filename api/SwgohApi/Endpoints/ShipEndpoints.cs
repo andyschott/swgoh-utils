@@ -11,8 +11,7 @@ namespace SwgohApi.Endpoints;
 
 public static class ShipEndpoints
 {
-  public static WebApplication MapShipEndpoints(this WebApplication app,
-    bool allowCreation)
+  public static WebApplication MapShipEndpoints(this WebApplication app)
   {
     var ships = app.MapGroup("/ships")
       .RequireAuthorization();

@@ -11,8 +11,7 @@ namespace SwgohApi.Endpoints;
 
 public static class CharacterEndpoints
 {
-  public static WebApplication MapCharacterEndpoints(this WebApplication app,
-    bool allowCreation)
+  public static WebApplication MapCharacterEndpoints(this WebApplication app)
   {
     var characters = app.MapGroup("/characters")
       .RequireAuthorization();

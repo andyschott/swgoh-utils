@@ -2,6 +2,8 @@ using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
+using SwgohApi.Configuration;
 using SwgohApi.Extensions;
 using SwgohApi.Filters;
 using SwgohApi.Infrastructure;
@@ -14,18 +16,14 @@ namespace SwgohApi.Endpoints;
 
 public static class UserEndpoints
 {
-  public static WebApplication MapUserEndpoints(this WebApplication app,
-    bool allowCreation)
+  public static WebApplication MapUserEndpoints(this WebApplication app)
   {
     var users = app.MapGroup("/users")
       .RequireAuthorization();
 
     users.MapGet(string.Empty, GetUsers);
-    if (allowCreation)
-    {
-      users.MapPost(string.Empty, CreateUser)
-        .AllowAnonymous();
-    }
+    users.MapPost(string.Empty, CreateUser)
+      .AllowAnonymous();
     users.MapPut("/{id}", UpdateUser);
     users.MapPut("/{id}/updateAdmin", UpdateAdmin)
       .AddEndpointFilter<RequireAdminEndpointFilter>();
@@ -47,8 +45,14 @@ public static class UserEndpoints
   public static async Task<Results<Ok<UserDto>, ProblemHttpResult>> CreateUser(
     CreateUserRequest request,
     IUserRepository userRepository,
-    IMapper<User, UserDto> userMapper)
+    IMapper<User, UserDto> userMapper,
+    IOptions<UserEndpointsConfiguration> config)
   {
+    if (config.Value.CreateUsersKey != request.Key)
+    {
+      return TypedResults.Problem(statusCode: (int)HttpStatusCode.Forbidden);
+    }
+
     var existingUser = await userRepository.GetUserByEmail(request.Email);
     if (existingUser is not null)
     {

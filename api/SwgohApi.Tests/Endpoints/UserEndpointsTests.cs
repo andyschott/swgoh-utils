@@ -3,6 +3,8 @@ using AutoFixture;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using SwgohApi.Configuration;
 using SwgohApi.Endpoints;
 using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
@@ -65,16 +67,23 @@ public sealed class UserEndpointsTests : IDisposable
   public async Task CreateUser_Successful(CreateUserRequest request, User user,
     UserDto responseUser)
   {
+    var mockConfig = _mockRepository.Create<IOptions<UserEndpointsConfiguration>>();
+    mockConfig.Setup(options => options.Value)
+      .Returns(new UserEndpointsConfiguration
+      {
+        CreateUsersKey = request.Key
+      });
+
     _mockUserRepository.Setup(repository => repository.GetUserByEmail(request.Email))
       .ReturnsAsync((User?)null);
     _mockUserRepository.Setup(repository => repository.CreateUser(request.Email, request.Password))
       .ReturnsAsync(user);
     _mockUserMapper.Setup(mapper => mapper.MapTo(user))
       .Returns(responseUser);
-
     var response = await UserEndpoints.CreateUser(request,
       _mockUserRepository.Object,
-      _mockUserMapper.Object);
+      _mockUserMapper.Object,
+      mockConfig.Object);
 
     var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
     var okResult = Assert.IsType<Ok<UserDto>>(result.Result);
@@ -83,15 +92,69 @@ public sealed class UserEndpointsTests : IDisposable
   }
 
   [Theory, AutoData]
+  public async Task CreateUser_InvalidKey_ReturnsForbidden(CreateUserRequest request,
+    string key)
+  {
+    var mockConfig = _mockRepository.Create<IOptions<UserEndpointsConfiguration>>();
+    mockConfig.Setup(options => options.Value)
+      .Returns(new UserEndpointsConfiguration
+      {
+        CreateUsersKey = key
+      });
+
+    var response = await UserEndpoints.CreateUser(request,
+      _mockUserRepository.Object,
+      _mockUserMapper.Object,
+      mockConfig.Object);
+
+    var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
+    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
+
+    Assert.Equal((int)HttpStatusCode.Forbidden, problemResult.StatusCode);
+  }
+
+  [Theory, AutoData]
+  public async Task CreateUser_MissingKey_ReturnsForbidden(string key,
+    IFixture fixture)
+  {
+    var mockConfig = _mockRepository.Create<IOptions<UserEndpointsConfiguration>>();
+    mockConfig.Setup(options => options.Value)
+      .Returns(new UserEndpointsConfiguration
+      {
+        CreateUsersKey = key
+      });
+
+    var request = fixture.Build<CreateUserRequest>()
+      .With(request => request.Key, (string?)null)
+      .Create();
+    var response = await UserEndpoints.CreateUser(request,
+      _mockUserRepository.Object,
+      _mockUserMapper.Object,
+      mockConfig.Object);
+
+    var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
+    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
+
+    Assert.Equal((int)HttpStatusCode.Forbidden, problemResult.StatusCode);
+  }
+
+  [Theory, AutoData]
   public async Task CreateUser_UserAlreadyExists_ReturnsBadRequest(CreateUserRequest request,
     User user)
   {
+    var mockConfig = _mockRepository.Create<IOptions<UserEndpointsConfiguration>>();
+    mockConfig.Setup(options => options.Value)
+      .Returns(new UserEndpointsConfiguration
+      {
+        CreateUsersKey = request.Key
+      });
     _mockUserRepository.Setup(repository => repository.GetUserByEmail(request.Email))
       .ReturnsAsync(user);
 
     var response = await UserEndpoints.CreateUser(request,
       _mockUserRepository.Object,
-      _mockUserMapper.Object);
+      _mockUserMapper.Object,
+      mockConfig.Object);
 
     var result = Assert.IsType<Results<Ok<UserDto>, ProblemHttpResult>>(response);
     var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);

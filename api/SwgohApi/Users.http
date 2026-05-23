@@ -4,7 +4,8 @@ Authorization: Bearer {{auth_token}}
 
 {
   "email": "test@example.com",
-  "password": "my-awesome-password"
+  "password": "my-awesome-password",
+  "key": "e8a64643-7001-4735-899a-dd4405b56cc8"
 }
 ###
 
