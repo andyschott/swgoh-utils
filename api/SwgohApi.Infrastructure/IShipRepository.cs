@@ -9,4 +9,5 @@ public interface IShipRepository
   Task<Ship?> GetShipByName(string name);
   Task<IEnumerable<Ship>> GetShips();
   Task<Ship?> GetShip(string id);
+  Task SaveShip(Ship ship);
 }

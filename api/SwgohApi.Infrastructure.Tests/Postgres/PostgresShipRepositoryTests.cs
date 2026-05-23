@@ -71,4 +71,15 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
 
     Assert.Null(result);
   }
+
+  [Theory, AutoData]
+  public async Task SaveShip_Successful(Ship ship)
+  {
+    SetupMockEntities(dbContext => dbContext.Ships, [ship]);
+
+    var exception = await Record.ExceptionAsync(() => _repository.SaveShip(ship));
+
+    Assert.Null(exception);
+    _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
+  }
 }

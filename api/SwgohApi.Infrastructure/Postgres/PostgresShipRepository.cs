@@ -42,4 +42,10 @@ public class PostgresShipRepository : IShipRepository
     return _dbContext.Ships
       .FirstOrDefaultAsync(c => c.Id == id);
   }
+
+  public async Task SaveShip(Ship ship)
+  {
+    _dbContext.Ships.Update(ship);
+    await _dbContext.SaveChangesAsync();
+  }
 }

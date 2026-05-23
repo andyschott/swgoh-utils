@@ -1,7 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SwgohApi.Extensions;
-using SwgohApi.Filters;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;

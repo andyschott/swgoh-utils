@@ -1,7 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SwgohApi.Extensions;
-using SwgohApi.Filters;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
@@ -24,6 +23,9 @@ public static class ShipEndpoints
       .AllowAnonymous();
     ships.MapGet("/{id}",  GetShip)
       .AllowAnonymous();
+
+    ships.MapPut("/{id}", UpdateShip)
+      .RequireAdmin();
 
     return app;
   }
@@ -71,4 +73,28 @@ public static class ShipEndpoints
     }
 
     return TypedResults.Ok(shipMapper.MapTo(ship));
-  }}
+  }
+
+  public static async Task<Results<Ok<Ship>, ProblemHttpResult>> UpdateShip(string id,
+    UpdateShipRequest request,
+    IShipRepository shipRepository,
+    IMapper<InternalShip, Ship> shipMapper,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
+  {
+    var internalShip = await shipRepository.GetShip(id);
+    if (internalShip is null)
+    {
+      return TypedResults.Problem(detail:"No ship with that ID exists.",
+        statusCode:(int)HttpStatusCode.NotFound);
+    }
+
+    if (request.Locations is not null)
+    {
+      internalShip.Locations = request.Locations.Select(earnableLocationMapper.MapFrom)
+        .ToList();
+    }
+
+    await shipRepository.SaveShip(internalShip);
+    return TypedResults.Ok(shipMapper.MapTo(internalShip));
+  }
+}

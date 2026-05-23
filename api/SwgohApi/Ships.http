@@ -15,3 +15,13 @@ Authorization: Bearer {{auth_token}}
 GET {{SwgohApi.BaseAddress}}/ships/39bb7800-682a-4ca1-847a-709f870e5580
 
 ###
+
+PUT {{SwgohApi.BaseAddress}}/ships/c8f8e30d-604d-42ae-bbb9-553d8804bb90
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "locations": []
+}
+
+###
