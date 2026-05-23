@@ -1,0 +1,44 @@
+<main class="characters-layout">
+  <section class="characters-card" aria-labelledby="characters-title">
+    <h1 id="characters-title">Characters</h1>
+
+    <div class="search-control">
+      <input
+        id="characters-search"
+        type="search"
+        aria-label="Search characters"
+        placeholder="Type a character name"
+        [value]="searchTerm()"
+        (input)="onSearchInput($event)"
+      />
+    </div>
+
+    <div class="table-container">
+      <table>
+        <caption class="visually-hidden">
+          All characters in the game with acceleration and earnable locations
+        </caption>
+        <thead>
+          <tr>
+            <th scope="col">Character</th>
+            <th scope="col">Accelerated</th>
+            <th scope="col">Locations</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (row of filteredRows(); track row.id) {
+            <tr>
+              <th scope="row">{{ row.name }}</th>
+              <td>{{ row.isAccelerated ? 'Yes' : 'No' }}</td>
+              <td>{{ row.locations | earnableLocations }}</td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="3">No characters match the current search.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </section>
+</main>

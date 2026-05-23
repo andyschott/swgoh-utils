@@ -14,9 +14,9 @@ describe('Home', () => {
           useValue: {
             getUsers: (): ReturnType<UserApiService['getUsers']> =>
               of<UserDto[]>([
-                { id: 'u-1', email: 'first@example.com' },
-                { id: 'u-2', email: 'second@example.com' },
-                { id: 'u-3', email: 'third@example.com' },
+                { id: 'u-1', email: 'first@example.com', isAdmin: false },
+                { id: 'u-2', email: 'second@example.com', isAdmin: true },
+                { id: 'u-3', email: 'third@example.com', isAdmin: false },
               ]),
           },
         },

@@ -3,8 +3,8 @@
  * Any changes made to this file can be lost when this file is regenerated.
  */
 
-export interface UserDto {
-    id: string;
-    email: string;
-    isAdmin: boolean;
+import { Earnable } from "./earnable";
+
+export interface Character extends Earnable {
+    isAccelerated: boolean;
 }

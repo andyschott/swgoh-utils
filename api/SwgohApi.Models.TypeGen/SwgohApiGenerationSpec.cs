@@ -6,12 +6,19 @@ public class SwgohApiGenerationSpec : GenerationSpec
 {
   public override void OnBeforeGeneration(OnBeforeGenerationArgs args)
   {
-    var assembly = typeof(SwgohApi.Models.Users.UserDto).Assembly;
+    var assembly = typeof(Users.UserDto).Assembly;
     var types = assembly.GetTypes();
 
     foreach (var type in types)
     {
-      AddInterface(type);
+      if (type.IsEnum)
+      {
+        AddEnum(type);
+      }
+      else
+      {
+        AddInterface(type);
+      }
     }
 
     base.OnBeforeGeneration(args);

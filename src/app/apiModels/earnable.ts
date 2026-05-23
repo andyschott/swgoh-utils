@@ -3,8 +3,10 @@
  * Any changes made to this file can be lost when this file is regenerated.
  */
 
-export interface UserDto {
+import { EarnableLocation } from "./earnable-location";
+
+export interface Earnable {
     id: string;
-    email: string;
-    isAdmin: boolean;
+    name: string;
+    locations: EarnableLocation[];
 }

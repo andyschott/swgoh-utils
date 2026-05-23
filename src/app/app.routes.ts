@@ -38,6 +38,18 @@ export const routes: Routes = [
       import('./features/marquee-dates/marquee-dates').then((module) => module.MarqueeDatesPage),
   },
   {
+    path: 'characters',
+    data: { navLabel: 'Characters' } satisfies AppNavData,
+    loadComponent: () =>
+      import('./features/characters-page/characters-page').then((module) => module.CharactersPage),
+  },
+  {
+    path: 'ships',
+    data: { navLabel: 'Ships' } satisfies AppNavData,
+    loadComponent: () =>
+      import('./features/ships-page/ships-page').then((module) => module.ShipsPage),
+  },
+  {
     path: 'signal-data-farming',
     data: { navLabel: 'Signal Data Farming' } satisfies AppNavData,
     loadComponent: () =>
