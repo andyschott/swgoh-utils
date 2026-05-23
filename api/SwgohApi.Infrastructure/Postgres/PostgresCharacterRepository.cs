@@ -36,6 +36,7 @@ public class PostgresCharacterRepository : ICharacterRepository
   public async Task<Character?> GetCharacterByName(string name)
   {
     return await _dbContext.Characters
+      .Include(c => c.Marquee)
       .FirstOrDefaultAsync(c => c.Name == name);
   }
 
@@ -47,6 +48,7 @@ public class PostgresCharacterRepository : ICharacterRepository
   public async Task<Character?> GetCharacter(string id)
   {
     return await _dbContext.Characters
+      .Include(c => c.Marquee)
       .FirstOrDefaultAsync(c => c.Id == id);
   }
 

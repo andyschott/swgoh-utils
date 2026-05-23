@@ -35,6 +35,7 @@ public class PostgresShipRepository : IShipRepository
   public async Task<Ship?> GetShipByName(string name)
   {
     return await _dbContext.Ships
+      .Include(s => s.Marquee)
       .FirstOrDefaultAsync(c => c.Name == name);
   }
 
@@ -46,6 +47,7 @@ public class PostgresShipRepository : IShipRepository
   public Task<Ship?> GetShip(string id)
   {
     return _dbContext.Ships
+      .Include(s => s.Marquee)
       .FirstOrDefaultAsync(c => c.Id == id);
   }
 
