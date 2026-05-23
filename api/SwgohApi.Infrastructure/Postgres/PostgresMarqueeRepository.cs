@@ -59,6 +59,14 @@ public class PostgresMarqueeRepository : IMarqueeRepository
       .FirstOrDefaultAsync(m => m.Id == id);
   }
 
+  public async Task<IEnumerable<Marquee>> GetMarquees()
+  {
+    return await _dbContext.Marquees
+      .Include(m => m.Character)
+      .Include(m => m.Ship)
+      .ToListAsync();
+  }
+
   public async Task SaveMarquee(Marquee marquee)
   {
     _dbContext.Marquees.Update(marquee);

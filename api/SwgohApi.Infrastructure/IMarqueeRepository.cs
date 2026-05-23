@@ -10,6 +10,7 @@ public interface IMarqueeRepository
     DateOnly shipmentDate,
     DateOnly farmDate,
     DateOnly? accelerationDate);
+  Task<IEnumerable<Marquee>> GetMarquees();
   Task<Marquee?> GetMarquee(string id);
   Task SaveMarquee(Marquee marquee);
 }
