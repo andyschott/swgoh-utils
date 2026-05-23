@@ -9,4 +9,5 @@ public interface ICharacterRepository
     bool isAccelerated);
   Task<Character?> GetCharacterByName(string name);
   Task<IEnumerable<Character>> GetCharacters();
+  Task<Character?> GetCharacter(string id);
 }

@@ -52,4 +52,25 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
 
     Assert.Null(result);
   }
+
+  [Theory, AutoData]
+  public async Task GetCharacterBy_Successful(Character character)
+  {
+    SetupMockEntities(dbContext => dbContext.Characters, [character]);
+
+    var result = await _repository.GetCharacter(character.Id);
+
+    Assert.Same(character, result);
+  }
+
+  [Theory, AutoData]
+  public async Task GetCharacter_NotFound_ReturnsNull(Character character,
+    string id)
+  {
+    SetupMockEntities(dbContext => dbContext.Characters, [character]);
+
+    var result = await _repository.GetCharacter(id);
+
+    Assert.Null(result);
+  }
 }

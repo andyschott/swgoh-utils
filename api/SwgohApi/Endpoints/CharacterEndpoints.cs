@@ -19,7 +19,10 @@ public static class CharacterEndpoints
     characters.MapPost(string.Empty, CreateCharacter)
       .AddEndpointFilter<RequireAdminEndpointFilter>();
 
-    characters.MapGet(string.Empty,  GetCharacters);
+    characters.MapGet(string.Empty, GetCharacters)
+      .AllowAnonymous();
+    characters.MapGet("/{id}", GetCharacter)
+      .AllowAnonymous();
 
     return app;
   }
@@ -54,5 +57,19 @@ public static class CharacterEndpoints
     var characters = await characterRepository.GetCharacters();
 
     return TypedResults.Ok(characters.Select(characterMapper.MapTo));
+  }
+
+  public static async Task<Results<Ok<Character>, ProblemHttpResult>> GetCharacter(string id,
+    ICharacterRepository characterRepository,
+    IMapper<InternalCharacter, Character> characterMapper)
+  {
+    var character = await characterRepository.GetCharacter(id);
+    if (character is null)
+    {
+      return TypedResults.Problem(detail:"No character with that ID exists.",
+        statusCode:(int)HttpStatusCode.NotFound);
+    }
+
+    return TypedResults.Ok(characterMapper.MapTo(character));
   }
 }

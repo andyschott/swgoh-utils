@@ -36,4 +36,10 @@ public class PostgresShipRepository : IShipRepository
   {
     return await _dbContext.Ships.ToListAsync();
   }
+
+  public Task<Ship?> GetShip(string id)
+  {
+    return _dbContext.Ships
+      .FirstOrDefaultAsync(c => c.Id == id);
+  }
 }

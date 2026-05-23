@@ -31,22 +31,43 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
   }
 
   [Theory, AutoData]
-  public async Task GetShipByName_Successful(Ship Ship)
+  public async Task GetShipByName_Successful(Ship ship)
   {
-    SetupMockEntities(dbContext => dbContext.Ships, [Ship]);
+    SetupMockEntities(dbContext => dbContext.Ships, [ship]);
 
-    var result = await _repository.GetShipByName(Ship.Name);
+    var result = await _repository.GetShipByName(ship.Name);
 
-    Assert.Same(Ship, result);
+    Assert.Same(ship, result);
   }
 
   [Theory, AutoData]
-  public async Task GetShipByName_NotFound_ReturnsNull(Ship Ship,
+  public async Task GetShipByName_NotFound_ReturnsNull(Ship ship,
     string name)
   {
-    SetupMockEntities(dbContext => dbContext.Ships, [Ship]);
+    SetupMockEntities(dbContext => dbContext.Ships, [ship]);
 
     var result = await _repository.GetShipByName(name);
+
+    Assert.Null(result);
+  }
+
+  [Theory, AutoData]
+  public async Task GetShip_Successful(Ship ship)
+  {
+    SetupMockEntities(dbContext => dbContext.Ships, [ship]);
+
+    var result = await _repository.GetShip(ship.Id);
+
+    Assert.Same(ship, result);
+  }
+
+  [Theory, AutoData]
+  public async Task GetShip_NotFound_ReturnsNull(Ship ship,
+    string id)
+  {
+    SetupMockEntities(dbContext => dbContext.Ships, [ship]);
+
+    var result = await _repository.GetShip(id);
 
     Assert.Null(result);
   }
