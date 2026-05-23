@@ -14,6 +14,7 @@ public class PostgresDbContext : DbContext, IPostgresDbContext
   public DbSet<RefreshToken> RefreshTokens { get; set; }
   public DbSet<Character> Characters { get; set; }
   public DbSet<Ship> Ships { get; set; }
+  public DbSet<Marquee> Marquees { get; set; }
 
   Task<int> IPostgresDbContext.SaveChangesAsync() => base.SaveChangesAsync();
 

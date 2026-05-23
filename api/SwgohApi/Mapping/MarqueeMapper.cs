@@ -17,13 +17,14 @@ public class MarqueeMapper : IMapper<InternalMarquee, Marquee>
 
   public InternalMarquee MapFrom(Marquee destination)
   {
-    return new InternalMarquee(destination.Id,
-      null,
-      null,
-      destination.IntroductionDate,
-      destination.MarqueeEventDate,
-      destination.ShipmentDate,
-      destination.FarmDate,
-      destination.AccelerationDate);
+    return new InternalMarquee
+    {
+      Id = destination.Id,
+      IntroductionDate = destination.IntroductionDate,
+      MarqueeEventDate = destination.MarqueeEventDate,
+      ShipmentDate = destination.ShipmentDate,
+      FarmDate = destination.FarmDate,
+      AccelerationDate = destination.AccelerationDate,
+    };
   }
 }

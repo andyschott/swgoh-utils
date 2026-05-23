@@ -15,9 +15,9 @@ public static class ServiceConfiguration
     services.AddDbContextPool<PostgresDbContext>(options =>
     {
       options.UseNpgsql(configuration.ConnectionString,
-        options =>
+        postgresOptions =>
         {
-          options.SetPostgresVersion(18, 0);
+          postgresOptions.SetPostgresVersion(18, 0);
         });
     });
     services.AddScoped<IPostgresDbContext>(provider =>
@@ -26,7 +26,8 @@ public static class ServiceConfiguration
     services.AddScoped<IUserRepository, PostgresUserRepository>()
       .AddScoped<ITokenRepository, PostgresTokenRepository>()
       .AddScoped<ICharacterRepository, PostgresCharacterRepository>()
-      .AddScoped<IShipRepository, PostgresShipRepository>();
+      .AddScoped<IShipRepository, PostgresShipRepository>()
+      .AddScoped<IMarqueeRepository, PostgresMarqueeRepository>();
 
     return services;
   }

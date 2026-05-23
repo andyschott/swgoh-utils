@@ -9,6 +9,7 @@ public interface IPostgresDbContext
   DbSet<RefreshToken> RefreshTokens { get; }
   DbSet<Character> Characters { get; }
   DbSet<Ship> Ships { get; }
+  DbSet<Marquee> Marquees { get; }
 
   Task<int> SaveChangesAsync();
 }
