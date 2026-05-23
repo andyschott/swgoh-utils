@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SwgohApi.Infrastructure.Models;
 
 namespace SwgohApi.Infrastructure.Postgres;
@@ -50,5 +51,11 @@ public class PostgresMarqueeRepository : IMarqueeRepository
     await _dbContext.Marquees.AddAsync(marquee);
     await _dbContext.SaveChangesAsync();
     return marquee;
+  }
+
+  public async Task<Marquee?> GetMarquee(string id)
+  {
+    return await _dbContext.Marquees
+      .FirstOrDefaultAsync(m => m.Id == id);
   }
 }

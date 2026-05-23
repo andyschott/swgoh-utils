@@ -85,6 +85,27 @@ public class PostgresMarqueeRepositoryTests : AbstractPostgresRepositoryTests
     _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
   }
 
+  [Theory, AutoDomainData]
+  public async Task GetMarquee_Successful(Marquee marquee)
+  {
+    SetupMockEntities(dbContext => dbContext.Marquees, [marquee]);
+
+    var result = await _repository.GetMarquee(marquee.Id);
+
+    Assert.Same(marquee, result);
+  }
+
+  [Theory, AutoDomainData]
+  public async Task GetMarquee_NotFound_ReturnsNull(Marquee marquee,
+    string id)
+  {
+    SetupMockEntities(dbContext => dbContext.Marquees, [marquee]);
+
+    var result = await _repository.GetMarquee(id);
+
+    Assert.Null(result);
+  }
+
   class AutoDomainDataAttribute : AutoDataAttribute
   {
     public AutoDomainDataAttribute()

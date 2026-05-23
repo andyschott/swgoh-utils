@@ -10,4 +10,5 @@ public interface IMarqueeRepository
     DateOnly shipmentDate,
     DateOnly farmDate,
     DateOnly? accelerationDate);
+  Task<Marquee?> GetMarquee(string id);
 }
