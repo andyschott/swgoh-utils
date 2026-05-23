@@ -1,7 +1,7 @@
 using AutoFixture;
 using SwgohApi.Infrastructure.Models;
 
-namespace SwgohApi.Infrastructure.Tests.Customizations;
+namespace SwgohApi.TestUtilities.Customizations;
 
 public class MarqueeCustomization : ICustomization
 {
@@ -10,5 +10,6 @@ public class MarqueeCustomization : ICustomization
     fixture.Customize<Marquee>(composer => composer
       .Without(m => m.Character)
       .Without(m => m.Ship));
+    fixture.Customize(new DateOnlyCustomization());
   }
 }

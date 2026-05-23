@@ -1,7 +1,7 @@
 using AutoFixture;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
-using SwgohApi.Infrastructure.Tests.Customizations;
+using SwgohApi.TestUtilities.Customizations;
 
 namespace SwgohApi.Infrastructure.Tests.Postgres;
 
@@ -127,7 +127,6 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
       var fixture = new Fixture();
 
       fixture.Customize(new MarqueeCustomization());
-      fixture.Customize(new DateOnlyCustomization());
 
 
       return fixture;

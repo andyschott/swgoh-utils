@@ -1,6 +1,6 @@
 using AutoFixture;
 
-namespace SwgohApi.Infrastructure.Tests.Customizations;
+namespace SwgohApi.TestUtilities.Customizations;
 
 public class DateOnlyCustomization : ICustomization
 {

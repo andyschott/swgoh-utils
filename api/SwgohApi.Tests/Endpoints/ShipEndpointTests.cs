@@ -5,6 +5,7 @@ using SwgohApi.Endpoints;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
+using SwgohApi.TestUtilities.Customizations;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
 
@@ -193,8 +194,7 @@ public sealed class ShipEndpointTests : IDisposable
     {
       var fixture = new Fixture();
 
-      fixture.Customize<InternalShip>(composer => composer
-        .Without(s => s.Marquee));
+      fixture.Customize(new MarqueeCustomization());
 
       return fixture;
     }

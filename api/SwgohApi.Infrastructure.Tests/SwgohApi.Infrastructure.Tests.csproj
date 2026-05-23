@@ -22,6 +22,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SwgohApi.Infrastructure\SwgohApi.Infrastructure.csproj" />
+      <ProjectReference Include="..\SwgohApi.TestUtilities\SwgohApi.TestUtilities.csproj" />
     </ItemGroup>
 
 </Project>

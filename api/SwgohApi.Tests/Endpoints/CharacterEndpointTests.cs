@@ -1,11 +1,11 @@
 using System.Net;
 using AutoFixture;
-using Microsoft.ApplicationInsights;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SwgohApi.Endpoints;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
+using SwgohApi.TestUtilities.Customizations;
 using Character = SwgohApi.Models.Earnables.Character;
 using EarnableLocation = SwgohApi.Models.Earnables.EarnableLocation;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
@@ -253,8 +253,7 @@ public sealed class CharacterEndpointTests : IDisposable
     {
       var fixture = new Fixture();
 
-      fixture.Customize<InternalCharacter>(composer => composer
-        .Without(c => c.Marquee));
+      fixture.Customize(new MarqueeCustomization());
 
       return fixture;
     }

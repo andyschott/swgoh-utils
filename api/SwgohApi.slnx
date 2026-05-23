@@ -4,5 +4,6 @@
   <Project Path="SwgohApi.Models.TypeGen/SwgohApi.Models.TypeGen.csproj" />
   <Project Path="SwgohApi.Models/SwgohApi.Models.csproj" />
   <Project Path="SwgohApi.Tests/SwgohApi.Tests.csproj" />
+  <Project Path="SwgohApi.TestUtilities/SwgohApi.TestUtilities.csproj" />
   <Project Path="SwgohApi/SwgohApi.csproj" />
 </Solution>
