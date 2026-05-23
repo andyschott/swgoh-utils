@@ -24,6 +24,8 @@ if (allowedOrigins is null)
   throw new Exception("AllowedOrigins configuration is missing");
 }
 
+builder.Services.Configure<UserEndpointsConfiguration>(builder.Configuration.GetSection("UserEndpoints"));
+
 builder.Services.AddCors(options =>
 {
   options.AddPolicy(CorsPolicy, policy =>
@@ -81,9 +83,6 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddOpenApi();
 
-var allowCreation = builder.Configuration.GetSection("AllowCreation")
-  .Get<bool>();
-
 var app = builder.Build();
 
 app.UseCors(CorsPolicy);
@@ -105,10 +104,10 @@ app.UseExceptionHandler(exceptionApp =>
 
 app.UseMiddleware<RequestingUserMiddleware>();
 
-app.MapUserEndpoints(allowCreation)
+app.MapUserEndpoints()
   .MapAuthEndpoints()
-  .MapCharacterEndpoints(allowCreation)
-  .MapShipEndpoints(allowCreation);
+  .MapCharacterEndpoints()
+  .MapShipEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
