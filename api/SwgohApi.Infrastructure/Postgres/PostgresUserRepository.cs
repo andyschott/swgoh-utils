@@ -26,9 +26,12 @@ public class PostgresUserRepository : IUserRepository
 
   public async Task<User> CreateUser(string email, string password)
   {
-    var user = new User(_idGenerator.CreateId(),
-      email,
-      string.Empty);
+    var user = new User
+    {
+      Id = _idGenerator.CreateId(),
+      Email = email,
+      IsAdmin = false,
+    };
 
     user.Password = _passwordHasher.HashPassword(user, password);
 
