@@ -1,3 +1,9 @@
 {
-    "generationSpecs": ["SwgohApiGenerationSpec"]
+  "generationSpecs": [
+    "SwgohApiGenerationSpec"
+  ],
+  "csNullableTranslation": "null",
+  "customTypeMappings": {
+    "System.DateOnly": "Date"
+  }
 }
