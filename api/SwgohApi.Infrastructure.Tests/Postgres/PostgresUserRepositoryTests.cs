@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
+using SwgohApi.TestUtilities;
 
 namespace SwgohApi.Infrastructure.Tests.Postgres;
 
@@ -19,7 +20,7 @@ public class PostgresUserRepositoryTests : AbstractPostgresRepositoryTests
       _mockPasswordHasher.Object);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task GetUsers_Successful(User[] users)
   {
     SetupMockEntities(dbContext => dbContext.Users, users);
@@ -34,7 +35,7 @@ public class PostgresUserRepositoryTests : AbstractPostgresRepositoryTests
     });
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateUser_Successful(string id,
     string email,
     string password,
@@ -58,7 +59,7 @@ public class PostgresUserRepositoryTests : AbstractPostgresRepositoryTests
     _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task GetUserByEmail_Successful(User user)
   {
     SetupMockEntities(dbContext => dbContext.Users, [user]);
@@ -68,7 +69,7 @@ public class PostgresUserRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Same(user, result);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task GetUserByEmail_NotFound_ReturnsNull(User user,
     string email)
   {
@@ -79,7 +80,7 @@ public class PostgresUserRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(result);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task GetUserById_Successful(User user)
   {
     SetupMockEntities(dbContext => dbContext.Users, [user]);
@@ -89,7 +90,7 @@ public class PostgresUserRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Same(user, result);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task GetUserById_NotFound_ReturnsNull(User user,
     string id)
   {
@@ -100,7 +101,7 @@ public class PostgresUserRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(result);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task SaveUser_Successful(User user)
   {
     SetupMockEntities(dbContext => dbContext.Users, [user]);
@@ -111,7 +112,7 @@ public class PostgresUserRepositoryTests : AbstractPostgresRepositoryTests
     _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task DeleteUser_Successful(User user)
   {
     SetupMockEntities(dbContext => dbContext.Users, [user]);
@@ -121,7 +122,7 @@ public class PostgresUserRepositoryTests : AbstractPostgresRepositoryTests
     Assert.True(result);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task DeleteUser_NotFound_ReturnsFalse(User user, string id)
   {
     SetupMockEntities(dbContext => dbContext.Users, [user]);

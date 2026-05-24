@@ -12,6 +12,7 @@ using SwgohApi.Infrastructure.Models;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Users;
 using SwgohApi.Services;
+using SwgohApi.TestUtilities;
 
 namespace SwgohApi.Tests.Endpoints;
 
@@ -36,7 +37,7 @@ public sealed class UserEndpointsTests : IDisposable
 
   public void Dispose() => _mockRepository.VerifyAll();
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task GetUsers_Successful(User[] users,
     UserDto[] responseUsers)
   {
@@ -63,7 +64,7 @@ public sealed class UserEndpointsTests : IDisposable
     });
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateUser_Successful(CreateUserRequest request, User user,
     UserDto responseUser)
   {
@@ -91,7 +92,7 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Same(responseUser, okResult.Value);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateUser_InvalidKey_ReturnsForbidden(CreateUserRequest request,
     string key)
   {
@@ -113,7 +114,7 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Equal((int)HttpStatusCode.Forbidden, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateUser_MissingKey_ReturnsForbidden(string key,
     IFixture fixture)
   {
@@ -138,7 +139,7 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Equal((int)HttpStatusCode.Forbidden, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateUser_UserAlreadyExists_ReturnsBadRequest(CreateUserRequest request,
     User user)
   {
@@ -164,13 +165,14 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Equal((int)HttpStatusCode.BadRequest, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateUser_UserDoesNotExist_ReturnsNotFound(string userId,
     UpdateUserRequest request,
     IFixture fixture)
   {
     var requestingUser = fixture.Build<User>()
       .With(user => user.IsAdmin, true)
+      .With(user => user.EarnableShards, [])
       .Create();
     _httpContext.RequestingUser = requestingUser;
 
@@ -192,13 +194,14 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateUser_NoUpdatesProvided_ReturnsUserWithoutSaving(string userId,
     UserDto responseUser,
     IFixture fixture)
   {
     var user = fixture.Build<User>()
       .With(user => user.Id, userId)
+      .With(user => user.EarnableShards, [])
       .Create();
     _httpContext.RequestingUser = user;
     _mockUserMapper.Setup(mapper => mapper.MapTo(user))
@@ -219,7 +222,7 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Same(responseUser, okResult.Value);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateUser_EmailAndPasswordProvided_UpdatesAndSavesUser(string userId,
     string email,
     string password,
@@ -229,6 +232,7 @@ public sealed class UserEndpointsTests : IDisposable
   {
     var user = fixture.Build<User>()
       .With(user => user.Id, userId)
+      .With(user => user.EarnableShards, [])
       .Create();
     _httpContext.RequestingUser = user;
     _mockPasswordHasher.Setup(hasher => hasher.HashPassword(user, password))
@@ -253,13 +257,14 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Same(responseUser, okResult.Value);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateUser_RequestingUserIsNotAdmin_ReturnsForbidden(string userId,
     UpdateUserRequest request,
     IFixture fixture)
   {
     var requestingUser = fixture.Build<User>()
       .With(user => user.IsAdmin, false)
+      .With(user => user.EarnableShards, [])
       .Create();
     _httpContext.RequestingUser = requestingUser;
 
@@ -276,7 +281,7 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Equal((int)HttpStatusCode.Forbidden, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateUser_RequestingUserNotFound_ReturnsForbidden(string userId,
     UpdateUserRequest request)
   {
@@ -293,13 +298,14 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Equal((int)HttpStatusCode.Forbidden, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task DeleteUser_RequestingUserIsNotAdmin_ReturnsForbidden(string userId,
     UpdateUserRequest request,
     IFixture fixture)
   {
     var requestingUser = fixture.Build<User>()
       .With(user => user.IsAdmin, false)
+      .With(user => user.EarnableShards, [])
       .Create();
     _httpContext.RequestingUser = requestingUser;
 
@@ -316,12 +322,13 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Equal((int)HttpStatusCode.Forbidden, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task DeleteUser_Successful(string userId,
     IFixture fixture)
   {
     var requestingUser = fixture.Build<User>()
       .With(user => user.Id, userId)
+      .With(user => user.EarnableShards, [])
       .Create();
     _httpContext.RequestingUser = requestingUser;
 
@@ -340,12 +347,13 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.IsType<Ok>(result.Result);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task DeleteUser_UserDoesNotExist_ReturnsNotFound(string userId,
     IFixture fixture)
   {
     var requestingUser = fixture.Build<User>()
       .With(user => user.IsAdmin, true)
+      .With(user => user.EarnableShards, [])
       .Create();
     _httpContext.RequestingUser = requestingUser;
 
@@ -368,13 +376,14 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateAdmin_Successful(string userId,
     UserDto responseUser,
     IFixture fixture)
   {
     var updatingUser = fixture.Build<User>()
       .With(user => user.IsAdmin, false)
+      .With(user => user.EarnableShards, [])
       .Create();
     _mockUserRepository.Setup(repository => repository.GetUserById(userId))
       .ReturnsAsync(updatingUser);
@@ -397,7 +406,7 @@ public sealed class UserEndpointsTests : IDisposable
     Assert.Same(responseUser, okResult.Value);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateAdmin_UserDoesNotExist_ReturnsNotFound(string userId)
   {
     _mockUserRepository.Setup(repository => repository.GetUserById(userId))

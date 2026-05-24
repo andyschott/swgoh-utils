@@ -4,6 +4,8 @@ using SwgohApi.Models.Earnables;
 using SwgohApi.TestUtilities;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
+using InternalEarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
+
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
 
 namespace SwgohApi.Tests.Mappers;
@@ -34,6 +36,7 @@ public sealed class ShipMapperTests : IDisposable
     IFixture fixture)
   {
     var source = fixture.Build<InternalShip>()
+      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
       .Create();
     foreach (var (srcLocation, destLocation) in source.Locations.Zip(destinationLocations))
     {
@@ -65,6 +68,7 @@ public sealed class ShipMapperTests : IDisposable
   {
     var source = fixture.Build<InternalShip>()
       .Without(source => source.Marquee)
+      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
       .Create();
     foreach (var (srcLocation, destLocation) in source.Locations.Zip(destinationLocations))
     {

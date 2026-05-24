@@ -8,6 +8,7 @@ using SwgohApi.Models.Earnables;
 using SwgohApi.TestUtilities;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
+using InternalEarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
 
 namespace SwgohApi.Tests.Endpoints;
@@ -208,6 +209,7 @@ public sealed class ShipEndpointTests : IDisposable
     IFixture fixture)
   {
     var internalShip = fixture.Build<InternalShip>()
+      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
       .Create();
     _mockShipRepository.Setup(repository => repository.GetShip(internalShip.Id))
       .ReturnsAsync(internalShip);
@@ -250,6 +252,7 @@ public sealed class ShipEndpointTests : IDisposable
   {
     var internalShip = fixture.Build<InternalShip>()
       .With(s => s.Marquee, (InternalMarquee?)null)
+      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
       .Create();
 
     _mockShipRepository.Setup(repository => repository.GetShip(internalShip.Id))
@@ -297,6 +300,7 @@ public sealed class ShipEndpointTests : IDisposable
   {
     var internalShip = fixture.Build<InternalShip>()
       .With(s => s.Marquee, (InternalMarquee?)null)
+      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
       .Create();
     var request = fixture.Build<UpdateShipRequest>()
       .With(r => r.Marquee, (ShipMarqueeRequest?)null)
