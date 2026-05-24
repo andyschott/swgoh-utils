@@ -8,4 +8,6 @@ public interface IEarnableShardsRepository
     Earnable earnable,
     int shards,
     FarmingStatus farmingStatus);
+  Task<EarnableShards?> GetEarnableShards(string id);
+  Task SaveEarnableShards(EarnableShards earnableShards);
 }

@@ -65,4 +65,37 @@ public class PostgresEarnableShardsRepositoryTests : AbstractPostgresRepositoryT
     Assert.Equal(shards, result.Shards);
     Assert.Equal(farmingStatus, result.FarmingStatus);
   }
+
+  [Theory, SwgohApiAutoData]
+  public async Task GetEarnableShards_Successful(EarnableShards earnableShards)
+  {
+    SetupMockEntities(dbContext => dbContext.EarnableShards, [earnableShards]);
+
+    var result = await _repository.GetEarnableShards(earnableShards.Id);
+
+    Assert.Same(earnableShards, result);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task GetEarnableShards_NotFound_ReturnsNull(EarnableShards earnableShards,
+    string id)
+  {
+    SetupMockEntities(dbContext => dbContext.EarnableShards, [earnableShards]);
+
+    var result = await _repository.GetEarnableShards(id);
+
+    Assert.Null(result);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task SaveEarnableShards_Successful(EarnableShards earnableShards)
+  {
+    var mockEarnableShardsSet = CreateMockDbSet(dbContext => dbContext.EarnableShards);
+
+    var exception = await Record.ExceptionAsync(() => _repository.SaveEarnableShards(earnableShards));
+
+    Assert.Null(exception);
+    mockEarnableShardsSet.Verify(dbSet => dbSet.Update(earnableShards), Times.Once);
+    _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
+  }
 }
