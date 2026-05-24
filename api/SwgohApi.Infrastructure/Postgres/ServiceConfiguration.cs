@@ -27,7 +27,8 @@ public static class ServiceConfiguration
       .AddScoped<ITokenRepository, PostgresTokenRepository>()
       .AddScoped<ICharacterRepository, PostgresCharacterRepository>()
       .AddScoped<IShipRepository, PostgresShipRepository>()
-      .AddScoped<IMarqueeRepository, PostgresMarqueeRepository>();
+      .AddScoped<IMarqueeRepository, PostgresMarqueeRepository>()
+      .AddScoped<IEarnableShardsRepository, PostgresEarnableShardsRepository>();
 
     return services;
   }
