@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { MarqueeDate, MarqueeDates } from '../../marquee/marquee-dates';
 
 interface MarqueeDateRow extends MarqueeDate {
@@ -15,16 +16,14 @@ export class MarqueeDatesPage {
   private readonly marqueeDatesService = inject(MarqueeDates);
   protected readonly searchTerm = signal('');
 
+  private readonly marqueeDatesApi = toSignal(this.marqueeDatesService.getMarqueeDates(), {
+    initialValue: [] as MarqueeDate[],
+  });
+
   protected readonly marqueeDates = computed<ReadonlyArray<MarqueeDateRow>>(() =>
-    this.marqueeDatesService
-      .getNames()
-      .map((name) => ({
-        name,
-        dates: this.marqueeDatesService.getDates(name),
-      }))
-      .filter((entry): entry is { name: string; dates: MarqueeDate } => entry.dates !== null)
-      .map(({ name, dates }) => ({
-        name,
+    this.marqueeDatesApi()
+      .map((dates) => ({
+        name: dates.name,
         introduction: dates.introduction,
         marqueeEvent: dates.marqueeEvent,
         shipment: dates.shipment,
@@ -34,7 +33,8 @@ export class MarqueeDatesPage {
       .sort(
         (left, right) =>
           this.compareDatesDescending(left.introduction, right.introduction) ||
-          this.compareDatesDescending(left.marqueeEvent, right.marqueeEvent),
+          this.compareDatesDescending(left.marqueeEvent, right.marqueeEvent) ||
+          left.name.localeCompare(right.name, 'en-US'),
       ),
   );
 

@@ -1,13 +1,42 @@
+import { of } from 'rxjs';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
+import { MarqueeDates } from '../../marquee/marquee-dates';
 
 import { MarqueeDatesPage } from './marquee-dates';
 
 describe('MarqueeDatesPage', () => {
+  const marqueeDates = [
+    {
+      name: 'Imperial Snowtrooper Commander',
+      introduction: new Date('2026-04-29'),
+      marqueeEvent: new Date('2026-07-14'),
+      shipment: new Date('2026-08-05'),
+      farm: new Date('2026-10-14'),
+      acceleration: new Date('2027-04-29'),
+    },
+    {
+      name: 'Kix',
+      introduction: new Date('2018-09-27'),
+      marqueeEvent: new Date('2018-09-28'),
+      shipment: new Date('2018-11-07'),
+      farm: new Date('2018-12-12'),
+      acceleration: new Date('2019-09-27'),
+    },
+  ];
+
   beforeEach(async () => {
     await TestBed.configureTestingModule({
       imports: [MarqueeDatesPage],
-      providers: [provideRouter([])],
+      providers: [
+        provideRouter([]),
+        {
+          provide: MarqueeDates,
+          useValue: {
+            getMarqueeDates: () => of(marqueeDates),
+          },
+        },
+      ],
     }).compileComponents();
   });
 
