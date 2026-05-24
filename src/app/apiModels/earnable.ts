@@ -4,9 +4,11 @@
  */
 
 import { EarnableLocation } from "./earnable-location";
+import { Marquee } from "./marquee";
 
 export interface Earnable {
     id: string;
     name: string;
     locations: EarnableLocation[];
+    marquee: Marquee | null;
 }

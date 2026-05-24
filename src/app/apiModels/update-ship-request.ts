@@ -4,7 +4,9 @@
  */
 
 import { EarnableLocation } from "./earnable-location";
+import { ShipMarqueeRequest } from "./ship-marquee-request";
 
 export interface UpdateShipRequest {
-    locations: EarnableLocation[];
+    locations: EarnableLocation[] | null;
+    marquee: ShipMarqueeRequest | null;
 }

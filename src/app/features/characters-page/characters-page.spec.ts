@@ -13,12 +13,14 @@ describe('CharactersPage', () => {
       name: 'Zorii Bliss',
       isAccelerated: false,
       locations: [EarnableLocation.CrystalShipments, EarnableLocation.LightSide],
+      marquee: null,
     },
     {
       id: '1',
       name: 'Ahsoka Tano',
       isAccelerated: true,
       locations: [EarnableLocation.Cantina],
+      marquee: null,
     },
   ];
 

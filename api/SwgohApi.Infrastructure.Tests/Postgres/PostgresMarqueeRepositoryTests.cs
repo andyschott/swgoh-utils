@@ -107,6 +107,16 @@ public class PostgresMarqueeRepositoryTests : AbstractPostgresRepositoryTests
   }
 
   [Theory, AutoDomainData]
+  public async Task GetMarquees_Successful(Marquee[] marquees)
+  {
+    SetupMockEntities(dbContext => dbContext.Marquees, marquees);
+
+    var result = await _repository.GetMarquees();
+
+    Assert.Equal(marquees, result);
+  }
+
+  [Theory, AutoDomainData]
   public async Task SaveMarquee_Successful(Marquee marquee)
   {
     var mockMarqueesDbSet = CreateMockDbSet(dbContext => dbContext.Marquees);

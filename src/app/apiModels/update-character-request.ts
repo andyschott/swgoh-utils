@@ -4,8 +4,10 @@
  */
 
 import { EarnableLocation } from "./earnable-location";
+import { CharacterMarqueeRequest } from "./character-marquee-request";
 
 export interface UpdateCharacterRequest {
-    locations: EarnableLocation[];
-    isAccelerated: boolean;
+    locations: EarnableLocation[] | null;
+    isAccelerated: boolean | null;
+    marquee: CharacterMarqueeRequest | null;
 }
