@@ -21,6 +21,10 @@ public class SwgohApiAutoDataAttribute : AutoDataAttribute
       .Without(m => m.Ship));
     fixture.Customize(new DateOnlyCustomization());
 
+    fixture.Customize<EarnableShards>(composer => composer
+      .Without(e => e.Character)
+      .Without(e => e.Ship));
+
     fixture.Customize<Character>(composer => composer
       .Without(c => c.Marquee)
       .Without(c => c.EarnableShards));
@@ -29,6 +33,7 @@ public class SwgohApiAutoDataAttribute : AutoDataAttribute
       .Without(s => s.EarnableShards));
     fixture.Customize<User>(composer => composer
       .With(u => u.EarnableShards, []));
+
 
     return fixture;
   }
