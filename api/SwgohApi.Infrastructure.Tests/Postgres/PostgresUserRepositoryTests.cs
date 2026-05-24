@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Moq.EntityFrameworkCore;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
 

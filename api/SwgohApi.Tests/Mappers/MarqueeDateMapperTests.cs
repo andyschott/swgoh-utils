@@ -1,7 +1,7 @@
 using AutoFixture;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
-using SwgohApi.TestUtilities.Customizations;
+using SwgohApi.TestUtilities;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
@@ -12,7 +12,7 @@ public class MarqueeDateMapperTests
 {
   private readonly MarqueeDateMapper _mapper = new();
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public void MapTo_CharacterMarquee_Successful(InternalCharacter character,
     IFixture fixture)
   {
@@ -33,7 +33,7 @@ public class MarqueeDateMapperTests
     Assert.Equal(source.AccelerationDate, result.AccelerationDate);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public void MapTo_ShipMarquee_Successful(InternalShip ship,
     IFixture fixture)
   {
@@ -54,7 +54,7 @@ public class MarqueeDateMapperTests
     Assert.Equal(source.AccelerationDate, result.AccelerationDate);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public void MapTo_NoCharacterOrShip_ThrowsArgumentException(InternalMarquee source)
   {
     source.Character = null;
@@ -65,26 +65,9 @@ public class MarqueeDateMapperTests
     Assert.Throws<ArgumentException>(() => _mapper.MapTo(source));
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public void MapFrom_ThrowsNotImplementedException(MarqueeDate source)
   {
     Assert.Throws<NotImplementedException>(() => _mapper.MapFrom(source));
-  }
-
-  class AutoDomainDataAttribute : AutoDataAttribute
-  {
-    public AutoDomainDataAttribute()
-      : base(Customize)
-    {
-    }
-
-    private static IFixture Customize()
-    {
-      var fixture = new Fixture();
-
-      fixture.Customize(new MarqueeCustomization());
-
-      return fixture;
-    }
   }
 }

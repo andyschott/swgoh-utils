@@ -5,7 +5,7 @@ using SwgohApi.Endpoints;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
-using SwgohApi.TestUtilities.Customizations;
+using SwgohApi.TestUtilities;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
@@ -31,7 +31,7 @@ public sealed class ShipEndpointTests : IDisposable
 
   public void Dispose() => _mockRepository.VerifyAll();
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateShip_Successful(CreateShipRequest request,
     InternalEarnableLocation[] internalLocations,
     InternalShip internalShip,
@@ -77,7 +77,7 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Same(ship, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateShip_NotAMarquee_Successful(InternalEarnableLocation[] internalLocations,
     InternalShip internalShip,
     Ship ship,
@@ -118,7 +118,7 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Same(ship, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateShip_ShipAlreadyExists_ReturnsBadRequest(
     CreateShipRequest request,
     InternalShip internalShip)
@@ -141,7 +141,7 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Equal((int)HttpStatusCode.BadRequest, problemResult.StatusCode);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetShips_Successful(InternalShip[] internalShips,
     Ship[] ships)
   {
@@ -164,7 +164,7 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Equal(ships, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetShip_Successful(InternalShip internalShip,
     Ship ship)
   {
@@ -183,7 +183,7 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Same(ship, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetShip_ShipNotFound_ReturnsNotFound(string id)
   {
     _mockShipRepository.Setup(repository => repository.GetShip(id))
@@ -201,12 +201,14 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
   }
 
-  [Theory, AutoDomainData]
-  public async Task UpdateShip_Successful(InternalShip internalShip,
-    UpdateShipRequest request,
+  [Theory, SwgohApiAutoData]
+  public async Task UpdateShip_Successful(UpdateShipRequest request,
     InternalEarnableLocation[] internalLocations,
-    Ship ship)
+    Ship ship,
+    IFixture fixture)
   {
+    var internalShip = fixture.Build<InternalShip>()
+      .Create();
     _mockShipRepository.Setup(repository => repository.GetShip(internalShip.Id))
       .ReturnsAsync(internalShip);
 
@@ -239,7 +241,7 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Same(ship, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateShip_CreatingMarquee_Successful(UpdateShipRequest request,
     InternalEarnableLocation[] internalLocations,
     InternalMarquee internalMarquee,
@@ -288,7 +290,7 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Same(ship, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateShip_NotAMarquee_Successful(InternalEarnableLocation[] internalLocations,
     Ship ship,
     IFixture fixture)
@@ -329,7 +331,7 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Same(ship, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateShip_ShipNotFound_ReturnsNotFound(string id,
     UpdateShipRequest request)
   {
@@ -351,7 +353,7 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetShipByName_Successful(InternalShip internalShip,
     Ship ship)
   {
@@ -370,7 +372,7 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.Same(ship, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetShip_ShipByNameNotFound_ReturnsNotFound(string name)
   {
     _mockShipRepository.Setup(repository => repository.GetShipByName(name))
@@ -386,22 +388,5 @@ public sealed class ShipEndpointTests : IDisposable
     Assert.NotNull(problemResult.ProblemDetails.Detail);
     Assert.NotEmpty(problemResult.ProblemDetails.Detail);
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
-  }
-
-  class AutoDomainDataAttribute : AutoDataAttribute
-  {
-    public AutoDomainDataAttribute()
-      : base(Customize)
-    {
-    }
-
-    private static IFixture Customize()
-    {
-      var fixture = new Fixture();
-
-      fixture.Customize(new MarqueeCustomization());
-
-      return fixture;
-    }
   }
 }

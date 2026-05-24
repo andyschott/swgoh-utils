@@ -1,7 +1,6 @@
-using AutoFixture;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
-using SwgohApi.TestUtilities.Customizations;
+using SwgohApi.TestUtilities;
 
 namespace SwgohApi.Infrastructure.Tests.Postgres;
 
@@ -15,7 +14,7 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
       _mockIdGenerator.Object);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateCharacter_Successful(string id,
     string name,
     EarnableLocation[] locations,
@@ -36,7 +35,7 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Equal(isAccelerated, result.IsAccelerated);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetCharacterByName_Successful(Character character)
   {
     SetupMockEntities(dbContext => dbContext.Characters, [character]);
@@ -46,7 +45,7 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Same(character, result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetCharacterByName_NotFound_ReturnsNull(Character character,
     string name)
   {
@@ -57,7 +56,7 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetCharacter_Successful(Character character)
   {
     SetupMockEntities(dbContext => dbContext.Characters, [character]);
@@ -67,7 +66,7 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Same(character, result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetCharacter_NotFound_ReturnsNull(Character character,
     string id)
   {
@@ -78,7 +77,7 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task SaveCharacter_Successful(Character character)
   {
     SetupMockEntities(dbContext => dbContext.Characters, [character]);
@@ -87,23 +86,5 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
 
     Assert.Null(exception);
     _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
-  }
-
-  class AutoDomainDataAttribute : AutoDataAttribute
-  {
-    public AutoDomainDataAttribute()
-    : base(Customize)
-    {
-    }
-
-    private static IFixture Customize()
-    {
-      var fixture = new Fixture();
-
-      fixture.Customize(new MarqueeCustomization());
-
-
-      return fixture;
-    }
   }
 }

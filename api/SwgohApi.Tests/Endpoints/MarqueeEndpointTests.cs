@@ -1,10 +1,9 @@
-using AutoFixture;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SwgohApi.Endpoints;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
-using SwgohApi.TestUtilities.Customizations;
+using SwgohApi.TestUtilities;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
 
 namespace SwgohApi.Tests.Endpoints;
@@ -24,7 +23,7 @@ public sealed class MarqueeEndpointTests : IDisposable
 
   public void Dispose() => _mockRepository.VerifyAll();
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetMarquees_Successful(InternalMarquee[] internalMarquees,
     MarqueeDate[] marqueeDates)
   {
@@ -43,22 +42,5 @@ public sealed class MarqueeEndpointTests : IDisposable
     var result = Assert.IsType<Ok<IEnumerable<MarqueeDate>>>(response);
 
     Assert.Equal(marqueeDates, result.Value);
-  }
-
-  class AutoDomainDataAttribute : AutoDataAttribute
-  {
-    public AutoDomainDataAttribute()
-      : base(Customize)
-    {
-    }
-
-    private static IFixture Customize()
-    {
-      var fixture = new Fixture();
-
-      fixture.Customize(new MarqueeCustomization());
-
-      return fixture;
-    }
   }
 }

@@ -5,7 +5,7 @@ using SwgohApi.Endpoints;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
-using SwgohApi.TestUtilities.Customizations;
+using SwgohApi.TestUtilities;
 using Character = SwgohApi.Models.Earnables.Character;
 using EarnableLocation = SwgohApi.Models.Earnables.EarnableLocation;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
@@ -33,7 +33,7 @@ public sealed class CharacterEndpointTests : IDisposable
 
   public void Dispose() => _mockRepository.VerifyAll();
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateCharacter_Successful(CreateCharacterRequest request,
     InternalEarnableLocation[] internalLocations,
     InternalCharacter internalCharacter,
@@ -79,7 +79,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateCharacter_NotAMarquee_Sucessful(InternalEarnableLocation[] internalLocations,
     InternalCharacter internalCharacter,
     Character character,
@@ -120,7 +120,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateCharacter_CharacterAlreadyExists_ReturnsBadRequest(
     CreateCharacterRequest request,
     InternalCharacter internalCharacter)
@@ -143,7 +143,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Equal((int)HttpStatusCode.BadRequest, problemResult.StatusCode);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetCharacters_Successful(InternalCharacter[] internalCharacters,
     Character[] characters)
   {
@@ -166,7 +166,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Equal(characters, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetCharacter_Successful(InternalCharacter internalCharacter,
     Character character)
   {
@@ -185,7 +185,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetCharacter_CharacterNotFound_ReturnsNotFound(string id)
   {
     _mockCharacterRepository.Setup(repository => repository.GetCharacter(id))
@@ -203,12 +203,14 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
   }
 
-  [Theory, AutoDomainData]
-  public async Task UpdateCharacter_Successful(InternalCharacter internalCharacter,
-    UpdateCharacterRequest request,
+  [Theory, SwgohApiAutoData]
+  public async Task UpdateCharacter_Successful(UpdateCharacterRequest request,
     InternalEarnableLocation[] internalLocations,
-    Character character)
+    Character character,
+    IFixture fixture)
   {
+    var internalCharacter = fixture.Build<InternalCharacter>()
+      .Create();
     _mockCharacterRepository.Setup(repository => repository.GetCharacter(internalCharacter.Id))
       .ReturnsAsync(internalCharacter);
 
@@ -242,7 +244,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateCharacter_CreatingMarquee_Successful(UpdateCharacterRequest request,
     InternalEarnableLocation[] internalLocations,
     InternalMarquee internalMarquee,
@@ -292,7 +294,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateCharacter_NotAMarquee_Successful(InternalEarnableLocation[] internalLocations,
     Character character,
     IFixture fixture)
@@ -334,7 +336,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task UpdateCharacter_CharacterNotFound_ReturnsNotFound(string id,
     UpdateCharacterRequest request)
   {
@@ -356,7 +358,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetCharacterByName_Successful(InternalCharacter internalCharacter,
     Character character)
   {
@@ -375,7 +377,7 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.Same(character, okResult.Value);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetCharacter_CharacterByNameNotFound_ReturnsNotFound(string name)
   {
     _mockCharacterRepository.Setup(repository => repository.GetCharacter(name))
@@ -391,22 +393,5 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.NotNull(problemResult.ProblemDetails.Detail);
     Assert.NotEmpty(problemResult.ProblemDetails.Detail);
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
-  }
-
-  class AutoDomainDataAttribute : AutoDataAttribute
-  {
-    public AutoDomainDataAttribute()
-    : base(Customize)
-    {
-    }
-
-    private static IFixture Customize()
-    {
-      var fixture = new Fixture();
-
-      fixture.Customize(new MarqueeCustomization());
-
-      return fixture;
-    }
   }
 }

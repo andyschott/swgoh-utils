@@ -1,7 +1,6 @@
 using System.IdentityModel.Tokens.Jwt;
 using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
-using SwgohApi.Infrastructure.Models;
 using SwgohApi.Services;
 
 namespace SwgohApi.Middleware;

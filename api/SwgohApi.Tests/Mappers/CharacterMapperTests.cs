@@ -1,7 +1,7 @@
 using AutoFixture;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
-using SwgohApi.TestUtilities.Customizations;
+using SwgohApi.TestUtilities;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
@@ -28,11 +28,13 @@ public sealed class CharacterMapperTests : IDisposable
 
   public void Dispose() =>  _mockRepository.VerifyAll();
 
-  [Theory, AutoDomainData]
-  public void MapTo_Successful(InternalCharacter source,
-    EarnableLocation[] destinationLocations,
-    Marquee destinationMarquee)
+  [Theory, SwgohApiAutoData]
+  public void MapTo_Successful(EarnableLocation[] destinationLocations,
+    Marquee destinationMarquee,
+    IFixture fixture)
   {
+    var source = fixture.Build<InternalCharacter>()
+      .Create();
     foreach (var (srcLocation, destLocation) in source.Locations.Zip(destinationLocations))
     {
       _mockLocationMapper.Setup(mapper => mapper.MapTo(srcLocation))
@@ -58,7 +60,7 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Equal(destinationMarquee.AccelerationDate, result.Marquee.AccelerationDate);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public void MapTo_NotAMarquee_Successful(EarnableLocation[] destinationLocations,
     IFixture fixture)
   {
@@ -80,7 +82,7 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Null(result.Marquee);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public void MapFrom_Successful(Character source,
     InternalEarnableLocation[] destinationLocations,
     InternalMarquee destinationMarquee)
@@ -112,7 +114,7 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Null(result.Marquee.ShipId);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public void MapFrom_NotAMarquee_Successful(InternalEarnableLocation[] destinationLocations,
     IFixture fixture)
   {
@@ -133,22 +135,5 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Equal(destinationLocations, result.Locations);
     Assert.Equal(source.IsAccelerated, result.IsAccelerated);
     Assert.Null(result.Marquee);
-  }
-
-  class AutoDomainDataAttribute : AutoDataAttribute
-  {
-    public AutoDomainDataAttribute()
-      : base(Customize)
-    {
-    }
-
-    private static IFixture Customize()
-    {
-      var fixture = new Fixture();
-
-      fixture.Customize(new MarqueeCustomization());
-
-      return fixture;
-    }
   }
 }
