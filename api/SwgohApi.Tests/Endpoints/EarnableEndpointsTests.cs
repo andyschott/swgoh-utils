@@ -8,7 +8,6 @@ using SwgohApi.Models.Earnables;
 using SwgohApi.TestUtilities;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
-using InternalEarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
 
@@ -364,7 +363,7 @@ public sealed class EarnableEndpointsTests : IDisposable
     IFixture fixture)
   {
     var internalCharacter = fixture.Build<InternalCharacter>()
-      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
+      .With(c => c.EarnableShards, [])
       .Create();
     _mockEarnableRepository.Setup(repository => repository.GetEarnable(internalCharacter.Id))
       .ReturnsAsync(internalCharacter);
@@ -408,7 +407,7 @@ public sealed class EarnableEndpointsTests : IDisposable
   {
     var internalCharacter = fixture.Build<InternalCharacter>()
       .With(c => c.Marquee, (InternalMarquee?)null)
-      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
+      .With(c => c.EarnableShards, [])
       .Create();
 
     _mockEarnableRepository.Setup(repository => repository.GetEarnable(internalCharacter.Id))
@@ -457,7 +456,7 @@ public sealed class EarnableEndpointsTests : IDisposable
   {
     var internalCharacter = fixture.Build<InternalCharacter>()
       .With(c => c.Marquee, (InternalMarquee?)null)
-      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
+      .With(c => c.EarnableShards, [])
       .Create();
     var request = fixture.Build<UpdateCharacterRequest>()
       .With(request => request.Marquee, (CharacterMarqueeRequest?)null)

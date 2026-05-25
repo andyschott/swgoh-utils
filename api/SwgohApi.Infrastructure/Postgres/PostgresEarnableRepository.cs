@@ -43,6 +43,20 @@ where T : Earnable, new()
     await _dbContext.SaveChangesAsync();
   }
 
+  public async Task<IEnumerable<T>> GetEarnablesForUser(User user)
+  {
+    return await DbSet
+      .Include(e => e.EarnableShards.Where(es => es.UserId == user.Id))
+      .ToListAsync();
+  }
+
+  public async Task<T?> GetEarnableForUser(string id, User user)
+  {
+    return await DbSet
+      .Include(e => e.EarnableShards.Where(es => es.UserId == user.Id))
+      .FirstOrDefaultAsync(e => e.Id == id);
+  }
+
   protected async Task<T> CreateEarnable(string name,
     IEnumerable<EarnableLocation> locations,
     Action<T>? updateEarnable = null)

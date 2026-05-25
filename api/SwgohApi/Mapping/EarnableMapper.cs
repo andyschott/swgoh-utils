@@ -36,9 +36,10 @@ where TEarnable : Earnable
     }
 
     EarnableShards? earnableShards = null;
-    if (source.EarnableShards is not null)
+    var internalEarnableShards = source.CurrentEarnableShards;
+    if (internalEarnableShards is not null)
     {
-      earnableShards = _earnableShardsMapper.MapTo(source.EarnableShards);
+      earnableShards = _earnableShardsMapper.MapTo(internalEarnableShards);
     }
 
     return Create(source, locations, marquee,  earnableShards);
@@ -73,23 +74,25 @@ where TEarnable : Earnable
 
     if (destination.Shards is not null)
     {
-      earnable.EarnableShards = _earnableShardsMapper.MapFrom(destination.Shards);
+      var internalEarnableShards = _earnableShardsMapper.MapFrom(destination.Shards);
       if (earnable is InternalCharacter character)
       {
-        earnable.EarnableShards.CharacterId = character.Id;
-        earnable.EarnableShards.Character = character;
+        internalEarnableShards.CharacterId = character.Id;
+        internalEarnableShards.Character = character;
 
-        earnable.EarnableShards.ShipId = null;
-        earnable.EarnableShards.Ship = null;
+        internalEarnableShards.ShipId = null;
+        internalEarnableShards.Ship = null;
       }
       else if (earnable is InternalShip ship)
       {
-        earnable.EarnableShards.ShipId = ship.Id;
-        earnable.EarnableShards.Ship = ship;
+        internalEarnableShards.ShipId = ship.Id;
+        internalEarnableShards.Ship = ship;
 
-        earnable.EarnableShards.CharacterId = null;
-        earnable.EarnableShards.Character = null;
+        internalEarnableShards.CharacterId = null;
+        internalEarnableShards.Character = null;
       }
+
+      earnable.EarnableShards.Add(internalEarnableShards);
     }
 
     return earnable;

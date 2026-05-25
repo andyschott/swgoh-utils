@@ -3,8 +3,8 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "shards": 250,
-  "farmingStatus": "Backlog"
+  "shards": 145,
+  "farmingStatus": "Active"
 }
 
 ###
