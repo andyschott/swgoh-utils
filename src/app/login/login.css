@@ -1,0 +1,19 @@
+form {
+    display: grid;
+    grid-template-columns: auto 0.5fr 1fr;
+    column-gap: 0.5rem;
+    row-gap: 0.5rem;
+
+    label {
+        grid-column: 1;
+    }
+
+    input {
+        grid-column: 2;
+    }
+
+    input[type="submit"] {
+        width: fit-content;
+        grid-column: 1;
+    }
+}
