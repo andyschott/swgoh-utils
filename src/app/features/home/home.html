@@ -5,17 +5,11 @@
     <p>Use the navigation menu to open any tool.</p>
   </section>
 
-  <section aria-labelledby="today-title">
-    <h2 id="today-title">Today</h2>
+  <section aria-labelledby="login-title">
+    <h2 id="login-title">Login</h2>
 
-    @if (hasRemainingSignalData()) {
-      <div class="today-item">
-        <h3>Signal Data Farming Plan</h3>
-        @if (signalDataFarmingPlan(); as plan) {
-          <p>Estimated Days: <strong>{{ plan.days }}</strong></p>
-          <p>Nodes to Farm: {{ plan.nodesToFarm.join(', ') }}</p>
-        }
-      </div>
-    }
+    <div class="login-item">
+      <app-login></app-login>
+    </div>
   </section>
 </main>
