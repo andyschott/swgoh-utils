@@ -39,7 +39,7 @@ export class AuthService {
   }
 
   logout() {
-    const token = this.getSavedToken();
+    const token = this.getToken();
     if (token === null) {
       return;
     }
@@ -53,6 +53,15 @@ export class AuthService {
       });
   }
 
+  getToken(): Token | null {
+    const item = localStorage.getItem(AuthKey);
+    if (item === null) {
+      return null;
+    }
+
+    return JSON.parse(item) as Token;
+  }
+
   private saveToken(auth: Token) {
     localStorage.setItem(AuthKey, JSON.stringify(auth));
     this._isLoggedIn.set(true);
@@ -61,15 +70,6 @@ export class AuthService {
   private clearToken() {
     localStorage.removeItem(AuthKey);
     this._isLoggedIn.set(false);
-  }
-
-  private getSavedToken(): Token | null {
-    const item = localStorage.getItem(AuthKey);
-    if (item === null) {
-      return null;
-    }
-
-    return JSON.parse(item) as Token;
   }
 
   private hasSavedToken() {
