@@ -13,9 +13,11 @@ public static class EarnableEndpoints
   public static WebApplication MapEarnableEndpoints(this WebApplication app)
   {
     app.MapGroup("/characters")
+      .RequireAuthorization()
       .MapEndpoints<InternalCharacter, Character>();
 
     app.MapGroup("/ships")
+      .RequireAuthorization()
       .MapEndpoints<InternalShip, Ship>();
 
     return app;
@@ -25,8 +27,10 @@ public static class EarnableEndpoints
   where TInternal : InternalEarnable
   where T : Earnable
   {
-    builder.RequireAuthorization()
-      .MapGet(string.Empty, GetEarnables<TInternal, T>)
+    builder.MapGet(string.Empty, GetEarnables<TInternal, T>)
+      .AllowAnonymous();
+
+    builder.MapGet("/{id}",  GetEarnable<TInternal, T>)
       .AllowAnonymous();
 
     return builder;
@@ -40,5 +44,21 @@ public static class EarnableEndpoints
   {
     var earnables =  await earnableRepository.GetEarnables();
     return TypedResults.Ok(earnables.Select(mapper.MapTo));
+  }
+
+  public static async Task<Results<Ok<T>, ProblemHttpResult>> GetEarnable<TInternal, T>(string id,
+    IEarnableRepository<TInternal> earnableRepository,
+    IMapper<TInternal, T> mapper)
+    where TInternal : InternalEarnable
+    where T : Earnable
+  {
+    var earnable = await earnableRepository.GetEarnable(id);
+    if (earnable is null)
+    {
+      return TypedResults.Problem(detail:"No entity with that ID exists.",
+        statusCode:StatusCodes.Status404NotFound);
+    }
+
+    return TypedResults.Ok(mapper.MapTo(earnable));
   }
 }

@@ -6,4 +6,5 @@ public interface IEarnableRepository<T>
 where T : Earnable
 {
   Task<IEnumerable<T>> GetEarnables();
+  Task<T?> GetEarnable(string id);
 }

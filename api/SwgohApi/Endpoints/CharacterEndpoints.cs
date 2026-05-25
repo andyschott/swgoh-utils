@@ -19,8 +19,6 @@ public static class CharacterEndpoints
     characters.MapPost(string.Empty, CreateCharacter)
       .RequireAdmin();
 
-    characters.MapGet("/{id}", GetCharacter)
-      .AllowAnonymous();
     characters.MapGet("/name/{name}", GetCharacterByName)
       .AllowAnonymous();
 
@@ -61,20 +59,6 @@ public static class CharacterEndpoints
         request.Marquee.AccelerationDate);
 
       character.Marquee = marquee;
-    }
-
-    return TypedResults.Ok(characterMapper.MapTo(character));
-  }
-
-  public static async Task<Results<Ok<Character>, ProblemHttpResult>> GetCharacter(string id,
-    ICharacterRepository characterRepository,
-    IMapper<InternalCharacter, Character> characterMapper)
-  {
-    var character = await characterRepository.GetCharacter(id);
-    if (character is null)
-    {
-      return TypedResults.Problem(detail:"No character with that ID exists.",
-        statusCode:(int)HttpStatusCode.NotFound);
     }
 
     return TypedResults.Ok(characterMapper.MapTo(character));

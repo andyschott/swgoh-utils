@@ -145,43 +145,6 @@ public sealed class CharacterEndpointTests : IDisposable
   }
 
   [Theory, SwgohApiAutoData]
-  public async Task GetCharacter_Successful(InternalCharacter internalCharacter,
-    Character character)
-  {
-    _mockCharacterRepository.Setup(repository => repository.GetCharacter(internalCharacter.Id))
-      .ReturnsAsync(internalCharacter);
-    _mockCharacterMapper.Setup(mapper => mapper.MapTo(internalCharacter))
-      .Returns(character);
-
-    var response = await CharacterEndpoints.GetCharacter(internalCharacter.Id,
-      _mockCharacterRepository.Object,
-      _mockCharacterMapper.Object);
-
-    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
-    var okResult = Assert.IsType<Ok<Character>>(result.Result);
-
-    Assert.Same(character, okResult.Value);
-  }
-
-  [Theory, SwgohApiAutoData]
-  public async Task GetCharacter_CharacterNotFound_ReturnsNotFound(string id)
-  {
-    _mockCharacterRepository.Setup(repository => repository.GetCharacter(id))
-      .ReturnsAsync((InternalCharacter?)null);
-
-    var response = await CharacterEndpoints.GetCharacter(id,
-      _mockCharacterRepository.Object,
-      _mockCharacterMapper.Object);
-
-    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
-    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
-
-    Assert.NotNull(problemResult.ProblemDetails.Detail);
-    Assert.NotEmpty(problemResult.ProblemDetails.Detail);
-    Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
-  }
-
-  [Theory, SwgohApiAutoData]
   public async Task UpdateCharacter_Successful(UpdateCharacterRequest request,
     InternalEarnableLocation[] internalLocations,
     Character character,
@@ -361,10 +324,10 @@ public sealed class CharacterEndpointTests : IDisposable
   [Theory, SwgohApiAutoData]
   public async Task GetCharacter_CharacterByNameNotFound_ReturnsNotFound(string name)
   {
-    _mockCharacterRepository.Setup(repository => repository.GetCharacter(name))
+    _mockCharacterRepository.Setup(repository => repository.GetCharacterByName(name))
       .ReturnsAsync((InternalCharacter?)null);
 
-    var response = await CharacterEndpoints.GetCharacter(name,
+    var response = await CharacterEndpoints.GetCharacterByName(name,
       _mockCharacterRepository.Object,
       _mockCharacterMapper.Object);
 

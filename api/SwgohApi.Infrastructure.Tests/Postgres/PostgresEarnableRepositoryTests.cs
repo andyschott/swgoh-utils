@@ -25,6 +25,27 @@ public class PostgresEarnableRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Equal(characters, result);
   }
 
+  [Theory, SwgohApiAutoData]
+  public async Task GetEarnable_Successful(Character character)
+  {
+    SetupMockEntities(dbContext => dbContext.Characters, [character]);
+
+    var result = await _repository.GetEarnable(character.Id);
+
+    Assert.Same(character, result);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task GetEarnable_NotFound_ReturnsNull(Character character,
+    string id)
+  {
+    SetupMockEntities(dbContext => dbContext.Characters, [character]);
+
+    var result = await _repository.GetEarnable(id);
+
+    Assert.Null(result);
+  }
+
   class TestPostgresEarnableRepository : PostgresEarnableRepository<Character>
   {
     public TestPostgresEarnableRepository(IPostgresDbContext dbContext, IIdGenerator idGenerator)

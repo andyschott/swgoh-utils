@@ -22,4 +22,11 @@ where T : Earnable, new()
   {
     return await DbSet.ToListAsync();
   }
+
+  public async Task<T?> GetEarnable(string id)
+  {
+    return await DbSet
+      .Include(c => c.Marquee)
+      .FirstOrDefaultAsync(c => c.Id == id);
+  }
 }
