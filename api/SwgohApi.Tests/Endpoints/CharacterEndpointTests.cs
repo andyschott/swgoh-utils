@@ -145,29 +145,6 @@ public sealed class CharacterEndpointTests : IDisposable
   }
 
   [Theory, SwgohApiAutoData]
-  public async Task GetCharacters_Successful(InternalCharacter[] internalCharacters,
-    Character[] characters)
-  {
-    _mockCharacterRepository.Setup(repository => repository.GetCharacters())
-      .ReturnsAsync(internalCharacters);
-
-    foreach (var (src, dest) in internalCharacters.Zip(characters))
-    {
-      _mockCharacterMapper.Setup(mapper => mapper.MapTo(src))
-        .Returns(dest);
-    }
-
-    var response = await CharacterEndpoints.GetCharacters(
-      _mockCharacterRepository.Object,
-      _mockCharacterMapper.Object);
-
-    var result = Assert.IsType<Results<Ok<IEnumerable<Character>>, ProblemHttpResult>>(response);
-    var okResult = Assert.IsType<Ok<IEnumerable<Character>>>(result.Result);
-
-    Assert.Equal(characters, okResult.Value);
-  }
-
-  [Theory, SwgohApiAutoData]
   public async Task GetCharacter_Successful(InternalCharacter internalCharacter,
     Character character)
   {

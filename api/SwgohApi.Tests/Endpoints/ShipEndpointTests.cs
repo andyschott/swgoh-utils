@@ -143,29 +143,6 @@ public sealed class ShipEndpointTests : IDisposable
   }
 
   [Theory, SwgohApiAutoData]
-  public async Task GetShips_Successful(InternalShip[] internalShips,
-    Ship[] ships)
-  {
-    _mockShipRepository.Setup(repository => repository.GetShips())
-      .ReturnsAsync(internalShips);
-
-    foreach (var (src, dest) in internalShips.Zip(ships))
-    {
-      _mockShipMapper.Setup(mapper => mapper.MapTo(src))
-        .Returns(dest);
-    }
-
-    var response = await ShipEndpoints.GetShips(
-      _mockShipRepository.Object,
-      _mockShipMapper.Object);
-
-    var result = Assert.IsType<Results<Ok<IEnumerable<Ship>>, ProblemHttpResult>>(response);
-    var okResult = Assert.IsType<Ok<IEnumerable<Ship>>>(result.Result);
-
-    Assert.Equal(ships, okResult.Value);
-  }
-
-  [Theory, SwgohApiAutoData]
   public async Task GetShip_Successful(InternalShip internalShip,
     Ship ship)
   {

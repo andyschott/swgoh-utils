@@ -66,15 +66,6 @@ public static class CharacterEndpoints
     return TypedResults.Ok(characterMapper.MapTo(character));
   }
 
-  public static async Task<Results<Ok<IEnumerable<Character>>, ProblemHttpResult>> GetCharacters(
-    ICharacterRepository characterRepository,
-    IMapper<InternalCharacter, Character> characterMapper)
-  {
-    var characters = await characterRepository.GetCharacters();
-
-    return TypedResults.Ok(characters.Select(characterMapper.MapTo));
-  }
-
   public static async Task<Results<Ok<Character>, ProblemHttpResult>> GetCharacter(string id,
     ICharacterRepository characterRepository,
     IMapper<InternalCharacter, Character> characterMapper)

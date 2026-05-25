@@ -66,15 +66,6 @@ public static class ShipEndpoints
     return TypedResults.Ok(shipMapper.MapTo(ship));
   }
 
-  public static async Task<Results<Ok<IEnumerable<Ship>>, ProblemHttpResult>> GetShips(
-    IShipRepository shipRepository,
-    IMapper<InternalShip, Ship> shipMapper)
-  {
-    var ships = await shipRepository.GetShips();
-
-    return TypedResults.Ok(ships.Select(shipMapper.MapTo));
-  }
-
   public static async Task<Results<Ok<Ship>, ProblemHttpResult>> GetShip(string id,
     IShipRepository shipRepository,
     IMapper<InternalShip, Ship> shipMapper)
