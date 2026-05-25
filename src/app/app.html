@@ -43,6 +43,16 @@
             </a>
           </li>
         }
+        @if (this.isLoggedIn()) {
+          <li>
+            <a class="site-nav-link"
+               href="#"
+               (click)="onLogout()"
+            >
+              Log Out
+            </a>
+          </li>
+        }
       </ul>
     </nav>
 

@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { NavigationEnd, Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs';
 import { AppNavData, routes } from './app.routes';
+import { AuthService } from './auth/auth-service';
 
 interface NavItem {
   path: string;
@@ -18,6 +19,8 @@ interface NavItem {
 })
 export class App {
   private readonly router = inject(Router);
+  private readonly authService = inject(AuthService);
+
   protected readonly mobileMenuOpen = signal(false);
 
   protected readonly navItems = computed<ReadonlyArray<NavItem>>(() =>
@@ -63,5 +66,13 @@ export class App {
     if (event.key === 'Escape') {
       this.closeMobileMenu();
     }
+  }
+
+  protected readonly isLoggedIn = computed(() => {
+    return this.authService.isLoggedIn();
+  })
+
+  protected onLogout() {
+    this.authService.logout();
   }
 }
