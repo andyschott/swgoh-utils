@@ -1,6 +1,7 @@
 using SwgohApi.Models.Earnables;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
+using InternalEarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
 
 namespace SwgohApi.Mapping;
@@ -8,20 +9,23 @@ namespace SwgohApi.Mapping;
 public class CharacterMapper : EarnableMapper<InternalCharacter, Character>
 {
   public CharacterMapper(IMapper<InternalEarnableLocation, EarnableLocation> locationMapper,
-    IMapper<InternalMarquee, Marquee> marqueeMapper)
-  : base(locationMapper,  marqueeMapper)
+    IMapper<InternalMarquee, Marquee> marqueeMapper,
+    IMapper<InternalEarnableShards, EarnableShards> earnableShardsMapper)
+  : base(locationMapper, marqueeMapper,earnableShardsMapper)
   {
   }
 
   protected override Character Create(InternalCharacter earnable,
     EarnableLocation[] earnableLocations,
-    Marquee? marquee)
+    Marquee? marquee,
+    EarnableShards? earnableShards)
   {
     return new Character(earnable.Id,
       earnable.Name,
       earnableLocations,
       earnable.IsAccelerated,
-      marquee);
+      marquee,
+      earnableShards);
   }
 
   protected override InternalCharacter Create(Character earnable,

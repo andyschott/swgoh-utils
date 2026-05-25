@@ -1,7 +1,6 @@
-using AutoFixture;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
-using SwgohApi.TestUtilities.Customizations;
+using SwgohApi.TestUtilities;
 
 namespace SwgohApi.Infrastructure.Tests.Postgres;
 
@@ -15,7 +14,7 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
       _mockIdGenerator.Object);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateShip_Successful(string id,
     string name,
     EarnableLocation[] locations,
@@ -36,7 +35,7 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Equal(marquee, result.Marquee);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateShip_NotMarquee_Successful(string id,
     string name,
     EarnableLocation[] locations)
@@ -56,7 +55,7 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(result.Marquee);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetShipByName_Successful(Ship ship)
   {
     SetupMockEntities(dbContext => dbContext.Ships, [ship]);
@@ -66,7 +65,7 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Same(ship, result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetShipByName_NotFound_ReturnsNull(Ship ship,
     string name)
   {
@@ -77,7 +76,7 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetShip_Successful(Ship ship)
   {
     SetupMockEntities(dbContext => dbContext.Ships, [ship]);
@@ -87,7 +86,7 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Same(ship, result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetShip_NotFound_ReturnsNull(Ship ship,
     string id)
   {
@@ -98,7 +97,7 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task SaveShip_Successful(Ship ship)
   {
     SetupMockEntities(dbContext => dbContext.Ships, [ship]);
@@ -107,22 +106,5 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
 
     Assert.Null(exception);
     _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
-  }
-
-  class AutoDomainDataAttribute : AutoDataAttribute
-  {
-    public AutoDomainDataAttribute()
-      : base(Customize)
-    {
-    }
-
-    private static IFixture Customize()
-    {
-      var fixture = new Fixture();
-
-      fixture.Customize(new MarqueeCustomization());
-
-      return fixture;
-    }
   }
 }

@@ -1,0 +1,15 @@
+PUT {{SwgohApi.BaseAddress}}/charactersForUser/d0b3502b-3055-4154-bb63-560c691e27a4
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "shards": 250,
+  "farmingStatus": "Backlog"
+}
+
+###
+
+GET {{SwgohApi.BaseAddress}}/charactersForUser
+Authorization: Bearer {{auth_token}}
+
+###

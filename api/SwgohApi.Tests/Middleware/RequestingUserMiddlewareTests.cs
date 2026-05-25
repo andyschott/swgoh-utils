@@ -7,6 +7,7 @@ using SwgohApi.Infrastructure.Models;
 using SwgohApi.Middleware;
 using SwgohApi.Services;
 using SwgohApi.Tests.Extensions;
+using SwgohApi.TestUtilities;
 
 namespace SwgohApi.Tests.Middleware;
 
@@ -50,7 +51,8 @@ public sealed class RequestingUserMiddlewareTests : IDisposable
 
     Assert.Null(_httpContext.RequestingUser);
   }
-  [Theory, AutoData]
+
+  [Theory, SwgohApiAutoData]
   public async Task Invoke_RequestingUserNotFound_ReturnsUnauthorized(string userId,
     IFixture fixture)
   {
@@ -68,7 +70,7 @@ public sealed class RequestingUserMiddlewareTests : IDisposable
       _httpContext.Response.StatusCode);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task Invoke_RequestingUserFound_AddsToContext(string userId,
     User user,
     IFixture fixture)

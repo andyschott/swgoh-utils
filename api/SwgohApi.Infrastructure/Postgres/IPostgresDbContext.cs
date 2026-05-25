@@ -10,6 +10,7 @@ public interface IPostgresDbContext
   DbSet<Character> Characters { get; }
   DbSet<Ship> Ships { get; }
   DbSet<Marquee> Marquees { get; }
+  DbSet<EarnableShards> EarnableShards { get; }
 
   Task<int> SaveChangesAsync();
 }

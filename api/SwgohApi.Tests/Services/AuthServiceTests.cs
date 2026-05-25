@@ -3,6 +3,7 @@ using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Models.Auth;
 using SwgohApi.Services;
+using SwgohApi.TestUtilities;
 
 namespace SwgohApi.Tests.Services;
 
@@ -31,7 +32,7 @@ public class AuthServiceTests
       _timeProvider);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task Login_ValidCredentials_ReturnsTokenResponse(User user,
     string password,
     GeneratedTokenPair generatedTokens)
@@ -55,7 +56,7 @@ public class AuthServiceTests
     Assert.Equal("Bearer", result.TokenType);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task Login_InvalidPassword_ReturnsNull(User user,
     string password)
   {
@@ -71,7 +72,7 @@ public class AuthServiceTests
     Assert.Null(result);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task Refresh_ValidToken_RotatesAndReturnsTokenResponse(User user,
     RefreshToken existingToken,
     GeneratedTokenPair generatedTokens,

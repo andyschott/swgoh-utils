@@ -4,5 +4,6 @@ public record Character(string Id,
   string Name,
   EarnableLocation[] Locations,
   bool IsAccelerated,
-  Marquee? Marquee)
-  : Earnable(Id, Name, Locations, Marquee);
+  Marquee? Marquee,
+  EarnableShards? Shards)
+  : Earnable(Id, Name, Locations, Marquee, Shards);

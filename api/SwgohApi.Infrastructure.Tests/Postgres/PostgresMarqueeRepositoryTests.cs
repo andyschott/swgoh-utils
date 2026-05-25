@@ -1,7 +1,6 @@
-using AutoFixture;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
-using SwgohApi.TestUtilities.Customizations;
+using SwgohApi.TestUtilities;
 
 namespace SwgohApi.Infrastructure.Tests.Postgres;
 
@@ -15,7 +14,7 @@ public class PostgresMarqueeRepositoryTests : AbstractPostgresRepositoryTests
       _mockIdGenerator.Object);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateMarquee_Successful(string id,
     Character character,
     DateOnly introductionDate,
@@ -50,7 +49,7 @@ public class PostgresMarqueeRepositoryTests : AbstractPostgresRepositoryTests
     _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task CreateMarquee_Ship_Successful(string id,
     Ship ship,
     DateOnly introductionDate,
@@ -85,7 +84,7 @@ public class PostgresMarqueeRepositoryTests : AbstractPostgresRepositoryTests
     _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetMarquee_Successful(Marquee marquee)
   {
     SetupMockEntities(dbContext => dbContext.Marquees, [marquee]);
@@ -95,7 +94,7 @@ public class PostgresMarqueeRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Same(marquee, result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetMarquee_NotFound_ReturnsNull(Marquee marquee,
     string id)
   {
@@ -106,7 +105,7 @@ public class PostgresMarqueeRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task GetMarquees_Successful(Marquee[] marquees)
   {
     SetupMockEntities(dbContext => dbContext.Marquees, marquees);
@@ -116,7 +115,7 @@ public class PostgresMarqueeRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Equal(marquees, result);
   }
 
-  [Theory, AutoDomainData]
+  [Theory, SwgohApiAutoData]
   public async Task SaveMarquee_Successful(Marquee marquee)
   {
     var mockMarqueesDbSet = CreateMockDbSet(dbContext => dbContext.Marquees);
@@ -126,22 +125,5 @@ public class PostgresMarqueeRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(exception);
     mockMarqueesDbSet.Verify(dbSet => dbSet.Update(marquee), Times.Once);
     _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
-  }
-
-  class AutoDomainDataAttribute : AutoDataAttribute
-  {
-    public AutoDomainDataAttribute()
-      : base(Customize)
-    {
-    }
-
-    private static IFixture Customize()
-    {
-      var fixture = new Fixture();
-
-      fixture.Customize(new MarqueeCustomization());
-
-      return fixture;
-    }
   }
 }

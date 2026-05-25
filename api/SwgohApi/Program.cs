@@ -41,7 +41,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.AddSingleton<IPasswordHasher<User>>(_ =>
   new PasswordHasher<User>())
-  .AddSingleton(TimeProvider.System);
+  .AddSingleton(TimeProvider.System)
+  .AddValidation();
 
 var postgresConfig = builder.Configuration.GetSection("Postgres")
   .Get<PostgresConfiguration>();
@@ -108,7 +109,8 @@ app.MapUserEndpoints()
   .MapAuthEndpoints()
   .MapCharacterEndpoints()
   .MapMarqueeEndpoints()
-  .MapShipEndpoints();
+  .MapShipEndpoints()
+  .MapEarnableShardsEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

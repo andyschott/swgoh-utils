@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using SwgohApi.Extensions;
 using SwgohApi.Filters;
 using SwgohApi.Infrastructure.Models;
+using SwgohApi.TestUtilities;
 
 namespace SwgohApi.Tests.Filters;
 
@@ -35,11 +36,12 @@ public sealed class RequireAdminEndpointFilterTests : IDisposable
     Assert.IsType<ForbidHttpResult>(result);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task InvokeAsync_UserNotAdmin_ReturnsForbidden(IFixture fixture)
   {
     var user = fixture.Build<User>()
       .With(user => user.IsAdmin, false)
+      .With(user => user.EarnableShards, [])
       .Create();
     _httpContext.RequestingUser = user;
 
@@ -49,11 +51,12 @@ public sealed class RequireAdminEndpointFilterTests : IDisposable
     Assert.IsType<ForbidHttpResult>(result);
   }
 
-  [Theory, AutoData]
+  [Theory, SwgohApiAutoData]
   public async Task InvokeAsync_UserIsAdmin_CallsNext(IFixture fixture)
   {
     var user = fixture.Build<User>()
       .With(user => user.IsAdmin, true)
+      .With(user => user.EarnableShards, [])
       .Create();
     _httpContext.RequestingUser = user;
 

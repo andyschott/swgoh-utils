@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using SwgohApi.Configuration;
 using SwgohApi.Extensions;
-using SwgohApi.Filters;
 using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Mapping;

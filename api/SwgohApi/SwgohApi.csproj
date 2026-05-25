@@ -18,6 +18,10 @@
   </ItemGroup>
 
   <PropertyGroup>
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);Microsoft.AspNetCore.Http.Validation.Generated</InterceptorsNamespaces>
+  </PropertyGroup>
+
+  <PropertyGroup>
     <ContainerRegistry>ghcr.io</ContainerRegistry>
     <ContainerImageTag>$(GITHUB_SHA)</ContainerImageTag>
   </PropertyGroup>

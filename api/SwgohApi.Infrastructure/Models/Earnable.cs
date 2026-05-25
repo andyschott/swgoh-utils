@@ -8,4 +8,5 @@ public abstract class Earnable
   public string Name { get; set; } = string.Empty;
   public List<EarnableLocation> Locations { get; set; } = [];
   public Marquee? Marquee { get; set; }
+  public EarnableShards? EarnableShards { get; set; }
 }
