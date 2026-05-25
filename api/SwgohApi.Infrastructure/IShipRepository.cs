@@ -8,7 +8,6 @@ public interface IShipRepository
     IEnumerable<EarnableLocation> locations,
     Marquee? marquee);
   Task<Ship?> GetShipByName(string name);
-  Task<IEnumerable<Ship>> GetShips();
   Task<Ship?> GetShip(string id);
   Task SaveShip(Ship ship);
 }

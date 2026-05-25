@@ -8,7 +8,6 @@ public interface ICharacterRepository
     IEnumerable<EarnableLocation> locations,
     bool isAccelerated);
   Task<Character?> GetCharacterByName(string name);
-  Task<IEnumerable<Character>> GetCharacters();
   Task<Character?> GetCharacter(string id);
   Task SaveCharacter(Character character);
   Task<IEnumerable<Character>> GetCharactersForUser(User user);

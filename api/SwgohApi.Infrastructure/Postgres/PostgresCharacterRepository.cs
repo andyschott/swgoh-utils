@@ -38,11 +38,6 @@ public class PostgresCharacterRepository : PostgresEarnableRepository<Character>
       .FirstOrDefaultAsync(c => c.Name == name);
   }
 
-  public async Task<IEnumerable<Character>> GetCharacters()
-  {
-    return await _dbContext.Characters.ToListAsync();
-  }
-
   public async Task<Character?> GetCharacter(string id)
   {
     return await _dbContext.Characters

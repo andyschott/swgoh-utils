@@ -36,12 +36,7 @@ public class PostgresShipRepository : PostgresEarnableRepository<Ship>, IShipRep
       .Include(s => s.Marquee)
       .FirstOrDefaultAsync(c => c.Name == name);
   }
-
-  public async Task<IEnumerable<Ship>> GetShips()
-  {
-    return await _dbContext.Ships.ToListAsync();
-  }
-
+  
   public Task<Ship?> GetShip(string id)
   {
     return _dbContext.Ships
