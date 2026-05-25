@@ -19,14 +19,16 @@ public static class EarnableEndpoints
       .MapEndpoints<InternalCharacter, Character>();
     characters.MapPost(string.Empty, CreateCharacter)
       .RequireAdmin();
-    characters.MapPut("/{id}", UpdateCharacter);
+    characters.MapPut("/{id}", UpdateCharacter)
+      .RequireAdmin();
 
     var ships = app.MapGroup("/ships")
       .RequireAuthorization()
       .MapEndpoints<InternalShip, Ship>();
     ships.MapPost(string.Empty, CreateShip)
       .RequireAdmin();
-    ships.MapPut("/{id}", UpdateShip);
+    ships.MapPut("/{id}", UpdateShip)
+      .RequireAdmin();
 
     return app;
   }
