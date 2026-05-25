@@ -11,4 +11,6 @@ public interface ICharacterRepository
   Task<IEnumerable<Character>> GetCharacters();
   Task<Character?> GetCharacter(string id);
   Task SaveCharacter(Character character);
+  Task<IEnumerable<Character>> GetCharactersForUser(User user);
+  Task<Character?> GetCharacterForUser(string id, User user);
 }
