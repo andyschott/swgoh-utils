@@ -108,6 +108,7 @@ app.UseMiddleware<RequestingUserMiddleware>();
 app.MapUserEndpoints()
   .MapAuthEndpoints()
   .MapCharacterEndpoints()
+  .MapEarnableEndpoints()
   .MapMarqueeEndpoints()
   .MapShipEndpoints()
   .MapEarnableShardsEndpoints();

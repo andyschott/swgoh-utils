@@ -19,8 +19,6 @@ public static class ShipEndpoints
     ships.MapPost(string.Empty, CreateShip)
       .RequireAdmin();
 
-    ships.MapGet(string.Empty, GetShips)
-      .AllowAnonymous();
     ships.MapGet("/{id}",  GetShip)
       .AllowAnonymous();
     ships.MapGet("/name/{name}", GetShipByName)

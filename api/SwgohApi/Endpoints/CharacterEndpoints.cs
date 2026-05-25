@@ -19,8 +19,6 @@ public static class CharacterEndpoints
     characters.MapPost(string.Empty, CreateCharacter)
       .RequireAdmin();
 
-    characters.MapGet(string.Empty, GetCharacters)
-      .AllowAnonymous();
     characters.MapGet("/{id}", GetCharacter)
       .AllowAnonymous();
     characters.MapGet("/name/{name}", GetCharacterByName)
