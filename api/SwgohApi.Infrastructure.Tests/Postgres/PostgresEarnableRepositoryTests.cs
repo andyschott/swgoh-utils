@@ -46,6 +46,27 @@ public class PostgresEarnableRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Null(result);
   }
 
+  [Theory, SwgohApiAutoData]
+  public async Task GetCharacterByName_Successful(Character character)
+  {
+    SetupMockEntities(dbContext => dbContext.Characters, [character]);
+
+    var result = await _repository.GetEarnableByName(character.Name);
+
+    Assert.Same(character, result);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task GetCharacterByName_NotFound_ReturnsNull(Character character,
+    string name)
+  {
+    SetupMockEntities(dbContext => dbContext.Characters, [character]);
+
+    var result = await _repository.GetEarnableByName(name);
+
+    Assert.Null(result);
+  }
+
   class TestPostgresEarnableRepository : PostgresEarnableRepository<Character>
   {
     public TestPostgresEarnableRepository(IPostgresDbContext dbContext, IIdGenerator idGenerator)

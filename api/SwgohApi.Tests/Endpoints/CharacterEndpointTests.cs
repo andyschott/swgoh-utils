@@ -301,41 +301,4 @@ public sealed class CharacterEndpointTests : IDisposable
     Assert.NotEmpty(problemResult.ProblemDetails.Detail);
     Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
   }
-
-  [Theory, SwgohApiAutoData]
-  public async Task GetCharacterByName_Successful(InternalCharacter internalCharacter,
-    Character character)
-  {
-    _mockCharacterRepository.Setup(repository => repository.GetCharacterByName(internalCharacter.Name))
-      .ReturnsAsync(internalCharacter);
-    _mockCharacterMapper.Setup(mapper => mapper.MapTo(internalCharacter))
-      .Returns(character);
-
-    var response = await CharacterEndpoints.GetCharacterByName(internalCharacter.Name,
-      _mockCharacterRepository.Object,
-      _mockCharacterMapper.Object);
-
-    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
-    var okResult = Assert.IsType<Ok<Character>>(result.Result);
-
-    Assert.Same(character, okResult.Value);
-  }
-
-  [Theory, SwgohApiAutoData]
-  public async Task GetCharacter_CharacterByNameNotFound_ReturnsNotFound(string name)
-  {
-    _mockCharacterRepository.Setup(repository => repository.GetCharacterByName(name))
-      .ReturnsAsync((InternalCharacter?)null);
-
-    var response = await CharacterEndpoints.GetCharacterByName(name,
-      _mockCharacterRepository.Object,
-      _mockCharacterMapper.Object);
-
-    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
-    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
-
-    Assert.NotNull(problemResult.ProblemDetails.Detail);
-    Assert.NotEmpty(problemResult.ProblemDetails.Detail);
-    Assert.Equal((int)HttpStatusCode.NotFound, problemResult.StatusCode);
-  }
 }

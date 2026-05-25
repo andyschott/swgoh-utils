@@ -19,9 +19,6 @@ public static class ShipEndpoints
     ships.MapPost(string.Empty, CreateShip)
       .RequireAdmin();
 
-    ships.MapGet("/name/{name}", GetShipByName)
-      .AllowAnonymous();
-
     ships.MapPut("/{id}", UpdateShip)
       .RequireAdmin();
 
@@ -111,19 +108,5 @@ public static class ShipEndpoints
     }
 
     return TypedResults.Ok(shipMapper.MapTo(internalShip));
-  }
-
-  public static async Task<Results<Ok<Ship>, ProblemHttpResult>> GetShipByName(string name,
-    IShipRepository shipRepository,
-    IMapper<InternalShip, Ship> shipMapper)
-  {
-    var character = await shipRepository.GetShipByName(name);
-    if (character is null)
-    {
-      return TypedResults.Problem(detail:"No ship with that name exists.",
-        statusCode:(int)HttpStatusCode.NotFound);
-    }
-
-    return TypedResults.Ok(shipMapper.MapTo(character));
   }
 }

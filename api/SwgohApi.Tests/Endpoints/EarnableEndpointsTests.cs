@@ -83,4 +83,41 @@ public sealed class EarnableEndpointsTests : IDisposable
     Assert.NotEmpty(problemResult.ProblemDetails.Detail);
     Assert.Equal(StatusCodes.Status404NotFound, problemResult.StatusCode);
   }
+
+  [Theory, SwgohApiAutoData]
+  public async Task GetEarnableByName_Successful(InternalCharacter internalCharacter,
+    Character character)
+  {
+    _mockEarnableRepository.Setup(repository => repository.GetEarnableByName(internalCharacter.Name))
+      .ReturnsAsync(internalCharacter);
+    _mockEarnableMapper.Setup(mapper => mapper.MapTo(internalCharacter))
+      .Returns(character);
+
+    var response = await EarnableEndpoints.GetEarnableByName(internalCharacter.Name,
+      _mockEarnableRepository.Object,
+      _mockEarnableMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Character>>(result.Result);
+
+    Assert.Same(character, okResult.Value);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task GetEarnable_EarnableByNameNotFound_ReturnsNotFound(string name)
+  {
+    _mockEarnableRepository.Setup(repository => repository.GetEarnableByName(name))
+      .ReturnsAsync((InternalCharacter?)null);
+
+    var response = await EarnableEndpoints.GetEarnableByName(name,
+      _mockEarnableRepository.Object,
+      _mockEarnableMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
+
+    Assert.NotNull(problemResult.ProblemDetails.Detail);
+    Assert.NotEmpty(problemResult.ProblemDetails.Detail);
+    Assert.Equal(StatusCodes.Status404NotFound, problemResult.StatusCode);
+  }
 }

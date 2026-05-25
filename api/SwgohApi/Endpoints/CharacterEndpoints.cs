@@ -19,9 +19,6 @@ public static class CharacterEndpoints
     characters.MapPost(string.Empty, CreateCharacter)
       .RequireAdmin();
 
-    characters.MapGet("/name/{name}", GetCharacterByName)
-      .AllowAnonymous();
-
     characters.MapPut("/{id}",  UpdateCharacter)
       .RequireAdmin();
 
@@ -116,19 +113,5 @@ public static class CharacterEndpoints
     }
 
     return TypedResults.Ok(characterMapper.MapTo(internalCharacter));
-  }
-
-  public static async Task<Results<Ok<Character>, ProblemHttpResult>> GetCharacterByName(string name,
-    ICharacterRepository characterRepository,
-    IMapper<InternalCharacter, Character> characterMapper)
-  {
-    var character = await characterRepository.GetCharacterByName(name);
-    if (character is null)
-    {
-      return TypedResults.Problem(detail:"No character with that name exists.",
-        statusCode:(int)HttpStatusCode.NotFound);
-    }
-
-    return TypedResults.Ok(characterMapper.MapTo(character));
   }
 }

@@ -33,6 +33,9 @@ public static class EarnableEndpoints
     builder.MapGet("/{id}",  GetEarnable<TInternal, T>)
       .AllowAnonymous();
 
+    builder.MapGet("/name/{name}",  GetEarnableByName<TInternal, T>)
+      .AllowAnonymous();
+
     return builder;
   }
 
@@ -56,6 +59,22 @@ public static class EarnableEndpoints
     if (earnable is null)
     {
       return TypedResults.Problem(detail:"No entity with that ID exists.",
+        statusCode:StatusCodes.Status404NotFound);
+    }
+
+    return TypedResults.Ok(mapper.MapTo(earnable));
+  }
+
+  public static async Task<Results<Ok<T>, ProblemHttpResult>> GetEarnableByName<TInternal, T>(string name,
+    IEarnableRepository<TInternal> earnableRepository,
+    IMapper<TInternal, T> mapper)
+    where TInternal : InternalEarnable
+    where T : Earnable
+  {
+    var earnable = await earnableRepository.GetEarnableByName(name);
+    if (earnable is null)
+    {
+      return TypedResults.Problem(detail:"No entity with that name exists.",
         statusCode:StatusCodes.Status404NotFound);
     }
 

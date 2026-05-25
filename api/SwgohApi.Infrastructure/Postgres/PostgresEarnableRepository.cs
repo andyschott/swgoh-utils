@@ -26,7 +26,14 @@ where T : Earnable, new()
   public async Task<T?> GetEarnable(string id)
   {
     return await DbSet
-      .Include(c => c.Marquee)
-      .FirstOrDefaultAsync(c => c.Id == id);
+      .Include(e => e.Marquee)
+      .FirstOrDefaultAsync(e => e.Id == id);
+  }
+
+  public async Task<T?> GetEarnableByName(string name)
+  {
+    return await DbSet
+      .Include(e => e.Marquee)
+      .FirstOrDefaultAsync(e => e.Name == name);
   }
 }
