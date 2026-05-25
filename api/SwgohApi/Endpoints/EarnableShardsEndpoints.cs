@@ -7,6 +7,7 @@ using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalEarnable = SwgohApi.Infrastructure.Models.Earnable;
 using InternalEarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
 using InternalFarmingStatus = SwgohApi.Infrastructure.Models.FarmingStatus;
+using InternalShip =  SwgohApi.Infrastructure.Models.Ship;
 
 namespace SwgohApi.Endpoints;
 
@@ -17,6 +18,10 @@ public static class EarnableShardsEndpoints
     app.MapGroup("charactersForUser")
       .RequireAuthorization()
       .MapEndpoints<InternalCharacter, Character>();
+
+    app.MapGroup("shipsForUser")
+      .RequireAuthorization()
+      .MapEndpoints<InternalShip, Ship>();
 
     return app;
   }
