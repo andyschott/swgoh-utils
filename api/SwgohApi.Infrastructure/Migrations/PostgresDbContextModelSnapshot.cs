@@ -46,43 +46,6 @@ namespace SwgohApi.Infrastructure.Migrations
                     b.ToTable("Characters", (string)null);
                 });
 
-            modelBuilder.Entity("SwgohApi.Infrastructure.Models.EarnableShards", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("text");
-
-                    b.Property<string>("CharacterId")
-                        .HasColumnType("text");
-
-                    b.Property<int>("FarmingStatus")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Shards")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("ShipId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CharacterId")
-                        .IsUnique();
-
-                    b.HasIndex("ShipId")
-                        .IsUnique();
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("EarnableShards", null, t =>
-                        {
-                            t.HasCheckConstraint("CK_Marquee_Entity", "(\n    \"CharacterId\" IS NOT NULL\n    AND\n    \"ShipId\" IS NULL\n)\nOR\n(\n    \"CharacterId\" IS NULL\n    AND\n    \"ShipId\" IS NOT NULL\n)");
-                        });
-                });
-
             modelBuilder.Entity("SwgohApi.Infrastructure.Models.Marquee", b =>
                 {
                     b.Property<string>("Id")
@@ -208,31 +171,6 @@ namespace SwgohApi.Infrastructure.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("SwgohApi.Infrastructure.Models.EarnableShards", b =>
-                {
-                    b.HasOne("SwgohApi.Infrastructure.Models.Character", "Character")
-                        .WithOne("EarnableShards")
-                        .HasForeignKey("SwgohApi.Infrastructure.Models.EarnableShards", "CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SwgohApi.Infrastructure.Models.Ship", "Ship")
-                        .WithOne("EarnableShards")
-                        .HasForeignKey("SwgohApi.Infrastructure.Models.EarnableShards", "ShipId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("SwgohApi.Infrastructure.Models.User", "User")
-                        .WithMany("EarnableShards")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Character");
-
-                    b.Navigation("Ship");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("SwgohApi.Infrastructure.Models.Marquee", b =>
                 {
                     b.HasOne("SwgohApi.Infrastructure.Models.Character", "Character")
@@ -252,21 +190,12 @@ namespace SwgohApi.Infrastructure.Migrations
 
             modelBuilder.Entity("SwgohApi.Infrastructure.Models.Character", b =>
                 {
-                    b.Navigation("EarnableShards");
-
                     b.Navigation("Marquee");
                 });
 
             modelBuilder.Entity("SwgohApi.Infrastructure.Models.Ship", b =>
                 {
-                    b.Navigation("EarnableShards");
-
                     b.Navigation("Marquee");
-                });
-
-            modelBuilder.Entity("SwgohApi.Infrastructure.Models.User", b =>
-                {
-                    b.Navigation("EarnableShards");
                 });
 #pragma warning restore 612, 618
         }
