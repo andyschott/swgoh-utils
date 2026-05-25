@@ -3,17 +3,15 @@ using SwgohApi.Infrastructure.Models;
 
 namespace SwgohApi.Infrastructure.Postgres;
 
-public class PostgresShipRepository : IShipRepository
+public class PostgresShipRepository : PostgresEarnableRepository<Ship>, IShipRepository
 {
-  private readonly IPostgresDbContext _dbContext;
-  private readonly IIdGenerator _idGenerator;
-
   public PostgresShipRepository(IPostgresDbContext dbContext,
     IIdGenerator idGenerator)
+  : base(dbContext, idGenerator)
   {
-    _dbContext = dbContext;
-    _idGenerator = idGenerator;
   }
+
+  protected override DbSet<Ship> DbSet => _dbContext.Ships;
 
   public async Task<Ship> CreateShip(string name,
     IEnumerable<EarnableLocation> locations,

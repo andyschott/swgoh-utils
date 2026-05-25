@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using SwgohApi.Infrastructure.Models;
 
 namespace SwgohApi.Infrastructure.Postgres;
 
@@ -25,10 +26,20 @@ public static class ServiceConfiguration
 
     services.AddScoped<IUserRepository, PostgresUserRepository>()
       .AddScoped<ITokenRepository, PostgresTokenRepository>()
-      .AddScoped<ICharacterRepository, PostgresCharacterRepository>()
-      .AddScoped<IShipRepository, PostgresShipRepository>()
+      .AddScoped<PostgresCharacterRepository>()
+      .AddScoped<PostgresShipRepository>()
       .AddScoped<IMarqueeRepository, PostgresMarqueeRepository>()
       .AddScoped<IEarnableShardsRepository, PostgresEarnableShardsRepository>();
+
+    services.AddScoped<ICharacterRepository>(provider =>
+      provider.GetRequiredService<PostgresCharacterRepository>());
+    services.AddScoped<IEarnableRepository<Character>>(provider =>
+      provider.GetRequiredService<PostgresCharacterRepository>());
+
+    services.AddScoped<IShipRepository>(provider =>
+      provider.GetRequiredService<PostgresShipRepository>());
+    services.AddScoped<IEarnableRepository<Ship>>(provider =>
+      provider.GetRequiredService<PostgresShipRepository>());
 
     return services;
   }

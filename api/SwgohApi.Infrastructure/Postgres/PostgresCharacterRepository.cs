@@ -3,17 +3,15 @@ using SwgohApi.Infrastructure.Models;
 
 namespace SwgohApi.Infrastructure.Postgres;
 
-public class PostgresCharacterRepository : ICharacterRepository
+public class PostgresCharacterRepository : PostgresEarnableRepository<Character>, ICharacterRepository
 {
-  private readonly IPostgresDbContext _dbContext;
-  private readonly IIdGenerator _idGenerator;
-
   public PostgresCharacterRepository(IPostgresDbContext dbContext,
     IIdGenerator idGenerator)
+  : base(dbContext, idGenerator)
   {
-    _dbContext = dbContext;
-    _idGenerator = idGenerator;
   }
+
+  protected override DbSet<Character> DbSet => _dbContext.Characters;
 
   public async Task<Character> CreateCharacter(string name,
     IEnumerable<EarnableLocation> locations,
