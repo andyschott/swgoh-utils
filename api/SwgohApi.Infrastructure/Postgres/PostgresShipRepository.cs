@@ -14,27 +14,9 @@ public class PostgresShipRepository : PostgresEarnableRepository<Ship>, IShipRep
   protected override DbSet<Ship> DbSet => _dbContext.Ships;
 
   public async Task<Ship> CreateShip(string name,
-    IEnumerable<EarnableLocation> locations,
-    Marquee? marquee)
+    IEnumerable<EarnableLocation> locations)
   {
-    var ship = new Ship
-    {
-      Id = _idGenerator.CreateId(),
-      Name = name,
-      Locations = locations.ToList(),
-      Marquee = marquee
-    };
-
-    await _dbContext.Ships.AddAsync(ship);
-    await _dbContext.SaveChangesAsync();
-    return ship;
-  }
-
-  public async Task<Ship?> GetShipByName(string name)
-  {
-    return await _dbContext.Ships
-      .Include(s => s.Marquee)
-      .FirstOrDefaultAsync(c => c.Name == name);
+    return await CreateEarnable(name, locations);
   }
 
   public Task<Ship?> GetShip(string id)

@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Http.HttpResults;
+using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalEarnable = SwgohApi.Infrastructure.Models.Earnable;
+using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
 
 namespace SwgohApi.Endpoints;
@@ -12,13 +14,17 @@ public static class EarnableEndpoints
 {
   public static WebApplication MapEarnableEndpoints(this WebApplication app)
   {
-    app.MapGroup("/characters")
+    var characters = app.MapGroup("/characters")
       .RequireAuthorization()
       .MapEndpoints<InternalCharacter, Character>();
+    characters.MapPost(string.Empty, CreateCharacter)
+      .RequireAdmin();
 
-    app.MapGroup("/ships")
+    var ships = app.MapGroup("/ships")
       .RequireAuthorization()
       .MapEndpoints<InternalShip, Ship>();
+    ships.MapPost(string.Empty, CreateShip)
+      .RequireAdmin();
 
     return app;
   }
@@ -79,5 +85,76 @@ public static class EarnableEndpoints
     }
 
     return TypedResults.Ok(mapper.MapTo(earnable));
+  }
+
+  public static async Task<Results<Ok<Character>, ProblemHttpResult>> CreateCharacter(
+    CreateCharacterRequest request,
+    ICharacterRepository characterRepository,
+    IMarqueeRepository marqueeRepository,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
+    IMapper<InternalCharacter, Character> characterMapper)
+  {
+    var existingCharacter = await characterRepository.GetEarnableByName(request.Name);
+    if (existingCharacter is not null)
+    {
+      return TypedResults.Problem("A character with that name already exists.",
+        statusCode:StatusCodes.Status400BadRequest);
+    }
+
+    var locations = request.Locations.Select(earnableLocationMapper.MapFrom)
+      .ToList();
+
+    var character = await characterRepository.CreateCharacter(request.Name,
+      locations,
+      request.IsAccelerated);
+
+    if (request.Marquee is not null)
+    {
+      var marquee = await marqueeRepository.CreateMarquee(character,
+        request.Marquee.IntroductionDate,
+        request.Marquee.MarqueeEventDate,
+        request.Marquee.ShipmentDate,
+        request.Marquee.FarmDate,
+        request.Marquee.AccelerationDate);
+
+      character.Marquee = marquee;
+    }
+
+    return TypedResults.Ok(characterMapper.MapTo(character));
+  }
+
+  public static async Task<Results<Ok<Ship>, ProblemHttpResult>> CreateShip(
+    CreateShipRequest request,
+    IShipRepository shipRepository,
+    IMarqueeRepository marqueeRepository,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
+    IMapper<InternalShip, Ship> shipMapper)
+  {
+    var existingShip = await shipRepository.GetEarnableByName(request.Name);
+    if (existingShip is not null)
+    {
+      return TypedResults.Problem("A Ship with that name already exists.",
+        statusCode:StatusCodes.Status400BadRequest);
+    }
+
+    var locations = request.Locations.Select(earnableLocationMapper.MapFrom)
+      .ToList();
+
+    var ship = await shipRepository.CreateShip(request.Name,
+      locations);
+
+    if (request.Marquee is not null)
+    {
+      var marquee = await marqueeRepository.CreateMarquee(ship,
+        request.Marquee.IntroductionDate,
+        request.Marquee.MarqueeEventDate,
+        request.Marquee.ShipmentDate,
+        request.Marquee.FarmDate,
+        null);
+
+      ship.Marquee = marquee;
+    }
+
+    return TypedResults.Ok(shipMapper.MapTo(ship));
   }
 }

@@ -36,4 +36,23 @@ where T : Earnable, new()
       .Include(e => e.Marquee)
       .FirstOrDefaultAsync(e => e.Name == name);
   }
+
+  protected async Task<T> CreateEarnable(string name,
+    IEnumerable<EarnableLocation> locations,
+    Action<T>? updateEarnable = null)
+  {
+    var earnable = new T
+    {
+      Id = _idGenerator.CreateId(),
+      Name = name,
+      Locations = locations.ToList(),
+      Marquee = null
+    };
+    updateEarnable?.Invoke(earnable);
+
+    await DbSet.AddAsync(earnable);
+    await _dbContext.SaveChangesAsync();
+
+    return earnable;
+  }
 }

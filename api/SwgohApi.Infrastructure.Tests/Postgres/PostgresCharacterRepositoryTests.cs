@@ -35,26 +35,6 @@ public class PostgresCharacterRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Equal(isAccelerated, result.IsAccelerated);
   }
 
-  [Theory, SwgohApiAutoData]
-  public async Task GetCharacterByName_Successful(Character character)
-  {
-    SetupMockEntities(dbContext => dbContext.Characters, [character]);
-
-    var result = await _repository.GetCharacterByName(character.Name);
-
-    Assert.Same(character, result);
-  }
-
-  [Theory, SwgohApiAutoData]
-  public async Task GetCharacterByName_NotFound_ReturnsNull(Character character,
-    string name)
-  {
-    SetupMockEntities(dbContext => dbContext.Characters, [character]);
-
-    var result = await _repository.GetCharacterByName(name);
-
-    Assert.Null(result);
-  }
 
   [Theory, SwgohApiAutoData]
   public async Task GetCharacter_Successful(Character character)

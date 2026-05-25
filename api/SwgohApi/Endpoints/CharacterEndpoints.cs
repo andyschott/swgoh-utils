@@ -16,49 +16,10 @@ public static class CharacterEndpoints
     var characters = app.MapGroup("/characters")
       .RequireAuthorization();
 
-    characters.MapPost(string.Empty, CreateCharacter)
-      .RequireAdmin();
-
     characters.MapPut("/{id}",  UpdateCharacter)
       .RequireAdmin();
 
     return app;
-  }
-
-  public static async Task<Results<Ok<Character>, ProblemHttpResult>> CreateCharacter(
-    CreateCharacterRequest request,
-    ICharacterRepository characterRepository,
-    IMarqueeRepository marqueeRepository,
-    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
-    IMapper<InternalCharacter, Character> characterMapper)
-  {
-    var existingCharacter = await characterRepository.GetCharacterByName(request.Name);
-    if (existingCharacter is not null)
-    {
-      return TypedResults.Problem("A character with that name already exists.",
-        statusCode:(int)HttpStatusCode.BadRequest);
-    }
-
-    var locations = request.Locations.Select(earnableLocationMapper.MapFrom)
-      .ToList();
-
-    var character = await characterRepository.CreateCharacter(request.Name,
-      locations,
-      request.IsAccelerated);
-
-    if (request.Marquee is not null)
-    {
-      var marquee = await marqueeRepository.CreateMarquee(character,
-        request.Marquee.IntroductionDate,
-        request.Marquee.MarqueeEventDate,
-        request.Marquee.ShipmentDate,
-        request.Marquee.FarmDate,
-        request.Marquee.AccelerationDate);
-
-      character.Marquee = marquee;
-    }
-
-    return TypedResults.Ok(characterMapper.MapTo(character));
   }
 
   public static async Task<Results<Ok<Character>, ProblemHttpResult>> UpdateCharacter(string id,

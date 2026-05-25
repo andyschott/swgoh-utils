@@ -16,49 +16,10 @@ public static class ShipEndpoints
     var ships = app.MapGroup("/ships")
       .RequireAuthorization();
 
-    ships.MapPost(string.Empty, CreateShip)
-      .RequireAdmin();
-
     ships.MapPut("/{id}", UpdateShip)
       .RequireAdmin();
 
     return app;
-  }
-
-  public static async Task<Results<Ok<Ship>, ProblemHttpResult>> CreateShip(
-    CreateShipRequest request,
-    IShipRepository shipRepository,
-    IMarqueeRepository marqueeRepository,
-    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
-    IMapper<InternalShip, Ship> shipMapper)
-  {
-    var existingShip = await shipRepository.GetShipByName(request.Name);
-    if (existingShip is not null)
-    {
-      return TypedResults.Problem("A Ship with that name already exists.",
-        statusCode:(int)HttpStatusCode.BadRequest);
-    }
-
-    var locations = request.Locations.Select(earnableLocationMapper.MapFrom)
-      .ToList();
-
-    var ship = await shipRepository.CreateShip(request.Name,
-      locations,
-      null);
-
-    if (request.Marquee is not null)
-    {
-      var marquee = await marqueeRepository.CreateMarquee(ship,
-        request.Marquee.IntroductionDate,
-        request.Marquee.MarqueeEventDate,
-        request.Marquee.ShipmentDate,
-        request.Marquee.FarmDate,
-        null);
-
-      ship.Marquee = marquee;
-    }
-
-    return TypedResults.Ok(shipMapper.MapTo(ship));
   }
 
   public static async Task<Results<Ok<Ship>, ProblemHttpResult>> UpdateShip(string id,

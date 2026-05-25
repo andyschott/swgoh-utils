@@ -17,25 +17,12 @@ public class PostgresCharacterRepository : PostgresEarnableRepository<Character>
     IEnumerable<EarnableLocation> locations,
     bool isAccelerated)
   {
-    var character = new Character
-    {
-      Id = _idGenerator.CreateId(),
-      Name = name,
-      Locations = locations.ToList(),
-      IsAccelerated = isAccelerated,
-      Marquee = null
-    };
-
-    await _dbContext.Characters.AddAsync(character);
-    await _dbContext.SaveChangesAsync();
-    return character;
-  }
-
-  public async Task<Character?> GetCharacterByName(string name)
-  {
-    return await _dbContext.Characters
-      .Include(c => c.Marquee)
-      .FirstOrDefaultAsync(c => c.Name == name);
+    return await CreateEarnable(name,
+      locations,
+      character =>
+      {
+        character.IsAccelerated = isAccelerated;
+      });
   }
 
   public async Task<Character?> GetCharacter(string id)
