@@ -5,11 +5,13 @@
     <p>Use the navigation menu to open any tool.</p>
   </section>
 
-  <section aria-labelledby="login-title">
-    <h2 id="login-title">Login</h2>
+  @if(!isLoggedIn()) {
+    <section aria-labelledby="login-title">
+      <h2 id="login-title">Login</h2>
 
-    <div class="login-item">
-      <app-login></app-login>
-    </div>
-  </section>
+      <div class="login-item">
+        <app-login></app-login>
+      </div>
+    </section>
+  }
 </main>

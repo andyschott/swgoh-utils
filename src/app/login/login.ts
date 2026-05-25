@@ -1,5 +1,6 @@
-import { Component, signal } from '@angular/core';
-import { FormsModule, NgForm } from '@angular/forms';
+import { Component, inject, signal } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { AuthService } from '../auth/auth-service';
 
 @Component({
   selector: 'app-login',
@@ -10,8 +11,11 @@ import { FormsModule, NgForm } from '@angular/forms';
 export class Login {
   username = signal('');
   password = signal('');
+  
+  private readonly authService = inject(AuthService);
 
-  onLogin(form: NgForm) {
-    console.log(`logging in ${this.username()}`);
+  onLogin() {
+    this.authService.login(this.username(),
+      this.password());
   }
 }
