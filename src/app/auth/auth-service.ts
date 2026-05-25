@@ -4,6 +4,7 @@ import { environment } from '../../environments/environment';
 import { TokenResponse } from '../apiModels/token-response';
 import { LoginRequest } from '../apiModels/login-request';
 import { map, Observable } from 'rxjs';
+import { RevokeRequest } from '../apiModels/revoke-request';
 
 const AuthKey = "authentication";
 
@@ -34,12 +35,41 @@ export class AuthService {
           refreshToken: response.refreshToken
         };
         this.saveToken(auth);
-        this._isLoggedIn.set(true);
+      });
+  }
+
+  logout() {
+    const token = this.getSavedToken();
+    if (token === null) {
+      return;
+    }
+
+    const request: RevokeRequest = {
+      refreshToken: token.refreshToken
+    };
+    this.httpClient.post(`${this.authUrl}/revoke`, request)
+      .subscribe(() => {
+        this.clearToken();
       });
   }
 
   private saveToken(auth: Token) {
     localStorage.setItem(AuthKey, JSON.stringify(auth));
+    this._isLoggedIn.set(true);
+  }
+
+  private clearToken() {
+    localStorage.removeItem(AuthKey);
+    this._isLoggedIn.set(false);
+  }
+
+  private getSavedToken(): Token | null {
+    const item = localStorage.getItem(AuthKey);
+    if (item === null) {
+      return null;
+    }
+
+    return JSON.parse(item) as Token;
   }
 
   private hasSavedToken() {
