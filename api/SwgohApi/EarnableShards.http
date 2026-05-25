@@ -1,0 +1,10 @@
+PUT {{SwgohApi.BaseAddress}}/characters/d0b3502b-3055-4154-bb63-560c691e27a4/earnableShards
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "shards": 244,
+  "farmingStatus": "Active"
+}
+
+###

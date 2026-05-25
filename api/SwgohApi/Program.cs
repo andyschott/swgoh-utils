@@ -108,7 +108,8 @@ app.MapUserEndpoints()
   .MapAuthEndpoints()
   .MapCharacterEndpoints()
   .MapMarqueeEndpoints()
-  .MapShipEndpoints();
+  .MapShipEndpoints()
+  .MapEarnableShardsEndpoints();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
