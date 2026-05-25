@@ -47,7 +47,7 @@ public class PostgresEarnableRepositoryTests : AbstractPostgresRepositoryTests
   }
 
   [Theory, SwgohApiAutoData]
-  public async Task GetCharacterByName_Successful(Character character)
+  public async Task GetEarnableByName_Successful(Character character)
   {
     SetupMockEntities(dbContext => dbContext.Characters, [character]);
 
@@ -57,7 +57,7 @@ public class PostgresEarnableRepositoryTests : AbstractPostgresRepositoryTests
   }
 
   [Theory, SwgohApiAutoData]
-  public async Task GetCharacterByName_NotFound_ReturnsNull(Character character,
+  public async Task GetEarnableByName_NotFound_ReturnsNull(Character character,
     string name)
   {
     SetupMockEntities(dbContext => dbContext.Characters, [character]);
@@ -65,6 +65,17 @@ public class PostgresEarnableRepositoryTests : AbstractPostgresRepositoryTests
     var result = await _repository.GetEarnableByName(name);
 
     Assert.Null(result);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task SaveEarnable_Successful(Character character)
+  {
+    SetupMockEntities(dbContext => dbContext.Characters, [character]);
+
+    var exception = await Record.ExceptionAsync(() => _repository.SaveEarnable(character));
+
+    Assert.Null(exception);
+    _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
   }
 
   class TestPostgresEarnableRepository : PostgresEarnableRepository<Character>

@@ -25,19 +25,6 @@ public class PostgresCharacterRepository : PostgresEarnableRepository<Character>
       });
   }
 
-  public async Task<Character?> GetCharacter(string id)
-  {
-    return await _dbContext.Characters
-      .Include(c => c.Marquee)
-      .FirstOrDefaultAsync(c => c.Id == id);
-  }
-
-  public async Task SaveCharacter(Character character)
-  {
-    _dbContext.Characters.Update(character);
-    await _dbContext.SaveChangesAsync();
-  }
-
   public async Task<IEnumerable<Character>> GetCharactersForUser(User user)
   {
     return await _dbContext.Characters

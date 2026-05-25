@@ -31,36 +31,4 @@ public class PostgresShipRepositoryTests : AbstractPostgresRepositoryTests
     Assert.Equal(name, result.Name);
     Assert.Equal(locations, result.Locations);
   }
-
-  [Theory, SwgohApiAutoData]
-  public async Task GetShip_Successful(Ship ship)
-  {
-    SetupMockEntities(dbContext => dbContext.Ships, [ship]);
-
-    var result = await _repository.GetShip(ship.Id);
-
-    Assert.Same(ship, result);
-  }
-
-  [Theory, SwgohApiAutoData]
-  public async Task GetShip_NotFound_ReturnsNull(Ship ship,
-    string id)
-  {
-    SetupMockEntities(dbContext => dbContext.Ships, [ship]);
-
-    var result = await _repository.GetShip(id);
-
-    Assert.Null(result);
-  }
-
-  [Theory, SwgohApiAutoData]
-  public async Task SaveShip_Successful(Ship ship)
-  {
-    SetupMockEntities(dbContext => dbContext.Ships, [ship]);
-
-    var exception = await Record.ExceptionAsync(() => _repository.SaveShip(ship));
-
-    Assert.Null(exception);
-    _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
-  }
 }

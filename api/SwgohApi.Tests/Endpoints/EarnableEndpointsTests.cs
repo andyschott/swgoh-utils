@@ -8,6 +8,7 @@ using SwgohApi.Models.Earnables;
 using SwgohApi.TestUtilities;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
+using InternalEarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
 
@@ -297,7 +298,7 @@ public sealed class EarnableEndpointsTests : IDisposable
   {
     var mockShipRepository = _mockRepository.Create<IShipRepository>();
     var request = fixture.Build<CreateShipRequest>()
-      .With(r => r.Marquee, (ShipMarqueeRequest?)null)
+      .With(r => r.Marquee, (MarqueeRequest?)null)
       .Create();
 
     mockShipRepository.Setup(repository => repository.GetEarnableByName(request.Name))
@@ -354,5 +355,163 @@ public sealed class EarnableEndpointsTests : IDisposable
     Assert.NotNull(problemResult.ProblemDetails.Detail);
     Assert.NotEmpty(problemResult.ProblemDetails.Detail);
     Assert.Equal(StatusCodes.Status400BadRequest, problemResult.StatusCode);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task UpdateCharacter_Successful(UpdateCharacterRequest request,
+    InternalEarnableLocation[] internalLocations,
+    Character character,
+    IFixture fixture)
+  {
+    var internalCharacter = fixture.Build<InternalCharacter>()
+      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
+      .Create();
+    _mockEarnableRepository.Setup(repository => repository.GetEarnable(internalCharacter.Id))
+      .ReturnsAsync(internalCharacter);
+
+    foreach (var (src, dest) in request.Locations!.Zip(internalLocations))
+    {
+      _mockEarnableLocationMapper.Setup(mapper => mapper.MapFrom(src))
+        .Returns(dest);
+    }
+
+    _mockEarnableRepository.Setup(repository => repository.SaveEarnable(
+        It.Is<InternalCharacter>(c => c.IsAccelerated == request.IsAccelerated &&
+                                      c.Locations.SequenceEqual(internalLocations))))
+      .Returns(Task.CompletedTask);
+
+    _mockMarqueeRepository.Setup(repository => repository.SaveMarquee(internalCharacter.Marquee!))
+      .Returns(Task.CompletedTask);
+
+    _mockEarnableMapper.Setup(mapper => mapper.MapTo(internalCharacter))
+      .Returns(character);
+
+    var response = await EarnableEndpoints.UpdateCharacter(internalCharacter.Id,
+      request,
+      _mockEarnableRepository.Object,
+      _mockMarqueeRepository.Object,
+      _mockEarnableMapper.Object,
+      _mockEarnableLocationMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Character>>(result.Result);
+
+    Assert.Same(character, okResult.Value);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task UpdateCharacter_CreatingMarquee_Successful(UpdateCharacterRequest request,
+    InternalEarnableLocation[] internalLocations,
+    InternalMarquee internalMarquee,
+    Character character,
+    IFixture fixture)
+  {
+    var internalCharacter = fixture.Build<InternalCharacter>()
+      .With(c => c.Marquee, (InternalMarquee?)null)
+      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
+      .Create();
+
+    _mockEarnableRepository.Setup(repository => repository.GetEarnable(internalCharacter.Id))
+      .ReturnsAsync(internalCharacter);
+
+    foreach (var (src, dest) in request.Locations!.Zip(internalLocations))
+    {
+      _mockEarnableLocationMapper.Setup(mapper => mapper.MapFrom(src))
+        .Returns(dest);
+    }
+
+    _mockEarnableRepository.Setup(repository => repository.SaveEarnable(
+        It.Is<InternalCharacter>(c => c.IsAccelerated == request.IsAccelerated &&
+                                      c.Locations.SequenceEqual(internalLocations))))
+      .Returns(Task.CompletedTask);
+
+    _mockMarqueeRepository.Setup(repository => repository.CreateMarquee(
+        internalCharacter,
+        request.Marquee!.IntroductionDate,
+        request.Marquee.MarqueeEventDate,
+        request.Marquee.ShipmentDate,
+        request.Marquee.FarmDate,
+        request.Marquee.AccelerationDate))
+      .ReturnsAsync(internalMarquee);
+
+    _mockEarnableMapper.Setup(mapper => mapper.MapTo(internalCharacter))
+      .Returns(character);
+
+    var response = await EarnableEndpoints.UpdateCharacter(internalCharacter.Id,
+      request,
+      _mockEarnableRepository.Object,
+      _mockMarqueeRepository.Object,
+      _mockEarnableMapper.Object,
+      _mockEarnableLocationMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Character>>(result.Result);
+
+    Assert.Same(character, okResult.Value);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task UpdateCharacter_NotAMarquee_Successful(InternalEarnableLocation[] internalLocations,
+    Character character,
+    IFixture fixture)
+  {
+    var internalCharacter = fixture.Build<InternalCharacter>()
+      .With(c => c.Marquee, (InternalMarquee?)null)
+      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
+      .Create();
+    var request = fixture.Build<UpdateCharacterRequest>()
+      .With(request => request.Marquee, (CharacterMarqueeRequest?)null)
+      .Create();
+
+    _mockEarnableRepository.Setup(repository => repository.GetEarnable(internalCharacter.Id))
+      .ReturnsAsync(internalCharacter);
+
+    foreach (var (src, dest) in request.Locations!.Zip(internalLocations))
+    {
+      _mockEarnableLocationMapper.Setup(mapper => mapper.MapFrom(src))
+        .Returns(dest);
+    }
+
+    _mockEarnableRepository.Setup(repository => repository.SaveEarnable(
+        It.Is<InternalCharacter>(c => c.IsAccelerated == request.IsAccelerated &&
+                                      c.Locations.SequenceEqual(internalLocations))))
+      .Returns(Task.CompletedTask);
+
+    _mockEarnableMapper.Setup(mapper => mapper.MapTo(internalCharacter))
+      .Returns(character);
+
+    var response = await EarnableEndpoints.UpdateCharacter(internalCharacter.Id,
+      request,
+      _mockEarnableRepository.Object,
+      _mockMarqueeRepository.Object,
+      _mockEarnableMapper.Object,
+      _mockEarnableLocationMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Character>>(result.Result);
+
+    Assert.Same(character, okResult.Value);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task UpdateCharacter_CharacterNotFound_ReturnsNotFound(string id,
+    UpdateCharacterRequest request)
+  {
+    _mockEarnableRepository.Setup(repository => repository.GetEarnable(id))
+      .ReturnsAsync((InternalCharacter?)null);
+
+    var response = await EarnableEndpoints.UpdateCharacter(id,
+      request,
+      _mockEarnableRepository.Object,
+      _mockMarqueeRepository.Object,
+      _mockEarnableMapper.Object,
+      _mockEarnableLocationMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
+
+    Assert.NotNull(problemResult.ProblemDetails.Detail);
+    Assert.NotEmpty(problemResult.ProblemDetails.Detail);
+    Assert.Equal(StatusCodes.Status404NotFound, problemResult.StatusCode);
   }
 }

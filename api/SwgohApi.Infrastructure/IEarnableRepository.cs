@@ -8,4 +8,5 @@ where T : Earnable
   Task<IEnumerable<T>> GetEarnables();
   Task<T?> GetEarnable(string id);
   Task<T?> GetEarnableByName(string name);
+  Task SaveEarnable(T earnable);
 }

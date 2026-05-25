@@ -19,12 +19,14 @@ public static class EarnableEndpoints
       .MapEndpoints<InternalCharacter, Character>();
     characters.MapPost(string.Empty, CreateCharacter)
       .RequireAdmin();
+    characters.MapPut("/{id}", UpdateCharacter);
 
     var ships = app.MapGroup("/ships")
       .RequireAuthorization()
       .MapEndpoints<InternalShip, Ship>();
     ships.MapPost(string.Empty, CreateShip)
       .RequireAdmin();
+    ships.MapPut("/{id}", UpdateShip);
 
     return app;
   }
@@ -156,5 +158,102 @@ public static class EarnableEndpoints
     }
 
     return TypedResults.Ok(shipMapper.MapTo(ship));
+  }
+
+  public static async Task<Results<Ok<Character>, ProblemHttpResult>> UpdateCharacter(string id,
+    UpdateCharacterRequest request,
+    IEarnableRepository<InternalCharacter> characterRepository,
+    IMarqueeRepository marqueeRepository,
+    IMapper<InternalCharacter, Character> characterMapper,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
+  {
+    return await UpdateEarnable(id,
+      request.Locations,
+      request.Marquee,
+      request.Marquee?.AccelerationDate,
+      characterRepository,
+      marqueeRepository,
+      characterMapper,
+      earnableLocationMapper,
+      internalCharacter =>
+      {
+        if (request.IsAccelerated is not null)
+        {
+          internalCharacter.IsAccelerated = request.IsAccelerated.Value;
+        }
+      });
+  }
+
+  public static async Task<Results<Ok<Ship>, ProblemHttpResult>> UpdateShip(string id,
+    UpdateShipRequest request,
+    IEarnableRepository<InternalShip> shipRepository,
+    IMarqueeRepository marqueeRepository,
+    IMapper<InternalShip, Ship> shipMapper,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
+  {
+    return await UpdateEarnable(id,
+      request.Locations,
+      request.Marquee,
+      null,
+      shipRepository,
+      marqueeRepository,
+      shipMapper,
+      earnableLocationMapper);
+  }
+
+  private static async Task<Results<Ok<T>, ProblemHttpResult>> UpdateEarnable<TInternal, T>(string id,
+    EarnableLocation[]? locations,
+    MarqueeRequest? marquee,
+    DateOnly? marqueeAccelerationDate,
+    IEarnableRepository<TInternal> earnableRepository,
+    IMarqueeRepository marqueeRepository,
+    IMapper<TInternal, T> mapper,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
+    Action<TInternal>? configureEarnable = null)
+  where TInternal : InternalEarnable
+  where T : Earnable
+  {
+    var internalEarnable = await earnableRepository.GetEarnable(id);
+    if (internalEarnable is null)
+    {
+      return TypedResults.Problem(detail: "No entity with that ID exist.",
+        statusCode: StatusCodes.Status404NotFound);
+    }
+
+    if (locations is not null)
+    {
+      internalEarnable.Locations = locations.Select(earnableLocationMapper.MapFrom)
+        .ToList();
+    }
+
+    configureEarnable?.Invoke(internalEarnable);
+
+    await earnableRepository.SaveEarnable(internalEarnable);
+
+    if (marquee is not null)
+    {
+      if (internalEarnable.Marquee is not null)
+      {
+        internalEarnable.Marquee.IntroductionDate = marquee.IntroductionDate;
+        internalEarnable.Marquee.MarqueeEventDate = marquee.MarqueeEventDate;
+        internalEarnable.Marquee.ShipmentDate = marquee.ShipmentDate;
+        internalEarnable.Marquee.FarmDate = marquee.FarmDate;
+        internalEarnable.Marquee.AccelerationDate = marqueeAccelerationDate;
+
+        await marqueeRepository.SaveMarquee(internalEarnable.Marquee);
+      }
+      else
+      {
+        internalEarnable.Marquee = await marqueeRepository.CreateMarquee(
+          internalEarnable,
+          marquee.IntroductionDate,
+          marquee.MarqueeEventDate,
+          marquee.ShipmentDate,
+          marquee.FarmDate,
+          marqueeAccelerationDate);
+      }
+    }
+
+    return TypedResults.Ok(mapper.MapTo(internalEarnable));
   }
 }

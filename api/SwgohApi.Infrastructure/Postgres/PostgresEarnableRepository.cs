@@ -37,6 +37,12 @@ where T : Earnable, new()
       .FirstOrDefaultAsync(e => e.Name == name);
   }
 
+  public async Task SaveEarnable(T earnable)
+  {
+    DbSet.Update(earnable);
+    await _dbContext.SaveChangesAsync();
+  }
+
   protected async Task<T> CreateEarnable(string name,
     IEnumerable<EarnableLocation> locations,
     Action<T>? updateEarnable = null)

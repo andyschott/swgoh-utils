@@ -18,17 +18,4 @@ public class PostgresShipRepository : PostgresEarnableRepository<Ship>, IShipRep
   {
     return await CreateEarnable(name, locations);
   }
-
-  public Task<Ship?> GetShip(string id)
-  {
-    return _dbContext.Ships
-      .Include(s => s.Marquee)
-      .FirstOrDefaultAsync(c => c.Id == id);
-  }
-
-  public async Task SaveShip(Ship ship)
-  {
-    _dbContext.Ships.Update(ship);
-    await _dbContext.SaveChangesAsync();
-  }
 }
