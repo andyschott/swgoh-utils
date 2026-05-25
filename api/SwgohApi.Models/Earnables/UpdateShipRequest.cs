@@ -1,4 +1,4 @@
 namespace SwgohApi.Models.Earnables;
 
 public record UpdateShipRequest(EarnableLocation[]? Locations,
-  ShipMarqueeRequest? Marquee);
+  MarqueeRequest? Marquee);

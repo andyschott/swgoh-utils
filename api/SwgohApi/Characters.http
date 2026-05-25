@@ -20,7 +20,7 @@ Authorization: Bearer {{auth_token}}
 }
 ###
 
-GET {{SwgohApi.BaseAddress}}/characters/2abe6d0a-52ad-4321-9d93-c65978f7ce52
+GET {{SwgohApi.BaseAddress}}/characters/d0b3502b-3055-4154-bb63-560c691e27a4
 
 ###
 

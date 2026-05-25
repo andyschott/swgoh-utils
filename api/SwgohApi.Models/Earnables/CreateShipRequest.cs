@@ -2,4 +2,4 @@ namespace SwgohApi.Models.Earnables;
 
 public record CreateShipRequest(string Name,
   EarnableLocation[] Locations,
-  ShipMarqueeRequest? Marquee);
+  MarqueeRequest? Marquee);

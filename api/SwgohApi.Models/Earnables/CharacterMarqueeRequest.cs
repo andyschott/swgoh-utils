@@ -4,4 +4,5 @@ public record CharacterMarqueeRequest(DateOnly IntroductionDate,
   DateOnly MarqueeEventDate,
   DateOnly ShipmentDate,
   DateOnly FarmDate,
-  DateOnly AccelerationDate);
+  DateOnly AccelerationDate)
+  : MarqueeRequest(IntroductionDate, MarqueeEventDate, ShipmentDate, FarmDate);

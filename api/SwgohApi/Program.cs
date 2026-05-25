@@ -107,9 +107,8 @@ app.UseMiddleware<RequestingUserMiddleware>();
 
 app.MapUserEndpoints()
   .MapAuthEndpoints()
-  .MapCharacterEndpoints()
+  .MapEarnableEndpoints()
   .MapMarqueeEndpoints()
-  .MapShipEndpoints()
   .MapEarnableShardsEndpoints();
 
 // Configure the HTTP request pipeline.
