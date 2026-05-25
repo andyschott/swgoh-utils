@@ -29,7 +29,7 @@ public abstract class AbstractPostgresRepositoryTests
   }
 
   protected void SetupMockEntities<T>(Expression<Func<IPostgresDbContext, DbSet<T>>> expression,
-    IEnumerable<T> entities)
+    params T[] entities)
     where T : class
   {
     _mockDbContext.Setup(expression)

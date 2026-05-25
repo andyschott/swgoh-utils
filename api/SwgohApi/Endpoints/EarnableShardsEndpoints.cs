@@ -4,8 +4,10 @@ using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
+using InternalEarnable = SwgohApi.Infrastructure.Models.Earnable;
 using InternalEarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
 using InternalFarmingStatus = SwgohApi.Infrastructure.Models.FarmingStatus;
+using InternalShip =  SwgohApi.Infrastructure.Models.Ship;
 
 namespace SwgohApi.Endpoints;
 
@@ -13,23 +15,36 @@ public static class EarnableShardsEndpoints
 {
   public static WebApplication MapEarnableShardsEndpoints(this WebApplication app)
   {
-    var group = app.MapGroup("charactersForUser")
-      .RequireAuthorization();
+    app.MapGroup("charactersForUser")
+      .RequireAuthorization()
+      .MapEndpoints<InternalCharacter, Character>();
 
-    group.MapPut("/{characterId}", CreateOrUpdateEarnableShards);
-    group.MapGet(string.Empty, GetCharactersForUser);
+    app.MapGroup("shipsForUser")
+      .RequireAuthorization()
+      .MapEndpoints<InternalShip, Ship>();
 
     return app;
   }
 
-  public static async Task<Results<Ok<EarnableShards>, ProblemHttpResult>> CreateOrUpdateEarnableShards(
-    string characterId,
+  private static RouteGroupBuilder MapEndpoints<TInternal, T>(this RouteGroupBuilder builder)
+  where TInternal : InternalEarnable
+  where T : Earnable
+  {
+    builder.MapPut("/{id}", CreateOrUpdateEarnableShards<TInternal>);
+    builder.MapGet(string.Empty, GetEarnablesForUser<TInternal, T>);
+
+    return builder;
+  }
+
+  public static async Task<Results<Ok<EarnableShards>, ProblemHttpResult>> CreateOrUpdateEarnableShards<TInternal>(
+    string id,
     EarnableShardsRequest request,
-    ICharacterRepository characterRepository,
+    IEarnableRepository<TInternal> earnableRepository,
     IEarnableShardsRepository earnableShardsRepository,
     IMapper<InternalFarmingStatus, FarmingStatus> farmingStatusMapper,
     IMapper<InternalEarnableShards, EarnableShards> earnableShardsMapper,
     HttpContext httpContext)
+  where TInternal : InternalEarnable
   {
     var requestingUser = httpContext.RequestingUser;
     if (requestingUser is null)
@@ -37,38 +52,40 @@ public static class EarnableShardsEndpoints
       return TypedResults.Problem(statusCode: StatusCodes.Status403Forbidden);
     }
 
-    var character = await characterRepository.GetCharacterForUser(characterId, requestingUser);
-    if (character is null)
+    var earnable = await earnableRepository.GetEarnableForUser(id, requestingUser);
+    if (earnable is null)
     {
       return TypedResults.Problem(statusCode: StatusCodes.Status404NotFound);
     }
 
     var internalFarmingStatus = farmingStatusMapper.MapFrom(request.FarmingStatus);
-    InternalEarnableShards earnableShards;
-    if (character.EarnableShards is null)
+
+    var internalEarnableShards = earnable.CurrentEarnableShards;
+    if (internalEarnableShards is null)
     {
-      earnableShards = await earnableShardsRepository.CreateEarnableShards(requestingUser,
-        character,
+      internalEarnableShards = await earnableShardsRepository.CreateEarnableShards(requestingUser,
+        earnable,
         request.Shards,
         internalFarmingStatus);
     }
     else
     {
-      character.EarnableShards.Shards = request.Shards;
-      character.EarnableShards.FarmingStatus = internalFarmingStatus;
+      internalEarnableShards.Shards = request.Shards;
+      internalEarnableShards.FarmingStatus = internalFarmingStatus;
 
-      await earnableShardsRepository.SaveEarnableShards(character.EarnableShards);
+      await earnableShardsRepository.SaveEarnableShards(internalEarnableShards);
 
-      earnableShards = character.EarnableShards;
     }
 
-    return TypedResults.Ok(earnableShardsMapper.MapTo(earnableShards));
+    return TypedResults.Ok(earnableShardsMapper.MapTo(internalEarnableShards));
   }
 
-  public static async Task<Results<Ok<IEnumerable<Character>>, ProblemHttpResult>> GetCharactersForUser(
-    ICharacterRepository characterRepository,
-    IMapper<InternalCharacter, Character> characterMapper,
+  public static async Task<Results<Ok<IEnumerable<T>>, ProblemHttpResult>> GetEarnablesForUser<TInternal, T>(
+    IEarnableRepository<TInternal> earnableRepository,
+    IMapper<TInternal, T> characterMapper,
     HttpContext httpContext)
+  where TInternal : InternalEarnable
+  where T : Earnable
   {
     var requestingUser = httpContext.RequestingUser;
     if (requestingUser is null)
@@ -76,7 +93,7 @@ public static class EarnableShardsEndpoints
       return TypedResults.Problem(statusCode: StatusCodes.Status403Forbidden);
     }
 
-    var characters = await characterRepository.GetCharactersForUser(requestingUser);
+    var characters = await earnableRepository.GetEarnablesForUser(requestingUser);
     return TypedResults.Ok(characters.Select(characterMapper.MapTo));
   }
 }

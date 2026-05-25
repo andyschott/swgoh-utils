@@ -9,4 +9,6 @@ where T : Earnable
   Task<T?> GetEarnable(string id);
   Task<T?> GetEarnableByName(string name);
   Task SaveEarnable(T earnable);
+  Task<IEnumerable<T>> GetEarnablesForUser(User user);
+  Task<T?> GetEarnableForUser(string id, User user);
 }

@@ -23,14 +23,14 @@ OR
     CONSTRAINT "FK_EarnableShards_Users_UserId" FOREIGN KEY ("UserId") REFERENCES "Users" ("Id") ON DELETE CASCADE
 );
 
-CREATE UNIQUE INDEX "IX_EarnableShards_CharacterId" ON "EarnableShards" ("CharacterId");
+CREATE INDEX "IX_EarnableShards_CharacterId" ON "EarnableShards" ("CharacterId");
 
-CREATE UNIQUE INDEX "IX_EarnableShards_ShipId" ON "EarnableShards" ("ShipId");
+CREATE INDEX "IX_EarnableShards_ShipId" ON "EarnableShards" ("ShipId");
 
 CREATE INDEX "IX_EarnableShards_UserId" ON "EarnableShards" ("UserId");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20260524224345_EarnableShards', '10.0.8');
+VALUES ('20260525152019_EarnableShards', '10.0.8');
 
 COMMIT;
 

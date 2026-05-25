@@ -48,14 +48,12 @@ namespace SwgohApi.Infrastructure.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_EarnableShards_CharacterId",
                 table: "EarnableShards",
-                column: "CharacterId",
-                unique: true);
+                column: "CharacterId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EarnableShards_ShipId",
                 table: "EarnableShards",
-                column: "ShipId",
-                unique: true);
+                column: "ShipId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_EarnableShards_UserId",

@@ -69,11 +69,9 @@ namespace SwgohApi.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CharacterId")
-                        .IsUnique();
+                    b.HasIndex("CharacterId");
 
-                    b.HasIndex("ShipId")
-                        .IsUnique();
+                    b.HasIndex("ShipId");
 
                     b.HasIndex("UserId");
 
@@ -211,13 +209,13 @@ namespace SwgohApi.Infrastructure.Migrations
             modelBuilder.Entity("SwgohApi.Infrastructure.Models.EarnableShards", b =>
                 {
                     b.HasOne("SwgohApi.Infrastructure.Models.Character", "Character")
-                        .WithOne("EarnableShards")
-                        .HasForeignKey("SwgohApi.Infrastructure.Models.EarnableShards", "CharacterId")
+                        .WithMany("EarnableShards")
+                        .HasForeignKey("CharacterId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SwgohApi.Infrastructure.Models.Ship", "Ship")
-                        .WithOne("EarnableShards")
-                        .HasForeignKey("SwgohApi.Infrastructure.Models.EarnableShards", "ShipId")
+                        .WithMany("EarnableShards")
+                        .HasForeignKey("ShipId")
                         .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SwgohApi.Infrastructure.Models.User", "User")

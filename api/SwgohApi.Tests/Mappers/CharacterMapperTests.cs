@@ -39,6 +39,9 @@ public sealed class CharacterMapperTests : IDisposable
     IFixture fixture)
   {
     var source = fixture.Build<InternalCharacter>()
+      .With(es => es.EarnableShards, [
+        fixture.Create<InternalEarnableShards>()
+      ])
       .Create();
     foreach (var (srcLocation, destLocation) in source.Locations.Zip(destinationLocations))
     {
@@ -48,7 +51,7 @@ public sealed class CharacterMapperTests : IDisposable
 
     _mockMarqueeMapper.Setup(mapper => mapper.MapTo(source.Marquee!))
       .Returns(destinationMarquee);
-    _mockEarnableShardsMapper.Setup(mapper => mapper.MapTo(source.EarnableShards!))
+    _mockEarnableShardsMapper.Setup(mapper => mapper.MapTo(source.EarnableShards[0]))
       .Returns(destinationEarnableShards);
 
     var result = _mapper.MapTo(source);
@@ -71,7 +74,7 @@ public sealed class CharacterMapperTests : IDisposable
   {
     var source = fixture.Build<InternalCharacter>()
       .Without(source => source.Marquee)
-      .With(c => c.EarnableShards, (InternalEarnableShards?)null)
+      .With(c => c.EarnableShards, [])
       .Create();
     foreach (var (srcLocation, destLocation) in source.Locations.Zip(destinationLocations))
     {
@@ -118,10 +121,9 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Equal(source.Id, result.Marquee.CharacterId);
     Assert.Null(result.Marquee.ShipId);
 
-    Assert.NotNull(result.EarnableShards);
-    Assert.Same(destinationEarnableShards, result.EarnableShards);
-    Assert.Equal(source.Id, result.EarnableShards.CharacterId);
-    Assert.Null(result.EarnableShards.ShipId);
+    var actualEarnableShards = Assert.Single(result.EarnableShards);
+    Assert.Equal(source.Id, actualEarnableShards.CharacterId);
+    Assert.Null(actualEarnableShards.ShipId);
   }
 
   [Theory, SwgohApiAutoData]
@@ -146,6 +148,6 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Equal(destinationLocations, result.Locations);
     Assert.Equal(source.IsAccelerated, result.IsAccelerated);
     Assert.Null(result.Marquee);
-    Assert.Null(result.EarnableShards);
+    Assert.Empty(result.EarnableShards);
   }
 }

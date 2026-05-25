@@ -19,14 +19,14 @@ public class EarnableShardsConfiguration : IEntityTypeConfiguration<EarnableShar
 
     // Character relationship
     builder.HasOne(e => e.Character)
-      .WithOne(c => c.EarnableShards)
-      .HasForeignKey<EarnableShards>(e => e.CharacterId)
+      .WithMany(c => c.EarnableShards)
+      .HasForeignKey(e => e.CharacterId)
       .OnDelete(DeleteBehavior.Cascade);
 
     //Ship relationship
     builder.HasOne(e => e.Ship)
-      .WithOne(s => s.EarnableShards)
-      .HasForeignKey<EarnableShards>(e => e.ShipId)
+      .WithMany(s => s.EarnableShards)
+      .HasForeignKey(e => e.ShipId)
       .OnDelete(DeleteBehavior.Cascade);
 
     // Unique constraints

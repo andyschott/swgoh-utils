@@ -24,19 +24,4 @@ public class PostgresCharacterRepository : PostgresEarnableRepository<Character>
         character.IsAccelerated = isAccelerated;
       });
   }
-
-  public async Task<IEnumerable<Character>> GetCharactersForUser(User user)
-  {
-    return await _dbContext.Characters
-      .Include(c => c.EarnableShards)
-      .Where(c => c.EarnableShards == null || c.EarnableShards.UserId == user.Id)
-      .ToListAsync();
-  }
-
-  public async Task<Character?> GetCharacterForUser(string id, User user)
-  {
-    return await _dbContext.Characters
-      .Include(c => c.EarnableShards)
-      .FirstOrDefaultAsync(c => c.Id == id);
-  }
 }

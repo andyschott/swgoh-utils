@@ -3,13 +3,29 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "shards": 250,
-  "farmingStatus": "Backlog"
+  "shards": 145,
+  "farmingStatus": "Active"
 }
 
 ###
 
 GET {{SwgohApi.BaseAddress}}/charactersForUser
+Authorization: Bearer {{auth_token}}
+
+###
+
+PUT {{SwgohApi.BaseAddress}}/shipsForUser/2a5c5534-fb64-4bc6-bdbd-134c6752ee2a
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "shards": 330,
+  "farmingStatus": "Done"
+}
+
+###
+
+GET {{SwgohApi.BaseAddress}}/shipsForUser
 Authorization: Bearer {{auth_token}}
 
 ###
