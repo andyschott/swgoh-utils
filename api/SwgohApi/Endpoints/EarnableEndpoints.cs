@@ -13,11 +13,9 @@ public static class EarnableEndpoints
   public static WebApplication MapEarnableEndpoints(this WebApplication app)
   {
     app.MapGroup("/characters")
-      .RequireAuthorization()
       .MapEndpoints<InternalCharacter, Character>();
 
-    app.MapGroup("/ship")
-      .RequireAuthorization()
+    app.MapGroup("/ships")
       .MapEndpoints<InternalShip, Ship>();
 
     return app;
@@ -27,7 +25,8 @@ public static class EarnableEndpoints
   where TInternal : InternalEarnable
   where T : Earnable
   {
-    builder.MapGet(string.Empty, GetEarnables<TInternal, T>)
+    builder.RequireAuthorization()
+      .MapGet(string.Empty, GetEarnables<TInternal, T>)
       .AllowAnonymous();
 
     return builder;
