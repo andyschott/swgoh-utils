@@ -14,6 +14,7 @@ describe('CharactersPage', () => {
       isAccelerated: false,
       locations: [EarnableLocation.CrystalShipments, EarnableLocation.LightSide],
       marquee: null,
+      shards: null,
     },
     {
       id: '1',
@@ -21,6 +22,7 @@ describe('CharactersPage', () => {
       isAccelerated: true,
       locations: [EarnableLocation.Cantina],
       marquee: null,
+      shards: null,
     },
   ];
 

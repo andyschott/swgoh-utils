@@ -13,12 +13,14 @@ describe('ShipsPage', () => {
       name: 'Razor Crest',
       locations: ['Fleet' as unknown as EarnableLocation],
       marquee: null,
+      shards: null,
     },
     {
       id: '1',
       name: 'Ahsoka Tano\'s Jedi Starfighter',
       locations: ['FleetArenaShipments' as unknown as EarnableLocation],
       marquee: null,
+      shards: null,
     },
   ];
 
