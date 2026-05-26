@@ -5,10 +5,12 @@
 
 import { EarnableLocation } from "./earnable-location";
 import { Marquee } from "./marquee";
+import { EarnableShards } from "./earnable-shards";
 
 export interface Earnable {
     id: string;
     name: string;
     locations: EarnableLocation[];
     marquee: Marquee | null;
+    shards: EarnableShards | null;
 }
