@@ -17,3 +17,11 @@ form {
         grid-column: 1;
     }
 }
+
+@media (prefers-color-scheme: dark) {
+  form {
+    border-color: #334155;
+    background: #0b1220;
+    color: #f8fafc;
+  }
+}

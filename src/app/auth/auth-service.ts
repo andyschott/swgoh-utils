@@ -3,14 +3,17 @@ import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { TokenResponse } from '../apiModels/token-response';
 import { LoginRequest } from '../apiModels/login-request';
-import { map, Observable } from 'rxjs';
 import { RevokeRequest } from '../apiModels/revoke-request';
+import { RefreshRequest } from '../apiModels/refresh-request';
+import { map, Observable } from 'rxjs';
 
 const AuthKey = "authentication";
+const TokenExpirationPadding = 300;
 
-interface Token {
+export interface Token {
   accessToken: string;
   refreshToken: string;
+  expiresAt: Date;
 }
 
 @Injectable({
@@ -30,12 +33,36 @@ export class AuthService {
     };
     this.httpClient.post<TokenResponse>(`${this.authUrl}/login`, request)
       .subscribe((response) => {
+        const expiresAt = new Date();
+        expiresAt.setSeconds(expiresAt.getSeconds() + response.expiresIn - TokenExpirationPadding);
+
         const auth: Token = {
           accessToken: response.accessToken,
-          refreshToken: response.refreshToken
+          refreshToken: response.refreshToken,
+          expiresAt
         };
         this.saveToken(auth);
       });
+  }
+
+  refresh(token: Token): Observable<Token> {
+    const request: RefreshRequest = {
+      refreshToken: token.refreshToken
+    };
+    return this.httpClient.post<TokenResponse>(`${this.authUrl}/refresh`, request).pipe(
+      map((response) => {
+        const expiresAt = new Date();
+        expiresAt.setSeconds(expiresAt.getSeconds() + response.expiresIn - TokenExpirationPadding);
+
+        const auth: Token = {
+          accessToken: response.accessToken,
+          refreshToken: response.refreshToken,
+          expiresAt
+        };
+        this.saveToken(auth);
+
+        return auth;
+      }));
   }
 
   logout() {
@@ -60,6 +87,10 @@ export class AuthService {
     }
 
     return JSON.parse(item) as Token;
+  }
+
+  isTokenExpired(token: Token) {
+    return new Date() > token.expiresAt;
   }
 
   private saveToken(auth: Token) {

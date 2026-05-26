@@ -3,10 +3,8 @@
  * Any changes made to this file can be lost when this file is regenerated.
  */
 
-export interface CharacterMarqueeRequest {
-    introductionDate: Date;
-    marqueeEventDate: Date;
-    shipmentDate: Date;
-    farmDate: Date;
+import { MarqueeRequest } from "./marquee-request";
+
+export interface CharacterMarqueeRequest extends MarqueeRequest {
     accelerationDate: Date;
 }
