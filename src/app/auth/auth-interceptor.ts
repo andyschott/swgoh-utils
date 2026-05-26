@@ -29,6 +29,6 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
 
 function attachToken(req: HttpRequest<unknown>, token: Token) {
     return req.clone({
-        headers: req.headers.set('Authentication', `Bearer ${token.accessToken}`)
+        headers: req.headers.set('Authorization', `Bearer ${token.accessToken}`)
     });
 }
