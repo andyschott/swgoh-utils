@@ -1,10 +1,11 @@
-import { HttpContextToken, HttpHandlerFn, HttpRequest } from "@angular/common/http";
+import { HttpContextToken, HttpEvent, HttpHandlerFn, HttpRequest } from "@angular/common/http";
 import { inject } from "@angular/core";
-import { AuthService } from "./auth-service";
+import { AuthService, Token } from "./auth-service";
+import { Observable, switchMap } from "rxjs";
 
 export const AUTHENTICATED_REQUEST = new HttpContextToken<boolean>(() => true);
 
-export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) {
+export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
     if (!req.context.get(AUTHENTICATED_REQUEST)) {
         return next(req);
     }
@@ -15,10 +16,19 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn) 
         return next(req);
     }
 
-    // TODO: Implement token refreshing
-    const authenticatedRequest = req.clone({
+    if (!authService.isTokenExpired(token)) {
+        return next(attachToken(req, token));
+    }
+
+    return authService.refresh(token).pipe(
+        switchMap((response) => {
+            return next(attachToken(req, response));
+        })
+    );
+}
+
+function attachToken(req: HttpRequest<unknown>, token: Token) {
+    return req.clone({
         headers: req.headers.set('Authentication', `Bearer ${token.accessToken}`)
     });
-
-    return next(req);
 }
