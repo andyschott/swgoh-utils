@@ -6,7 +6,9 @@ import { Observable, switchMap } from "rxjs";
 export const AUTHENTICATED_REQUEST = new HttpContextToken<boolean>(() => true);
 
 export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn): Observable<HttpEvent<unknown>> {
-    if (!req.context.get(AUTHENTICATED_REQUEST)) {
+    const isAuthenticated = req.context.has(AUTHENTICATED_REQUEST) &&
+        req.context.get(AUTHENTICATED_REQUEST);
+    if (!isAuthenticated) {
         return next(req);
     }
 
