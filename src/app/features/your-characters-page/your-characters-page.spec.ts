@@ -33,6 +33,18 @@ describe('YourCharactersPage', () => {
         farmingStatus: FarmingStatus.Backlog,
       },
     },
+    {
+      id: '3',
+      name: 'Boba Fett',
+      isAccelerated: true,
+      locations: [EarnableLocation.CantinaShipments],
+      marquee: null,
+      shards: {
+        id: 'shards-3',
+        shards: 330,
+        farmingStatus: FarmingStatus.Done,
+      },
+    },
   ];
 
   beforeEach(async () => {
@@ -55,7 +67,7 @@ describe('YourCharactersPage', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render user characters sorted by name with shard totals converted', () => {
+  it('should render user characters sorted by farming status and name with shard totals converted', () => {
     const fixture = TestBed.createComponent(YourCharactersPage);
     fixture.detectChanges();
 
@@ -65,8 +77,12 @@ describe('YourCharactersPage', () => {
     const secondRowCells = Array.from(
       fixture.nativeElement.querySelectorAll('tbody tr:nth-child(2) th, tbody tr:nth-child(2) td'),
     ).map((cell) => (cell as HTMLTableCellElement).textContent?.trim());
+    const thirdRowCells = Array.from(
+      fixture.nativeElement.querySelectorAll('tbody tr:nth-child(3) th, tbody tr:nth-child(3) td'),
+    ).map((cell) => (cell as HTMLTableCellElement).textContent?.trim());
 
-    expect(firstRowCells).toEqual(['Ahsoka Tano', '2', '12', '293', 'Backlog', 'Cantina']);
-    expect(secondRowCells).toEqual(['Zorii Bliss', '5', '0', '185', 'Active', 'Crystal Shipments, Light Side']);
+    expect(firstRowCells).toEqual(['Zorii Bliss', '5', '0', '185', 'Active', 'Crystal Shipments, Light Side']);
+    expect(secondRowCells).toEqual(['Ahsoka Tano', '2', '12', '293', 'Backlog', 'Cantina']);
+    expect(thirdRowCells).toEqual(['Boba Fett', '7', '0', '0', 'Done', 'Cantina Shipments']);
   });
 });

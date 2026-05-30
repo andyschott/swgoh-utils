@@ -13,11 +13,17 @@ interface YourCharacterRow {
   stars: number;
   currentShards: number;
   shardsRemaining: number;
+  farmingStatusOrder: number;
   farmingStatus: string;
   locations: ReadonlyArray<EarnableLocation>;
 }
 
 const MaximumCharacterShards = 330;
+const farmingStatusOrder = new Map<FarmingStatus, number>([
+  [FarmingStatus.Active, 0],
+  [FarmingStatus.Backlog, 1],
+  [FarmingStatus.Done, 2],
+]);
 
 @Component({
   selector: 'app-your-characters-page',
@@ -38,7 +44,10 @@ export class YourCharactersPage {
   protected readonly rows = computed<ReadonlyArray<YourCharacterRow>>(() =>
     this.characters()
       .map((character) => this.toRow(character))
-      .sort((left, right) => left.name.localeCompare(right.name, 'en-US')),
+      .sort(
+        (left, right) =>
+          left.farmingStatusOrder - right.farmingStatusOrder || left.name.localeCompare(right.name, 'en-US'),
+      ),
   );
 
   protected readonly filteredRows = computed<ReadonlyArray<YourCharacterRow>>(() => {
@@ -66,9 +75,14 @@ export class YourCharactersPage {
       stars: stars.stars,
       currentShards: stars.shards,
       shardsRemaining: MaximumCharacterShards - shards,
+      farmingStatusOrder: this.getFarmingStatusOrder(character.shards?.farmingStatus),
       farmingStatus: this.formatFarmingStatus(character.shards?.farmingStatus),
       locations: character.locations,
     };
+  }
+
+  private getFarmingStatusOrder(farmingStatus: FarmingStatus | null | undefined): number {
+    return farmingStatusOrder.get(farmingStatus ?? FarmingStatus.Backlog) ?? farmingStatusOrder.get(FarmingStatus.Backlog) ?? 1;
   }
 
   private formatFarmingStatus(farmingStatus: FarmingStatus | null | undefined): string {
