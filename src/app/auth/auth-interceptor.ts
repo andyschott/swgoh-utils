@@ -22,6 +22,12 @@ export function authInterceptor(req: HttpRequest<unknown>, next: HttpHandlerFn):
         return next(attachToken(req, token));
     }
 
+    if (authService.isRefreshTokenExpired(token)) {
+        authService.logout();
+        // TODO: This request will fail - need to handle that gracefully somehow
+        return next(req);
+    }
+
     return authService.refresh(token).pipe(
         switchMap((response) => {
             return next(attachToken(req, response));

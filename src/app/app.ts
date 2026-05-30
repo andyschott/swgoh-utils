@@ -73,6 +73,7 @@ export class App {
   })
 
   protected onLogout() {
+    console.log('logging out');
     this.authService.logout();
   }
 }
