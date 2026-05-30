@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 export interface AppNavData {
   navLabel: string;
+  requiresAuth?: boolean;
 }
 
 export const routes: Routes = [
@@ -45,7 +46,7 @@ export const routes: Routes = [
   },
   {
     path: 'your-characters',
-    data: { navLabel: 'Your Characters' } satisfies AppNavData,
+    data: { navLabel: 'Your Characters', requiresAuth: true } satisfies AppNavData,
     loadComponent: () =>
       import('./features/your-characters-page/your-characters-page').then((module) => module.YourCharactersPage),
   },

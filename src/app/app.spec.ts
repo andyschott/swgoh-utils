@@ -1,13 +1,28 @@
+import { signal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { App } from './app';
 import { routes } from './app.routes';
+import { AuthService } from './auth/auth-service';
 
 describe('App', () => {
+  const isLoggedIn = signal(false);
+
   beforeEach(async () => {
+    isLoggedIn.set(false);
+
     await TestBed.configureTestingModule({
       imports: [App],
-      providers: [provideRouter(routes)],
+      providers: [
+        provideRouter(routes),
+        {
+          provide: AuthService,
+          useValue: {
+            isLoggedIn,
+            logout: vi.fn(),
+          },
+        },
+      ],
     }).compileComponents();
   });
 
@@ -25,13 +40,27 @@ describe('App', () => {
     expect(compiled.querySelector('router-outlet')).not.toBeNull();
   });
 
-  it('should render a navigation link for each top-level route', () => {
+  it('should hide authenticated navigation links when logged out', () => {
     const fixture = TestBed.createComponent(App);
     fixture.detectChanges();
 
     const compiled = fixture.nativeElement as HTMLElement;
-    const navLinks = compiled.querySelectorAll('.site-nav-link');
-    expect(navLinks.length).toBe(routes.length);
+    const navLinks = Array.from(compiled.querySelectorAll('.site-nav-link')).map((link) => link.textContent?.trim());
+    const expectedPublicRoutes = routes.filter((route) => !route.data?.['requiresAuth']);
+
+    expect(navLinks).not.toContain('Your Characters');
+    expect(navLinks.length).toBe(expectedPublicRoutes.length);
+  });
+
+  it('should render authenticated navigation links when logged in', () => {
+    isLoggedIn.set(true);
+    const fixture = TestBed.createComponent(App);
+    fixture.detectChanges();
+
+    const compiled = fixture.nativeElement as HTMLElement;
+    const navLinks = Array.from(compiled.querySelectorAll('.site-nav-link')).map((link) => link.textContent?.trim());
+
+    expect(navLinks).toContain('Your Characters');
   });
 
   it('should toggle mobile navigation menu', () => {
