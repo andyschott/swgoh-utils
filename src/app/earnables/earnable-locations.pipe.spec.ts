@@ -9,10 +9,7 @@ describe('EarnableLocationsPipe', () => {
   });
 
   it('should map and sort known locations', () => {
-    const locations = [
-      'LightSide' as unknown as EarnableLocation,
-      'CantinaShipments' as unknown as EarnableLocation,
-    ];
+    const locations = [EarnableLocation.LightSide, EarnableLocation.CantinaShipments];
     expect(pipe.transform(locations)).toBe('Cantina Shipments, Light Side');
   });
 

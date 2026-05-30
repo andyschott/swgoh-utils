@@ -44,6 +44,12 @@ export const routes: Routes = [
       import('./features/characters-page/characters-page').then((module) => module.CharactersPage),
   },
   {
+    path: 'your-characters',
+    data: { navLabel: 'Your Characters' } satisfies AppNavData,
+    loadComponent: () =>
+      import('./features/your-characters-page/your-characters-page').then((module) => module.YourCharactersPage),
+  },
+  {
     path: 'ships',
     data: { navLabel: 'Ships' } satisfies AppNavData,
     loadComponent: () =>
