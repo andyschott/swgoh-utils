@@ -116,6 +116,7 @@ public class AuthService : IAuthService
     return new TokenResponse(generatedTokenPair.AccessToken,
       "Bearer",
       (int)(generatedTokenPair.AccessTokenExpiresAtUtc - now).TotalSeconds,
-      generatedTokenPair.RefreshToken);
+      generatedTokenPair.RefreshToken,
+      (int)(generatedTokenPair.RefreshTokenExpiresAtUtc - now).TotalSeconds);
   }
 }
