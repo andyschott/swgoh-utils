@@ -1,11 +1,11 @@
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Ship } from '../apiModels/ship';
-import { AUTHENTICATED_REQUEST } from '../auth/auth-interceptor';
 import { EarnableShardsRequest } from '../apiModels/earnable-shards-request';
 import { EarnableShards } from '../apiModels/earnable-shards';
+import { AuthService } from '../auth/auth-service';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +21,7 @@ export class ShipsApiService {
 
   public getShipsForUser(): Observable<Ship[]> {
     return this.httpClient.get<Ship[]>(this.shipsForUserUrl, {
-      context: new HttpContext().set(AUTHENTICATED_REQUEST, true)
+      context: AuthService.authenticatedContext
     });
   }
 
@@ -34,8 +34,9 @@ export class ShipsApiService {
       shards: ship.shards.shards,
       farmingStatus: ship.shards.farmingStatus
     }
-    return this.httpClient.put<EarnableShards>(`${this.shipsForUserUrl}/${ship.id}`, request)
-      .pipe(map((response) => {
+    return this.httpClient.put<EarnableShards>(`${this.shipsForUserUrl}/${ship.id}`, request, {
+      context: AuthService.authenticatedContext
+    }).pipe(map((response) => {
         const updatedShip: Ship = {
           id: ship.id,
           name: ship.name,

@@ -1,12 +1,11 @@
-import { HttpClient, HttpContext } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { map, Observable, of } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { Character } from '../apiModels/character';
-import { AUTHENTICATED_REQUEST } from '../auth/auth-interceptor';
 import { EarnableShardsRequest } from '../apiModels/earnable-shards-request';
-import { ShardConverter } from '../earnables/shard-converter';
 import { EarnableShards } from '../apiModels/earnable-shards';
+import { AuthService } from '../auth/auth-service';
 
 @Injectable({
   providedIn: 'root',
@@ -22,7 +21,7 @@ export class CharactersApiService {
 
   public getCharactersForUser(): Observable<Character[]> {
     return this.httpClient.get<Character[]>(this.charactersForUserUrl, {
-      context: new HttpContext().set(AUTHENTICATED_REQUEST, true)
+      context: AuthService.authenticatedContext
     });
   }
 
@@ -35,8 +34,9 @@ export class CharactersApiService {
       shards: character.shards.shards,
       farmingStatus: character.shards.farmingStatus
     }
-    return this.httpClient.put<EarnableShards>(`${this.charactersForUserUrl}/${character.id}`, request)
-      .pipe(map((response) => {
+    return this.httpClient.put<EarnableShards>(`${this.charactersForUserUrl}/${character.id}`, request, {
+      context: AuthService.authenticatedContext
+    }).pipe(map((response) => {
         const updatedCharacter: Character = {
           id: character.id,
           isAccelerated: character.isAccelerated,
