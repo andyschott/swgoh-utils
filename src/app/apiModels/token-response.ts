@@ -8,4 +8,5 @@ export interface TokenResponse {
     tokenType: string;
     expiresIn: number;
     refreshToken: string;
+    refreshTokenExpiresIn: number;
 }

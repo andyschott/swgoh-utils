@@ -5,7 +5,7 @@ import { TokenResponse } from '../apiModels/token-response';
 import { LoginRequest } from '../apiModels/login-request';
 import { RevokeRequest } from '../apiModels/revoke-request';
 import { RefreshRequest } from '../apiModels/refresh-request';
-import { map, Observable } from 'rxjs';
+import { map, Observable, of } from 'rxjs';
 
 const AuthKey = "authentication";
 const TokenExpirationPadding = 300;
@@ -14,6 +14,7 @@ export interface Token {
   accessToken: string;
   refreshToken: string;
   expiresAt: Date;
+  refreshTokenExpiresAt: Date;
 }
 
 @Injectable({
@@ -36,10 +37,14 @@ export class AuthService {
         const expiresAt = new Date();
         expiresAt.setSeconds(expiresAt.getSeconds() + response.expiresIn - TokenExpirationPadding);
 
+        const refreshTokenExpiresAt = new Date();
+        refreshTokenExpiresAt.setSeconds(refreshTokenExpiresAt.getSeconds() + response.refreshTokenExpiresIn - TokenExpirationPadding);
+
         const auth: Token = {
           accessToken: response.accessToken,
           refreshToken: response.refreshToken,
-          expiresAt
+          expiresAt,
+          refreshTokenExpiresAt,
         };
         this.saveToken(auth);
       });
@@ -54,10 +59,14 @@ export class AuthService {
         const expiresAt = new Date();
         expiresAt.setSeconds(expiresAt.getSeconds() + response.expiresIn - TokenExpirationPadding);
 
+        const refreshTokenExpiresAt = new Date();
+        refreshTokenExpiresAt.setSeconds(refreshTokenExpiresAt.getSeconds() + response.refreshTokenExpiresIn - TokenExpirationPadding);
+
         const auth: Token = {
           accessToken: response.accessToken,
           refreshToken: response.refreshToken,
-          expiresAt
+          expiresAt,
+          refreshTokenExpiresAt,
         };
         this.saveToken(auth);
 
@@ -93,6 +102,10 @@ export class AuthService {
     return new Date() > token.expiresAt;
   }
 
+  isRefreshTokenExpired(token: Token) {
+    return new Date() > token.refreshTokenExpiresAt;
+  }
+
   private saveToken(auth: Token) {
     localStorage.setItem(AuthKey, JSON.stringify(auth));
     this._isLoggedIn.set(true);
@@ -103,7 +116,13 @@ export class AuthService {
     this._isLoggedIn.set(false);
   }
 
-  private hasSavedToken() {
-    return localStorage.getItem(AuthKey) !== null;
+  private hasSavedToken(): boolean {
+    const token = this.getToken();
+    if (token === null) {
+      return false;
+    }
+
+    return !this.isTokenExpired(token) &&
+      !this.isRefreshTokenExpired(token);
   }
 }
