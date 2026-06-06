@@ -49,6 +49,7 @@ describe('App', () => {
     const expectedPublicRoutes = routes.filter((route) => !route.data?.['requiresAuth']);
 
     expect(navLinks).not.toContain('Your Characters');
+    expect(navLinks).not.toContain('Your Ships');
     expect(navLinks.length).toBe(expectedPublicRoutes.length);
   });
 
@@ -61,6 +62,7 @@ describe('App', () => {
     const navLinks = Array.from(compiled.querySelectorAll('.site-nav-link')).map((link) => link.textContent?.trim());
 
     expect(navLinks).toContain('Your Characters');
+    expect(navLinks).toContain('Your Ships');
   });
 
   it('should toggle mobile navigation menu', () => {

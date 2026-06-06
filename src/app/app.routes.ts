@@ -57,6 +57,12 @@ export const routes: Routes = [
       import('./features/ships-page/ships-page').then((module) => module.ShipsPage),
   },
   {
+    path: 'your-ships',
+    data: { navLabel: 'Your Ships', requiresAuth: true } satisfies AppNavData,
+    loadComponent: () =>
+      import('./features/your-ships-page/your-ships-page').then((module) => module.YourShipsPage),
+  },
+  {
     path: 'signal-data-farming',
     data: { navLabel: 'Signal Data Farming' } satisfies AppNavData,
     loadComponent: () =>
