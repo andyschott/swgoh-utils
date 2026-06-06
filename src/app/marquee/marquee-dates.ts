@@ -3,6 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { map, Observable } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MarqueeDate as ApiMarqueeDate } from '../apiModels/marquee-date';
+import { DateTime } from 'luxon';
 
 export interface MarqueeDate {
   name: string;
@@ -26,11 +27,11 @@ export class MarqueeDates {
         map((marquees) =>
           marquees.map((marquee) => ({
             name: marquee.name,
-            introduction: new Date(marquee.introductionDate),
-            marqueeEvent: new Date(marquee.marqueeEventDate),
-            shipment: new Date(marquee.shipmentDate),
-            farm: new Date(marquee.farmDate),
-            acceleration: marquee.accelerationDate === null ? null : new Date(marquee.accelerationDate),
+            introduction: DateTime.fromISO(marquee.introductionDate).toJSDate(),
+            marqueeEvent: DateTime.fromISO(marquee.marqueeEventDate).toJSDate(),
+            shipment: DateTime.fromISO(marquee.shipmentDate).toJSDate(),
+            farm: DateTime.fromISO(marquee.farmDate).toJSDate(),
+            acceleration: marquee.accelerationDate === null ? null : DateTime.fromISO(marquee.accelerationDate).toJSDate(),
           }))),
       );
   }
