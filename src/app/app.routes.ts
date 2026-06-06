@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 
 export interface AppNavData {
   navLabel: string;
+  requiresAuth?: boolean;
 }
 
 export const routes: Routes = [
@@ -44,10 +45,22 @@ export const routes: Routes = [
       import('./features/characters-page/characters-page').then((module) => module.CharactersPage),
   },
   {
+    path: 'your-characters',
+    data: { navLabel: 'Your Characters', requiresAuth: true } satisfies AppNavData,
+    loadComponent: () =>
+      import('./features/your-characters-page/your-characters-page').then((module) => module.YourCharactersPage),
+  },
+  {
     path: 'ships',
     data: { navLabel: 'Ships' } satisfies AppNavData,
     loadComponent: () =>
       import('./features/ships-page/ships-page').then((module) => module.ShipsPage),
+  },
+  {
+    path: 'your-ships',
+    data: { navLabel: 'Your Ships', requiresAuth: true } satisfies AppNavData,
+    loadComponent: () =>
+      import('./features/your-ships-page/your-ships-page').then((module) => module.YourShipsPage),
   },
   {
     path: 'signal-data-farming',

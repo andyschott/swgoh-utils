@@ -28,6 +28,7 @@ export class App {
       .filter((route): route is typeof route & { path: string; data: AppNavData } =>
         typeof route.path === 'string' && route.path !== '**' && !!route.data?.['navLabel'],
       )
+      .filter((route) => !route.data.requiresAuth || this.isLoggedIn())
       .map((route) => ({
         path: route.path,
         label: route.data.navLabel,

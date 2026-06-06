@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpContext } from '@angular/common/http';
 import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { TokenResponse } from '../apiModels/token-response';
@@ -6,6 +6,7 @@ import { LoginRequest } from '../apiModels/login-request';
 import { RevokeRequest } from '../apiModels/revoke-request';
 import { RefreshRequest } from '../apiModels/refresh-request';
 import { map, Observable, of } from 'rxjs';
+import { AUTHENTICATED_REQUEST } from './auth-interceptor';
 
 const AuthKey = "authentication";
 const TokenExpirationPadding = 300;
@@ -26,6 +27,9 @@ export class AuthService {
 
   private readonly _isLoggedIn = signal(this.hasSavedToken());
   readonly isLoggedIn = this._isLoggedIn.asReadonly();
+
+  public static readonly authenticatedContext = new HttpContext()
+    .set(AUTHENTICATED_REQUEST, true);
 
   login(username: string, password: string) {
     const request: LoginRequest = {

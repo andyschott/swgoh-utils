@@ -37,8 +37,12 @@ export class EarnableLocationsPipe implements PipeTransform {
     }
 
     return locations
-      .map((location) => EarnableLocationsPipe.locationNames.get(String(location)) ?? 'Unknown')
+      .map((location) => EarnableLocationsPipe.locationNames.get(this.locationKey(location)) ?? 'Unknown')
       .sort((left, right) => left.localeCompare(right, 'en-US'))
       .join(', ');
+  }
+
+  private locationKey(location: EarnableLocation): string {
+    return typeof location === 'number' ? EarnableLocation[location] : String(location);
   }
 }

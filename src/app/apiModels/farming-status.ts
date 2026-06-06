@@ -4,7 +4,7 @@
  */
 
 export enum FarmingStatus {
-    Backlog = 0,
-    Active = 1,
-    Done = 2,
+    Backlog = "Backlog",
+    Active = "Active",
+    Done = "Done",
 }
