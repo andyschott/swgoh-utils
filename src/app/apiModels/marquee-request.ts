@@ -4,8 +4,8 @@
  */
 
 export interface MarqueeRequest {
-    introductionDate: Date;
-    marqueeEventDate: Date;
-    shipmentDate: Date;
-    farmDate: Date;
+    introductionDate: string;
+    marqueeEventDate: string;
+    shipmentDate: string;
+    farmDate: string;
 }
