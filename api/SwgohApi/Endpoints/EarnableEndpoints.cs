@@ -21,6 +21,8 @@ public static class EarnableEndpoints
       .RequireAdmin();
     characters.MapPut("/{id}", UpdateCharacter)
       .RequireAdmin();
+    characters.MapPost("/import", ImportCharacters)
+      .RequireAdmin();
 
     var ships = app.MapGroup("/ships")
       .RequireAuthorization()
@@ -28,6 +30,8 @@ public static class EarnableEndpoints
     ships.MapPost(string.Empty, CreateShip)
       .RequireAdmin();
     ships.MapPut("/{id}", UpdateShip)
+      .RequireAdmin();
+    ships.MapPost("/import", ImportShips)
       .RequireAdmin();
 
     return app;
@@ -98,11 +102,50 @@ public static class EarnableEndpoints
     IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
     IMapper<InternalCharacter, Character> characterMapper)
   {
-    var existingCharacter = await characterRepository.GetEarnableByName(request.Name);
-    if (existingCharacter is not null)
+    var character = await CreateCharacterImpl(request, characterRepository, marqueeRepository, earnableLocationMapper);
+    if (character is null)
     {
       return TypedResults.Problem("A character with that name already exists.",
         statusCode:StatusCodes.Status400BadRequest);
+    }
+
+    return TypedResults.Ok(characterMapper.MapTo(character));
+  }
+
+  public static async Task<Ok<IEnumerable<ImportResult>>> ImportCharacters(
+    CreateCharacterRequest[] requests,
+    ICharacterRepository characterRepository,
+    IMarqueeRepository marqueeRepository,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
+    IMapper<InternalCharacter, Character> characterMapper)
+  {
+    var results = new List<ImportResult>();
+
+    foreach (var request in requests)
+    {
+      var character = await CreateCharacterImpl(request, characterRepository, marqueeRepository, earnableLocationMapper);
+      if (character is null)
+      {
+        results.Add(new ImportResult(request.Name, false));
+      }
+      else
+      {
+        results.Add(new ImportResult(request.Name, true));
+      }
+    }
+
+    return TypedResults.Ok(results.AsEnumerable());
+  }
+
+  private static async Task<InternalCharacter?> CreateCharacterImpl(CreateCharacterRequest request,
+    ICharacterRepository characterRepository,
+    IMarqueeRepository marqueeRepository,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
+  {
+    var existingCharacter = await characterRepository.GetEarnableByName(request.Name);
+    if (existingCharacter is not null)
+    {
+      return null;
     }
 
     var locations = request.Locations.Select(earnableLocationMapper.MapFrom)
@@ -124,7 +167,7 @@ public static class EarnableEndpoints
       character.Marquee = marquee;
     }
 
-    return TypedResults.Ok(characterMapper.MapTo(character));
+    return character;
   }
 
   public static async Task<Results<Ok<Ship>, ProblemHttpResult>> CreateShip(
@@ -134,11 +177,25 @@ public static class EarnableEndpoints
     IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
     IMapper<InternalShip, Ship> shipMapper)
   {
-    var existingShip = await shipRepository.GetEarnableByName(request.Name);
-    if (existingShip is not null)
+    var ship = await CreateShipImpl(request, shipRepository, marqueeRepository, earnableLocationMapper);
+    if (ship is null)
     {
       return TypedResults.Problem("A Ship with that name already exists.",
         statusCode:StatusCodes.Status400BadRequest);
+    }
+
+    return TypedResults.Ok(shipMapper.MapTo(ship));
+  }
+
+  private static async Task<InternalShip?> CreateShipImpl(CreateShipRequest request,
+    IShipRepository shipRepository,
+    IMarqueeRepository marqueeRepository,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
+  {
+    var existingShip = await shipRepository.GetEarnableByName(request.Name);
+    if (existingShip is not null)
+    {
+      return null;
     }
 
     var locations = request.Locations.Select(earnableLocationMapper.MapFrom)
@@ -159,7 +216,32 @@ public static class EarnableEndpoints
       ship.Marquee = marquee;
     }
 
-    return TypedResults.Ok(shipMapper.MapTo(ship));
+    return ship;
+  }
+
+  public static async Task<Ok<IEnumerable<ImportResult>>> ImportShips(
+    CreateShipRequest[] requests,
+    IShipRepository shipRepository,
+    IMarqueeRepository marqueeRepository,
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
+    IMapper<InternalShip, Ship> shipMapper)
+  {
+    var results = new List<ImportResult>();
+
+    foreach (var request in requests)
+    {
+      var character = await CreateShipImpl(request, shipRepository, marqueeRepository, earnableLocationMapper);
+      if (character is null)
+      {
+        results.Add(new ImportResult(request.Name, false));
+      }
+      else
+      {
+        results.Add(new ImportResult(request.Name, true));
+      }
+    }
+
+    return TypedResults.Ok(results.AsEnumerable());
   }
 
   public static async Task<Results<Ok<Character>, ProblemHttpResult>> UpdateCharacter(string id,
