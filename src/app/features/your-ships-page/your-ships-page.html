@@ -1,50 +1,10 @@
-<main class="your-ships-layout">
-  <section class="your-ships-card" aria-labelledby="your-ships-title">
-    <h1 id="your-ships-title">Your Ships</h1>
-
-    <div class="search-control">
-      <input
-        id="your-ships-search"
-        type="search"
-        aria-label="Search your ships"
-        placeholder="Type a ship name"
-        [value]="searchTerm()"
-        (input)="onSearchInput($event)"
-      />
-    </div>
-
-    <div class="table-container">
-      <table>
-        <caption class="visually-hidden">
-          Current user's ships with stars, shards, farming status, and earnable locations
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col">Ship Name</th>
-            <th scope="col">Stars</th>
-            <th scope="col">Current Shards</th>
-            <th scope="col">Shards Remaining</th>
-            <th scope="col">Farming Status</th>
-            <th scope="col">Locations</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (row of filteredRows(); track row.id) {
-            <tr>
-              <th scope="row">{{ row.name }}</th>
-              <td>{{ row.stars }}</td>
-              <td>{{ row.currentShards }}</td>
-              <td>{{ row.shardsRemaining }}</td>
-              <td>{{ row.farmingStatus }}</td>
-              <td>{{ row.locations | earnableLocations }}</td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="6">No ships match the current search.</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </section>
-</main>
+<app-your-earnables-table
+  title="Your Ships"
+  searchInputId="your-ships-search"
+  searchAriaLabel="Search your ships"
+  searchPlaceholder="Type a ship name"
+  caption="Current user's ships with stars, shards, farming status, and earnable locations"
+  nameColumnLabel="Ship Name"
+  emptyMessage="No ships match the current search."
+  [rows]="rows()"
+/>

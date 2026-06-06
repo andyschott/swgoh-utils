@@ -1,50 +1,10 @@
-<main class="your-characters-layout">
-  <section class="your-characters-card" aria-labelledby="your-characters-title">
-    <h1 id="your-characters-title">Your Characters</h1>
-
-    <div class="search-control">
-      <input
-        id="your-characters-search"
-        type="search"
-        aria-label="Search your characters"
-        placeholder="Type a character name"
-        [value]="searchTerm()"
-        (input)="onSearchInput($event)"
-      />
-    </div>
-
-    <div class="table-container">
-      <table>
-        <caption class="visually-hidden">
-          Current user's characters with stars, shards, farming status, and earnable locations
-        </caption>
-        <thead>
-          <tr>
-            <th scope="col">Character Name</th>
-            <th scope="col">Stars</th>
-            <th scope="col">Current Shards</th>
-            <th scope="col">Shards Remaining</th>
-            <th scope="col">Farming Status</th>
-            <th scope="col">Locations</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (row of filteredRows(); track row.id) {
-            <tr>
-              <th scope="row">{{ row.name }}</th>
-              <td>{{ row.stars }}</td>
-              <td>{{ row.currentShards }}</td>
-              <td>{{ row.shardsRemaining }}</td>
-              <td>{{ row.farmingStatus }}</td>
-              <td>{{ row.locations | earnableLocations }}</td>
-            </tr>
-          } @empty {
-            <tr>
-              <td colspan="6">No characters match the current search.</td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-  </section>
-</main>
+<app-your-earnables-table
+  title="Your Characters"
+  searchInputId="your-characters-search"
+  searchAriaLabel="Search your characters"
+  searchPlaceholder="Type a character name"
+  caption="Current user's characters with stars, shards, farming status, and earnable locations"
+  nameColumnLabel="Character Name"
+  emptyMessage="No characters match the current search."
+  [rows]="rows()"
+/>

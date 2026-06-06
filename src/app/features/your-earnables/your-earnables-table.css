@@ -4,7 +4,7 @@
   overflow: hidden;
 }
 
-.your-characters-layout {
+.your-earnables-layout {
   margin: 0 auto;
   max-width: 100rem;
   height: 100%;
@@ -14,7 +14,7 @@
   min-height: 0;
 }
 
-.your-characters-card {
+.your-earnables-card {
   border: 1px solid #cbd5e1;
   border-radius: 0.75rem;
   background: #ffffff;
@@ -129,7 +129,7 @@ tbody th {
 }
 
 @media (prefers-color-scheme: dark) {
-  .your-characters-card {
+  .your-earnables-card {
     border-color: #334155;
     background: #0b1220;
     color: #f8fafc;
