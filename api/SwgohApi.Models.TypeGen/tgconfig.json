@@ -4,7 +4,7 @@
   ],
   "csNullableTranslation": "null",
   "customTypeMappings": {
-    "System.DateOnly": "Date"
+    "System.DateOnly": "string"
   },
   "enumStringInitializers": true
 }

@@ -6,5 +6,5 @@
 import { MarqueeRequest } from "./marquee-request";
 
 export interface CharacterMarqueeRequest extends MarqueeRequest {
-    accelerationDate: Date;
+    accelerationDate: string;
 }

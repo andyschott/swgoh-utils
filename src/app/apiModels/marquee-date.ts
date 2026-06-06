@@ -5,9 +5,9 @@
 
 export interface MarqueeDate {
     name: string;
-    introductionDate: Date;
-    marqueeEventDate: Date;
-    shipmentDate: Date;
-    farmDate: Date;
-    accelerationDate: Date | null;
+    introductionDate: string;
+    marqueeEventDate: string;
+    shipmentDate: string;
+    farmDate: string;
+    accelerationDate: string | null;
 }
