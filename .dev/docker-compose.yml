@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:18
+    restart: always
+    shm_size: 128mb
+    ports:
+     - 5432:5432
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: swgoh
+    volumes:
+      - swgoh_pgdata:/var/lib/postgresql
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+
+volumes:
+  swgoh_pgdata:
