@@ -3,5 +3,5 @@ export interface Environment {
 }
 
 export const environment: Environment = {
-  apiBaseUrl: 'http://localhost:5149',
+  apiBaseUrl: 'http://localhost:5149/api',
 };

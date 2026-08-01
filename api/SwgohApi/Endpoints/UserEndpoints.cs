@@ -17,7 +17,7 @@ public static class UserEndpoints
 {
   public static WebApplication MapUserEndpoints(this WebApplication app)
   {
-    var users = app.MapGroup("/users")
+    var users = app.MapGroup("/api/users")
       .RequireAuthorization();
 
     users.MapGet(string.Empty, GetUsers);

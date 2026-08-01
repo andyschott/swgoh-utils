@@ -84,11 +84,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
   });
 builder.Services.AddAuthorization();
 
+builder.Services.AddRazorPages();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 app.UseCors(CorsPolicy);
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -112,6 +115,7 @@ app.MapUserEndpoints()
   .MapEarnableEndpoints()
   .MapMarqueeEndpoints()
   .MapEarnableShardsEndpoints();
+app.MapRazorPages();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

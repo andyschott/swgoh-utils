@@ -12,7 +12,7 @@ public static class MarqueeEndpoints
 {
   public static WebApplication MapMarqueeEndpoints(this WebApplication app)
   {
-    var marquees = app.MapGroup("/marquees");
+    var marquees = app.MapGroup("/api/marquees");
 
     marquees.MapGet(string.Empty, GetMarquees)
       .AllowAnonymous();
