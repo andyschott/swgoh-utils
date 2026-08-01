@@ -4,8 +4,23 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>@ViewData["Title"]</title>
+  <link rel="stylesheet" href="~/css/styles.css"/>
 </head>
 
 <body>
-@RenderBody()
+<header>
+  <h1>Holocron Vault</h1>
+</header>
+
+<div class="sidebar">
+  <ul>
+    <li>Characters</li>
+    <li>Ships</li>
+    <li>GAC Planner</li>
+  </ul>
+</div>
+<div class="content">
+  @RenderBody()
+</div>
+
 </body>
