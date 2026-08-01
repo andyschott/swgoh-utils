@@ -9,7 +9,7 @@ public static class AuthEndpoints
 {
   public static WebApplication MapAuthEndpoints(this WebApplication app)
   {
-    var auth = app.MapGroup("/auth");
+    var auth = app.MapGroup("/api/auth");
 
     auth.MapPost("/login", Login);
     auth.MapPost("/refresh", Refresh);

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>@ViewData["Title"]</title>
+  <link rel="stylesheet" href="~/css/styles.css"/>
+</head>
+
+<body>
+<header>
+  <h1><a asp-page="/Index">Holocron Vault</a></h1>
+</header>
+
+<div class="sidebar">
+  <ul>
+    <li>Characters</li>
+    <li>Ships</li>
+    <li>GAC Planner</li>
+  </ul>
+</div>
+<div class="content">
+  @RenderBody()
+</div>
+
+</body>

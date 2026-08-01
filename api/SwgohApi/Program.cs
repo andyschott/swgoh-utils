@@ -84,11 +84,14 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
   });
 builder.Services.AddAuthorization();
 
+builder.Services.AddControllersWithViews();
 builder.Services.AddOpenApi();
 
 var app = builder.Build();
 
 app.UseCors(CorsPolicy);
+app.UseStaticFiles();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -112,6 +115,8 @@ app.MapUserEndpoints()
   .MapEarnableEndpoints()
   .MapMarqueeEndpoints()
   .MapEarnableShardsEndpoints();
+app.MapControllerRoute("default",
+  "{controller=Home}/{action=Index}/{id?}");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

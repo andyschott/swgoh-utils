@@ -14,7 +14,7 @@ public static class EarnableEndpoints
 {
   public static WebApplication MapEarnableEndpoints(this WebApplication app)
   {
-    var characters = app.MapGroup("/characters")
+    var characters = app.MapGroup("/api/characters")
       .RequireAuthorization()
       .MapEndpoints<InternalCharacter, Character>();
     characters.MapPost(string.Empty, CreateCharacter)
@@ -24,7 +24,7 @@ public static class EarnableEndpoints
     characters.MapPost("/import", ImportCharacters)
       .RequireAdmin();
 
-    var ships = app.MapGroup("/ships")
+    var ships = app.MapGroup("/api/ships")
       .RequireAuthorization()
       .MapEndpoints<InternalShip, Ship>();
     ships.MapPost(string.Empty, CreateShip)

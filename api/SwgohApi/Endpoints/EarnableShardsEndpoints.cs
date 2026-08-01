@@ -15,11 +15,11 @@ public static class EarnableShardsEndpoints
 {
   public static WebApplication MapEarnableShardsEndpoints(this WebApplication app)
   {
-    app.MapGroup("charactersForUser")
+    app.MapGroup("/api/charactersForUser")
       .RequireAuthorization()
       .MapEndpoints<InternalCharacter, Character>();
 
-    app.MapGroup("shipsForUser")
+    app.MapGroup("/api/shipsForUser")
       .RequireAuthorization()
       .MapEndpoints<InternalShip, Ship>();
 
