@@ -3,6 +3,7 @@ using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models;
 using SwgohApi.Models.Earnables;
+using SwgohApi.ViewModels;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 
 namespace SwgohApi.Controllers;
@@ -22,10 +23,11 @@ public class CharactersController : Controller
   public async Task<IActionResult> Index()
   {
     var internalCharacters = await _characterRepository.GetEarnables();
-    var characters = internalCharacters.Select(_mapper.MapTo);
+    var characters = internalCharacters.Select(_mapper.MapTo)
+      .OrderBy(character => character.Name);
     var model = new CharactersViewModel
     {
-      Characters = [.. characters]
+      Characters = new CharactersTableViewModel(characters)
     };
     return View(model);
   }

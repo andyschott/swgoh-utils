@@ -1,0 +1,23 @@
+@model ITableViewModel
+
+<table>
+  <thead>
+  <tr>
+    @foreach (var column in Model.Columns)
+    {
+      <td>@column</td>
+    }
+  </tr>
+  </thead>
+  <tbody>
+  @foreach (var id in Model.Items)
+  {
+    <tr>
+      @foreach (var column in Model.Columns)
+      {
+        <td>@Model.GetText(id, column)</td>
+      }
+    </tr>
+  }
+  </tbody>
+</table>
