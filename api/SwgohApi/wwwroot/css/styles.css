@@ -46,3 +46,33 @@ header h1 a, a:visited {
 .content {
   overflow-y: auto;
 }
+
+.content-header {
+  margin-top: 0;
+}
+
+table.data-table {
+  table-layout: fixed;
+  border-collapse: collapse;
+  border: 0.1em solid black;
+}
+
+table.data-table th, td {
+  padding: 0.6em;
+  border: 0.1em solid black;
+}
+
+table.data-table thead tr {
+  text-align: left;
+  border-bottom: 0.1em solid black;
+  background-color: lightgray;
+}
+
+table.data-table tbody th {
+  text-align: left;
+  background-color: lightgray;
+}
+
+table.data-table tbody tr:nth-child(even) {
+  background-color: lightgray;
+}

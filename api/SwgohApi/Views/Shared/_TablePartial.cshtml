@@ -1,0 +1,24 @@
+@model ITableViewModel
+
+<table class="data-table">
+  <thead>
+  <tr>
+    @foreach (var column in Model.Columns)
+    {
+      <th scope="col">@column</th>
+    }
+  </tr>
+  </thead>
+  <tbody>
+  @foreach (var id in Model.Items)
+  {
+    <tr>
+      <th scope="row">@Model.GetText(id, Model.Columns.First())</th>
+      @foreach (var column in Model.Columns.Skip(1))
+      {
+        <td>@Model.GetText(id, column)</td>
+      }
+    </tr>
+  }
+  </tbody>
+</table>

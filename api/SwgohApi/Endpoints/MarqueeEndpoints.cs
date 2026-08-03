@@ -61,7 +61,7 @@ public static class MarqueeEndpoints
           marquee.AccelerationDate);
         importedMarquees.Add(new ImportResult(marquee.Name, true));
       }
-      catch (Exception ex)
+      catch (Exception)
       {
         importedMarquees.Add(new ImportResult(marquee.Name, false));
       }
