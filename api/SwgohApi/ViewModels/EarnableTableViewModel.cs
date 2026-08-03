@@ -63,7 +63,7 @@ where T : Earnable
     };
   }
 
-  protected abstract string? GetText(T earnable, string column);
+  protected virtual string? GetText(T earnable, string column) => null;
 
   private static string GetLocationsText(IEnumerable<EarnableLocation> locations)
   {

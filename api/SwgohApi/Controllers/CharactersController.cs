@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
-using SwgohApi.Models;
 using SwgohApi.Models.Earnables;
 using SwgohApi.ViewModels;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
