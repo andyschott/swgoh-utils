@@ -47,6 +47,10 @@ header h1 a, a:visited {
   overflow-y: auto;
 }
 
+.content-header {
+  margin-top: 0;
+}
+
 table.data-table {
   table-layout: fixed;
   border-collapse: collapse;
