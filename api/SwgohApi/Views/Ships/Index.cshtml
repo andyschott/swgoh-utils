@@ -1,4 +1,7 @@
 @model SwgohApi.ViewModels.ShipsViewModel
 
-@await Html.PartialAsync("_TablePartial", Model.Ships)
+@{
+  ViewData["Title"] = "Ships";
+}
 
+@await Html.PartialAsync("_TablePartial", Model.Ships)

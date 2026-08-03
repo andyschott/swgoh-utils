@@ -1,3 +1,7 @@
 @model SwgohApi.ViewModels.CharactersViewModel
 
+@{
+  ViewData["Title"] = "Characters";
+}
+
 @await Html.PartialAsync("_TablePartial", Model.Characters)
