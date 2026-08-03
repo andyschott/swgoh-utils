@@ -28,8 +28,4 @@
     <ProjectReference Include="..\SwgohApi\SwgohApi.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Pages\Ships\" />
-  </ItemGroup>
-
 </Project>

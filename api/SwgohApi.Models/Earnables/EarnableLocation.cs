@@ -1,5 +1,3 @@
-using System.ComponentModel;
-
 namespace SwgohApi.Models.Earnables;
 
 public enum EarnableLocation
