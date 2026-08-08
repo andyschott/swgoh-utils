@@ -51,36 +51,3 @@ header h1 a, a:visited {
   margin-top: 0;
 }
 
-table.data-table {
-  border-collapse: collapse;
-  border: 0.1em solid black;
-  width: 100%;
-}
-
-table.data-table th, td {
-  padding: 0.6em;
-  border: 0.1em solid black;
-}
-
-table.data-table thead tr {
-  text-align: left;
-  border-bottom: 0.1em solid black;
-  background-color: lightgray;
-}
-
-table.data-table tbody th {
-  text-align: left;
-  background-color: lightgray;
-}
-
-#filter-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: right;
-  margin-bottom: 1em;
-  margin-right: 0.2em;
-}
-
-#filter-container input {
-  font-size: calc(1em + 1px);
-}

@@ -8,6 +8,11 @@
 
 @await Html.PartialAsync("_TablePartial", Model.Ships)
 
+@section Styles
+{
+  <link rel="stylesheet" href="~/css/filter.css"/>
+}
+
 @section Scripts
 {
   <script src="~/scripts/filter.js" asp-append-version="true"></script>
