@@ -7,3 +7,8 @@
 <h2 class="content-header">Characters</h2>
 
 @await Html.PartialAsync("_TablePartial", Model.Characters)
+
+@section Scripts
+{
+  <script src="~/scripts/filter.js" asp-append-version="true"></script>
+}

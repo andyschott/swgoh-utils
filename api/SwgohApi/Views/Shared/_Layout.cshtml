@@ -22,5 +22,5 @@
 <div class="content">
   @RenderBody()
 </div>
-
+@await RenderSectionAsync("Scripts", required: false)
 </body>

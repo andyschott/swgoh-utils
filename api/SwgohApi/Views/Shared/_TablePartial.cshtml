@@ -1,6 +1,10 @@
 @model ITableViewModel
 
-<table class="data-table">
+<div id="filter-container">
+  <input id="filter" placeholder="Enter a name">
+</div>
+
+<table class="data-table" id="data-table">
   <thead>
   <tr>
     @foreach (var column in Model.Columns)
