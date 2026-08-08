@@ -1,13 +1,46 @@
+.table-content {
+  min-height: 0;
+  display: grid;
+  grid-template-rows: auto auto 1fr;
+  overflow: hidden;
+}
+
+.table-scroll {
+  min-height: 0;
+  overflow-y: auto;
+}
 
 table.data-table {
-  border-collapse: collapse;
-  border: 0.1em solid black;
+  border-collapse: separate;
+  border-spacing: 0;
   width: 100%;
+}
+
+table.data-table thead th {
+  border-top: 0.1em solid black;
+}
+
+table.data-table thead {
+  position: sticky;
+  top: 0;
+  background: transparent;
+  z-index: 1;
 }
 
 table.data-table th, td {
   padding: 0.6em;
   border: 0.1em solid black;
+  border-top: none;
+  border-left: none;
+}
+
+/* restore the outer edges that border-top/left: none removed */
+table.data-table th:first-child, td:first-child {
+  border-left: 0.1em solid black;
+}
+
+table.data-table thead th {
+  border-top: 0.1em solid black;
 }
 
 table.data-table thead tr {

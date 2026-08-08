@@ -13,15 +13,18 @@
   <h1><a asp-controller="Home" asp-action="Index">Holocron Vault</a></h1>
 </header>
 
-<div class="sidebar">
-  <ul>
-    <li><a asp-controller="Characters" asp-action="Index">Characters</a></li>
-    <li><a asp-controller="Ships" asp-action="Index">Ships</a></li>
-    <li>GAC Planner</li>
-  </ul>
+<div class="page-row">
+  <div class="sidebar">
+    <ul>
+      <li><a asp-controller="Characters" asp-action="Index">Characters</a></li>
+      <li><a asp-controller="Ships" asp-action="Index">Ships</a></li>
+      <li>GAC Planner</li>
+    </ul>
+  </div>
+  <div class="content">
+    @RenderBody()
+  </div>
 </div>
-<div class="content">
-  @RenderBody()
-</div>
+
 @await RenderSectionAsync("Scripts", required: false)
 </body>

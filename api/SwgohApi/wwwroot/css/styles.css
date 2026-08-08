@@ -9,14 +9,19 @@ body {
   display: grid;
   /* header takes natural space, rest fills remaining space */
   grid-template-rows: auto 1fr;
-  grid-template-columns: 1fr 4fr;
-  column-gap: 1em;
   padding: 0 1em 1em 1em;
   height: 100vh;
 }
 
 * {
   box-sizing: border-box;
+}
+
+.page-row {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  column-gap: 1em;
 }
 
 header {
@@ -26,6 +31,11 @@ header {
 header h1 a, a:visited {
   text-decoration: none;
   color: CanvasText;
+}
+
+.page-row {
+  min-height: 0;
+
 }
 
 .sidebar {
@@ -44,7 +54,10 @@ header h1 a, a:visited {
 }
 
 .content {
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 1fr;
 }
 
 .content-header {

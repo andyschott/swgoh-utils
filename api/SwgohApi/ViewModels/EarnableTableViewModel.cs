@@ -42,6 +42,8 @@ where T : Earnable
     _earnables = earnables.ToDictionary(earnable => earnable.Id);
   }
 
+  public abstract string Title { get; }
+
   public virtual IEnumerable<string> Columns { get; } = [NameColumn, LocationsColumn];
 
   public IEnumerable<string> Items => _earnables.Keys;

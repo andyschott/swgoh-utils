@@ -11,6 +11,8 @@ public class CharactersTableViewModel: EarnableTableViewModel<Character>
   {
   }
 
+  public override string Title => "Characters";
+
   public override IEnumerable<string> Columns { get; } = [NameColumn, LocationsColumn, AcceleratedColumn];
 
   protected override string? GetText(Character character, string column)

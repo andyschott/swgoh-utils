@@ -1,28 +1,34 @@
 @model ITableViewModel
 
-<div id="filter-container">
-  <input id="filter" placeholder="Enter a name">
-</div>
+<div class="table-content">
+  <h2>@Model.Title</h2>
 
-<table class="data-table" id="data-table">
-  <thead>
-  <tr>
-    @foreach (var column in Model.Columns)
-    {
-      <th scope="col">@column</th>
-    }
-  </tr>
-  </thead>
-  <tbody>
-  @foreach (var id in Model.Items)
-  {
-    <tr>
-      <th scope="row">@Model.GetText(id, Model.Columns.First())</th>
-      @foreach (var column in Model.Columns.Skip(1))
+  <div id="filter-container">
+    <input id="filter" placeholder="Enter a name">
+  </div>
+
+  <div class="table-scroll">
+    <table class="data-table" id="data-table">
+      <thead>
+      <tr>
+        @foreach (var column in Model.Columns)
+        {
+          <th scope="col">@column</th>
+        }
+      </tr>
+      </thead>
+      <tbody>
+      @foreach (var id in Model.Items)
       {
-        <td>@Model.GetText(id, column)</td>
+        <tr>
+          <th scope="row">@Model.GetText(id, Model.Columns.First())</th>
+          @foreach (var column in Model.Columns.Skip(1))
+          {
+            <td>@Model.GetText(id, column)</td>
+          }
+        </tr>
       }
-    </tr>
-  }
-  </tbody>
-</table>
+      </tbody>
+    </table>
+  </div>
+</div>

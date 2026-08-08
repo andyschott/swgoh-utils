@@ -2,6 +2,8 @@ namespace SwgohApi.ViewModels;
 
 public interface ITableViewModel
 {
+  string Title { get; }
+
   IEnumerable<string> Columns { get; }
   IEnumerable<string> Items { get; }
 
