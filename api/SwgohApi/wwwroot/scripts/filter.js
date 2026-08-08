@@ -5,7 +5,7 @@ function onFilter(event) {
   if (searchTerm.length === 0) {
     const rows = getDataTableRows();
     for (let index = 0; index < rows.length; index++) {
-      rows[index].style.visibility = 'visible';
+      rows[index].style.display = '';
     }
     return;
   }
@@ -13,7 +13,7 @@ function onFilter(event) {
   for (let index = 0; index < items.length; index++) {
     const item = items[index];
     const match = item.name.toLocaleLowerCase().includes(searchTerm.toLocaleLowerCase());
-    item.row.style.visibility = match ? 'visible' : 'collapse';
+    item.row.style.display = match ? '' : 'none';
   }
 }
 
