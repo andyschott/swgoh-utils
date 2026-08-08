@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>@(!string.IsNullOrEmpty(ViewData["Title"] as string) ? $"{ViewData["Title"]} - Holocron Vault" : "Holocron Vault")</title>
   <link rel="stylesheet" href="~/css/styles.css"/>
+  @await RenderSectionAsync("Styles", required: false)
 </head>
 
 <body>
@@ -12,15 +13,18 @@
   <h1><a asp-controller="Home" asp-action="Index">Holocron Vault</a></h1>
 </header>
 
-<div class="sidebar">
-  <ul>
-    <li><a asp-controller="Characters" asp-action="Index">Characters</a></li>
-    <li><a asp-controller="Ships" asp-action="Index">Ships</a></li>
-    <li>GAC Planner</li>
-  </ul>
-</div>
-<div class="content">
-  @RenderBody()
+<div class="page-row">
+  <div class="sidebar">
+    <ul>
+      <li><a asp-controller="Characters" asp-action="Index">Characters</a></li>
+      <li><a asp-controller="Ships" asp-action="Index">Ships</a></li>
+      <li>GAC Planner</li>
+    </ul>
+  </div>
+  <div class="content">
+    @RenderBody()
+  </div>
 </div>
 
+@await RenderSectionAsync("Scripts", required: false)
 </body>

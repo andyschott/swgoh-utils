@@ -8,4 +8,6 @@ public class ShipsTableViewModel : EarnableTableViewModel<Ship>
     : base(earnables)
   {
   }
+
+  public override string Title => "Ships";
 }

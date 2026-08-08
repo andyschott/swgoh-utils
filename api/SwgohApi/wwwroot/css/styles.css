@@ -9,14 +9,19 @@ body {
   display: grid;
   /* header takes natural space, rest fills remaining space */
   grid-template-rows: auto 1fr;
-  grid-template-columns: 1fr 4fr;
-  column-gap: 1em;
   padding: 0 1em 1em 1em;
   height: 100vh;
 }
 
 * {
   box-sizing: border-box;
+}
+
+.page-row {
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  column-gap: 1em;
 }
 
 header {
@@ -26,6 +31,10 @@ header {
 header h1 a, a:visited {
   text-decoration: none;
   color: CanvasText;
+}
+
+.page-row {
+  min-height: 0;
 }
 
 .sidebar {
@@ -44,35 +53,13 @@ header h1 a, a:visited {
 }
 
 .content {
-  overflow-y: auto;
+  min-height: 0;
+  overflow: hidden;
+  display: grid;
+  grid-template-rows: 1fr;
 }
 
 .content-header {
   margin-top: 0;
 }
 
-table.data-table {
-  table-layout: fixed;
-  border-collapse: collapse;
-  border: 0.1em solid black;
-}
-
-table.data-table th, td {
-  padding: 0.6em;
-  border: 0.1em solid black;
-}
-
-table.data-table thead tr {
-  text-align: left;
-  border-bottom: 0.1em solid black;
-  background-color: lightgray;
-}
-
-table.data-table tbody th {
-  text-align: left;
-  background-color: lightgray;
-}
-
-table.data-table tbody tr:nth-child(even) {
-  background-color: lightgray;
-}
