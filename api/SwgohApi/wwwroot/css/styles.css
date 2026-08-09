@@ -1,5 +1,6 @@
 :root {
   --standard-border: 0.1em solid black;
+  --base-background-color: #040C4F;
 }
 
 html, body {
@@ -96,7 +97,7 @@ header h1 a, a:visited {
   }
 
   body {
-    background-color: #040C4F;
+    background-color: var(--base-background-color);
   }
 }
 
@@ -114,6 +115,7 @@ header h1 a, a:visited {
     transform: translateX(-100%);
     transition: transform 0.25s ease-in-out;
     z-index: 100;
+    background-color: var(--base-background-color);
   }
 
   .sidebar.open {
