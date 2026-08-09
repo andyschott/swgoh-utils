@@ -82,6 +82,14 @@ header h1 a, a:visited {
   margin-bottom: 0.5em;
 }
 
+.overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 99; /* just below the sidebar */
+}
+
 .content {
   min-height: 0;
   overflow: hidden;
@@ -122,6 +130,10 @@ header h1 a, a:visited {
 
   .sidebar.open {
     transform: translateX(0);
+  }
+
+  .overlay.visible {
+    display: block;
   }
 
   .hamburger {
