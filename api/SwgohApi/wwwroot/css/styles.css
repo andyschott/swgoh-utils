@@ -123,6 +123,6 @@ header h1 a, a:visited {
   }
 
   .hamburger {
-    display: block;
+    display: flex;
   }
 }
