@@ -1,5 +1,6 @@
 :root {
   --standard-border: 0.1em solid black;
+  --base-background-color: #040C4F;
 }
 
 html, body {
@@ -30,6 +31,8 @@ body {
 
 header {
   grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
 }
 
 header h1 a, a:visited {
@@ -37,8 +40,31 @@ header h1 a, a:visited {
   color: CanvasText;
 }
 
+.hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.hamburger-line {
+  display: block;
+  width: 100%;
+  height: 2px;
+  background-color: currentColor;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
 .page-row {
   min-height: 0;
+  position: relative;
+  overflow-x: hidden; /* so closed sidebar isn't shown */
 }
 
 .sidebar {
@@ -54,6 +80,14 @@ header h1 a, a:visited {
 
 .sidebar ul li {
   margin-bottom: 0.5em;
+}
+
+.overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 99; /* just below the sidebar */
 }
 
 .content {
@@ -73,6 +107,36 @@ header h1 a, a:visited {
   }
 
   body {
-    background-color: #040C4F;
+    background-color: var(--base-background-color);
+  }
+}
+
+@media (max-width: 768px) {
+  .page-row {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 250px;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease-in-out;
+    z-index: 100;
+    background-color: var(--base-background-color);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .overlay.visible {
+    display: block;
+  }
+
+  .hamburger {
+    display: flex;
   }
 }

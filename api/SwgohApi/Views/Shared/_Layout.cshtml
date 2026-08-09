@@ -11,6 +11,11 @@
 
 <body>
 <header>
+  <button class="hamburger" aria-label="Toggle navigation" aria-expanded="false" aria-controls="sidebar">
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+    <span class="hamburger-line"></span>
+  </button>
   <h1><a asp-controller="Home" asp-action="Index">Holocron Vault</a></h1>
 </header>
 
@@ -22,10 +27,12 @@
       <li>GAC Planner</li>
     </ul>
   </div>
+  <div class="overlay"></div>
   <div class="content">
     @RenderBody()
   </div>
 </div>
 
+<script src="~/scripts/main.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)
 </body>
