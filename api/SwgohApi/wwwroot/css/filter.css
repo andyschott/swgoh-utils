@@ -1,3 +1,7 @@
+:root {
+  --table-header-background: lightgray;
+}
+
 .table-content {
   min-height: 0;
   display: grid;
@@ -17,7 +21,7 @@ table.data-table {
 }
 
 table.data-table thead th {
-  border-top: 0.1em solid black;
+  border-top: var(--standard-border);
 }
 
 table.data-table thead {
@@ -29,29 +33,29 @@ table.data-table thead {
 
 table.data-table th, td {
   padding: 0.6em;
-  border: 0.1em solid black;
+  border: var(--standard-border);
   border-top: none;
   border-left: none;
 }
 
 /* restore the outer edges that border-top/left: none removed */
 table.data-table th:first-child, td:first-child {
-  border-left: 0.1em solid black;
+  border-left: var(--standard-border);
 }
 
 table.data-table thead th {
-  border-top: 0.1em solid black;
+  border-top: var(--standard-border);
 }
 
 table.data-table thead tr {
   text-align: left;
-  border-bottom: 0.1em solid black;
-  background-color: lightgray;
+  border-bottom: var(--standard-border);
+  background-color: var(--table-header-background);
 }
 
 table.data-table tbody th {
   text-align: left;
-  background-color: lightgray;
+  background-color: var(--table-header-background);
 }
 
 #filter-container {
@@ -64,4 +68,10 @@ table.data-table tbody th {
 
 #filter-container input {
   font-size: calc(1em + 1px);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --table-header-background: #222222;
+  }
 }

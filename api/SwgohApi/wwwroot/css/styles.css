@@ -1,3 +1,7 @@
+:root {
+  --standard-border: 0.1em solid black;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -38,7 +42,7 @@ header h1 a, a:visited {
 }
 
 .sidebar {
-  border: 0.1em solid black;
+  border: var(--standard-border);
   border-radius: 0.5em;
   overflow-y: auto;
 }
@@ -63,3 +67,12 @@ header h1 a, a:visited {
   margin-top: 0;
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --standard-border: 0.1em solid white;
+  }
+
+  body {
+    background-color: #040C4F;
+  }
+}
