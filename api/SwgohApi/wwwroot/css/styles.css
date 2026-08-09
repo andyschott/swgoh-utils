@@ -112,7 +112,7 @@ header h1 a, a:visited {
 }
 
 @media (max-width: 768px) {
-  body {
+  .page-row {
     grid-template-columns: 1fr;
   }
 
