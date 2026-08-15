@@ -8,6 +8,7 @@ public abstract class Earnable
   public string Name { get; set; } = string.Empty;
   public List<EarnableLocation> Locations { get; set; } = [];
   public Marquee? Marquee { get; set; }
+  public ConquestReward? ConquestReward { get; set; }
   public List<EarnableShards> EarnableShards { get; set; } = [];
 
   public EarnableShards? CurrentEarnableShards => EarnableShards.FirstOrDefault();
