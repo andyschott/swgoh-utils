@@ -29,6 +29,7 @@ public static class ServiceConfiguration
       .AddScoped<PostgresCharacterRepository>()
       .AddScoped<PostgresShipRepository>()
       .AddScoped<IMarqueeRepository, PostgresMarqueeRepository>()
+      .AddScoped<IConquestRewardRepository, PostgresConquestRewardRepository>()
       .AddScoped<IEarnableShardsRepository, PostgresEarnableShardsRepository>();
 
     services.AddScoped<ICharacterRepository>(provider =>

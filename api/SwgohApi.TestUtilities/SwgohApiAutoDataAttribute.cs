@@ -15,11 +15,15 @@ public class SwgohApiAutoDataAttribute : AutoDataAttribute
   private static IFixture Customize()
   {
     var fixture = new Fixture();
+    fixture.Customize(new DateOnlyCustomization());
 
     fixture.Customize<Marquee>(composer => composer
       .Without(m => m.Character)
       .Without(m => m.Ship));
-    fixture.Customize(new DateOnlyCustomization());
+
+    fixture.Customize<ConquestReward>(composer => composer
+      .Without(m => m.Character)
+      .Without(m => m.Ship));
 
     fixture.Customize<EarnableShards>(composer => composer
       .Without(e => e.Character)
@@ -27,10 +31,12 @@ public class SwgohApiAutoDataAttribute : AutoDataAttribute
 
     fixture.Customize<Character>(composer => composer
       .Without(c => c.Marquee)
-      .Without(c => c.EarnableShards));
+      .Without(c => c.EarnableShards)
+      .Without(c => c.ConquestReward));
     fixture.Customize<Ship>(composer => composer
       .Without(s => s.Marquee)
-      .Without(s => s.EarnableShards));
+      .Without(s => s.EarnableShards)
+      .Without(c => c.ConquestReward));
     fixture.Customize<User>(composer => composer
       .With(u => u.EarnableShards, []));
 
