@@ -13,7 +13,7 @@
       <tr>
         @foreach (var column in Model.Columns)
         {
-          <th scope="col">@column</th>
+          <th scope="col" data-type="@Model.GetDataType(column)">@column</th>
         }
       </tr>
       </thead>

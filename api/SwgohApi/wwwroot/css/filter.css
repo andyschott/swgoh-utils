@@ -70,6 +70,14 @@ table.data-table tbody th {
   background-color: var(--table-header-background);
 }
 
+table.data-table th.sort-asc::after {
+  content: " ▲";
+}
+
+table.data-table th.sort-desc::after {
+  content: " ▼";
+}
+
 #filter-container {
   display: flex;
   flex-direction: row;

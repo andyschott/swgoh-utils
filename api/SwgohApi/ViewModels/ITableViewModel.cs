@@ -9,6 +9,7 @@ public interface ITableViewModel
 
   string GetText(string id, string column);
 
+  string GetDataType(string column) => "text";
   string? GetCellClass(string id, string column) => string.Empty;
   string? GetCellToolip(string id, string column) => string.Empty;
 }

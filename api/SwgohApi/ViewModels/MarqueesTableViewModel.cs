@@ -42,6 +42,20 @@ public class MarqueesTableViewModel : ITableViewModel
     };
   }
 
+  public string GetDataType(string column)
+  {
+    return column switch
+    {
+      NameColumn => "text",
+      IntroductionDateColumn => "date",
+      MarqueeEventDateColumn => "date",
+      ShipmentDateColumn => "date",
+      FarmDate => "date",
+      AccelerationDate => "date",
+      _ => throw new ArgumentOutOfRangeException(nameof(column), column)
+    };
+  }
+
   public string? GetCellClass(string id, string column)
   {
     var isEstimated = IsEstimated(id, column);
