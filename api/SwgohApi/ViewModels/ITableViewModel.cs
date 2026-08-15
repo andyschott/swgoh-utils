@@ -8,4 +8,7 @@ public interface ITableViewModel
   IEnumerable<string> Items { get; }
 
   string GetText(string id, string column);
+
+  string? GetCellClass(string id, string column) => string.Empty;
+  string? GetCellToolip(string id, string column) => string.Empty;
 }

@@ -38,11 +38,40 @@ public class MarqueesTableViewModel : ITableViewModel
     return column switch
     {
       NameColumn => marquee.Name,
-      IntroductionDateColumn => FormatDate(marquee.IntroductionDate),
-      MarqueeEventDateColumn => FormatDate(marquee.MarqueeEventDate),
-      ShipmentDateColumn => FormatDate(marquee.ShipmentDate),
-      FarmDate => FormatDate(marquee.FarmDate),
-      AccelerationDate => FormatDate(marquee.AccelerationDate),
+      _ => FormatDate(GetDateForColumn(marquee, column)),
+    };
+  }
+
+  public string? GetCellClass(string id, string column)
+  {
+    var isEstimated = IsEstimated(id, column);
+    return isEstimated ? "estimate" : string.Empty;
+  }
+
+  public string? GetCellToolip(string id, string column)
+  {
+    var isEstimated = IsEstimated(id, column);
+    return isEstimated ? "Estimated" : string.Empty;
+  }
+
+  private bool IsEstimated(string id, string column)
+  {
+    var marquee = _marquees[id];
+    var date = GetDateForColumn(marquee, column);
+
+    var today = DateOnly.FromDateTime(DateTimeOffset.UtcNow.Date);
+    return date > today;
+  }
+
+  private static DateOnly? GetDateForColumn(MarqueeDate marquee, string column)
+  {
+    return column switch
+    {
+      IntroductionDateColumn => marquee.IntroductionDate,
+      MarqueeEventDateColumn => marquee.MarqueeEventDate,
+      ShipmentDateColumn => marquee.ShipmentDate,
+      FarmDate => marquee.FarmDate,
+      AccelerationDate => marquee.AccelerationDate,
       _ => throw new ArgumentOutOfRangeException(nameof(column), column)
     };
   }
