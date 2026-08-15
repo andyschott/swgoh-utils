@@ -22,7 +22,12 @@
 <div class="page-row">
   <div class="sidebar">
     <ul>
-      <li><a asp-controller="Characters" asp-action="Index">Characters</a></li>
+      <li>
+        <a asp-controller="Characters" asp-action="Index">Characters</a>
+        <ul>
+          <a asp-controller="Marquees" asp-action="Index">Marqeues</a>
+        </ul>
+      </li>
       <li><a asp-controller="Ships" asp-action="Index">Ships</a></li>
       <li>GAC Planner</li>
     </ul>
