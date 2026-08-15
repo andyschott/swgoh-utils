@@ -9,10 +9,12 @@ using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation
 using InternalEarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
 using InternalFarmingStatus = SwgohApi.Infrastructure.Models.FarmingStatus;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
+using InternalConquestRewardPhase = SwgohApi.Infrastructure.Models.ConquestRewardPhase;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
 using Marquee = SwgohApi.Models.Earnables.Marquee;
 using MarqueeDate = SwgohApi.Models.Earnables.MarqueeDate;
 using Ship = SwgohApi.Models.Earnables.Ship;
+using ConquestRewardPhase = SwgohApi.Models.Earnables.ConquestRewardPhase;
 
 namespace SwgohApi.Mapping;
 
@@ -27,6 +29,7 @@ public static class ServiceConfiguration
       .AddSingleton<IMapper<InternalMarquee, MarqueeDate>, MarqueeDateMapper>()
       .AddSingleton<IMapper<User, UserDto>, UserMapper>()
       .AddSingleton<IMapper<InternalEarnableShards,  EarnableShards>, EarnableShardsMapper>()
-      .AddSingleton<IMapper<InternalFarmingStatus, FarmingStatus>, FarmingStatusMapper>();
+      .AddSingleton<IMapper<InternalFarmingStatus, FarmingStatus>, FarmingStatusMapper>()
+      .AddSingleton<IMapper<InternalConquestRewardPhase, ConquestRewardPhase>, ConquestRewardPhaseMapper>();
   }
 }
