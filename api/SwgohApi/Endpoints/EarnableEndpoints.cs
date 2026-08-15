@@ -7,6 +7,7 @@ using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalEarnable = SwgohApi.Infrastructure.Models.Earnable;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
+using InternalConquestRewardPhase = SwgohApi.Infrastructure.Models.ConquestRewardPhase;
 
 namespace SwgohApi.Endpoints;
 
@@ -248,17 +249,22 @@ public static class EarnableEndpoints
     UpdateCharacterRequest request,
     IEarnableRepository<InternalCharacter> characterRepository,
     IMarqueeRepository marqueeRepository,
+    IConquestRewardRepository conquestRewardRepository,
     IMapper<InternalCharacter, Character> characterMapper,
-    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
+    IMapper<InternalConquestRewardPhase, ConquestRewardPhase> conquestRewardPhaseMapper)
   {
     return await UpdateEarnable(id,
       request.Locations,
       request.Marquee,
       request.Marquee?.AccelerationDate,
+      request.ConquestReward,
       characterRepository,
       marqueeRepository,
+      conquestRewardRepository,
       characterMapper,
       earnableLocationMapper,
+      conquestRewardPhaseMapper,
       internalCharacter =>
       {
         if (request.IsAccelerated is not null)
@@ -272,27 +278,35 @@ public static class EarnableEndpoints
     UpdateShipRequest request,
     IEarnableRepository<InternalShip> shipRepository,
     IMarqueeRepository marqueeRepository,
+    IConquestRewardRepository conquestRewardRepository,
     IMapper<InternalShip, Ship> shipMapper,
-    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper)
+    IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
+    IMapper<InternalConquestRewardPhase, ConquestRewardPhase> conquestRewardPhaseMapper)
   {
     return await UpdateEarnable(id,
       request.Locations,
       request.Marquee,
       null,
+      request.ConquestReward,
       shipRepository,
       marqueeRepository,
+      conquestRewardRepository,
       shipMapper,
-      earnableLocationMapper);
+      earnableLocationMapper,
+      conquestRewardPhaseMapper);
   }
 
   private static async Task<Results<Ok<T>, ProblemHttpResult>> UpdateEarnable<TInternal, T>(string id,
     EarnableLocation[]? locations,
     MarqueeRequest? marquee,
     DateOnly? marqueeAccelerationDate,
+    ConquestRewardRequest? conquestReward,
     IEarnableRepository<TInternal> earnableRepository,
     IMarqueeRepository marqueeRepository,
+    IConquestRewardRepository conquestRewardRepository,
     IMapper<TInternal, T> mapper,
     IMapper<InternalEarnableLocation, EarnableLocation> earnableLocationMapper,
+    IMapper<InternalConquestRewardPhase, ConquestRewardPhase> conquestRewardPhaseMapper,
     Action<TInternal>? configureEarnable = null)
   where TInternal : InternalEarnable
   where T : Earnable
@@ -335,6 +349,25 @@ public static class EarnableEndpoints
           marquee.ShipmentDate,
           marquee.FarmDate,
           marqueeAccelerationDate);
+      }
+    }
+
+    if (conquestReward is not null)
+    {
+      var internalRewardPhase = conquestRewardPhaseMapper.MapFrom(conquestReward.RewardPhase);
+
+      if (internalEarnable.ConquestReward is not null)
+      {
+        throw new NotImplementedException();
+      }
+      else
+      {
+        internalEarnable.ConquestReward = await conquestRewardRepository.CreateConquestReward(
+          internalEarnable,
+          internalRewardPhase,
+          conquestReward.InitialUnlockDate,
+          conquestReward.FinalRewardCreateDate,
+          conquestReward.ProvingGroundsDate);
       }
     }
 

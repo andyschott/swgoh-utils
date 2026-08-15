@@ -2,4 +2,5 @@ namespace SwgohApi.Models.Earnables;
 
 public record UpdateCharacterRequest(EarnableLocation[]? Locations,
   bool? IsAccelerated,
-  CharacterMarqueeRequest? Marquee);
+  CharacterMarqueeRequest? Marquee,
+  ConquestRewardRequest? ConquestReward);
