@@ -32,6 +32,9 @@ public class MarqueesTableViewModel : ITableViewModel
 
   public IEnumerable<string> Items => _marquees.Keys;
 
+  public string DefaultSortColumn => IntroductionDateColumn;
+  public bool DefaultSortAscending => false;
+
   public string GetText(string id, string column)
   {
     var marquee = _marquees[id];

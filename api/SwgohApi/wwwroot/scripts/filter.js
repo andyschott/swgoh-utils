@@ -61,3 +61,23 @@ document.querySelectorAll('#data-table thead th').forEach((th, colIndex) => {
   th.style.cursor = 'pointer';
   th.addEventListener('click', () => sortTable(th, colIndex));
 });
+
+function setDefaultSortColumn() {
+  const dataTable = document.querySelector('#data-table');
+  const defaultSortColumn = dataTable.dataset.defaultSortColumn;
+  const defaultSortAscending = dataTable.dataset.defaultSortAscending === 'true';
+  const tableHeaders = dataTable.querySelectorAll('thead th');
+
+  for (const entry of tableHeaders.entries()) {
+    if (entry[1].innerText === defaultSortColumn) {
+      console.log('default sort column', entry[1].innerText);
+      entry[1].dataset.sortDir = defaultSortAscending ? 'asc' : 'desc';
+      entry[1].classList.add(defaultSortAscending ? 'sort-asc' : 'sort-desc');
+
+      break;
+    }
+  }
+}
+setDefaultSortColumn();
+
+

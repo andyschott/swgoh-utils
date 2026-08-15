@@ -8,12 +8,16 @@
   </div>
 
   <div class="table-scroll">
-    <table class="data-table" id="data-table">
+    <table class="data-table" id="data-table"
+           data-default-sort-column="@Model.DefaultSortColumn"
+           data-default-sort-ascending="@Model.DefaultSortAscending.ToString().ToLower()">
       <thead>
       <tr>
         @foreach (var column in Model.Columns)
         {
-          <th scope="col" data-type="@Model.GetDataType(column)">@column</th>
+          <th scope="col" data-type="@Model.GetDataType(column)">
+            @column
+          </th>
         }
       </tr>
       </thead>
