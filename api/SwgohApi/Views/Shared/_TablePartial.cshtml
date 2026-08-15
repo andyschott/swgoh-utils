@@ -8,12 +8,16 @@
   </div>
 
   <div class="table-scroll">
-    <table class="data-table" id="data-table">
+    <table class="data-table" id="data-table"
+           data-default-sort-column="@Model.DefaultSortColumn"
+           data-default-sort-ascending="@Model.DefaultSortAscending.ToString().ToLower()">
       <thead>
       <tr>
         @foreach (var column in Model.Columns)
         {
-          <th scope="col">@column</th>
+          <th scope="col" data-type="@Model.GetDataType(column)">
+            @column
+          </th>
         }
       </tr>
       </thead>
@@ -24,7 +28,10 @@
           <th scope="row">@Model.GetText(id, Model.Columns.First())</th>
           @foreach (var column in Model.Columns.Skip(1))
           {
-            <td>@Model.GetText(id, column)</td>
+            <td class="@Model.GetCellClass(id, column)"
+                title="@Model.GetCellToolip(id, column)">
+              @Model.GetText(id, column)
+            </td>
           }
         </tr>
       }

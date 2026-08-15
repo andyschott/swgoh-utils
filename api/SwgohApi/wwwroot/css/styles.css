@@ -82,6 +82,10 @@ header h1 a, a:visited {
   margin-bottom: 0.5em;
 }
 
+.sidebar li ul {
+  margin-top: 0.5em;
+}
+
 .overlay {
   display: none;
   position: absolute;

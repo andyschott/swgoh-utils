@@ -48,6 +48,9 @@ where T : Earnable
 
   public IEnumerable<string> Items => _earnables.Keys;
 
+  public string DefaultSortColumn => NameColumn;
+  public bool DefaultSortAscending => true;
+
   public string GetText(string id, string column)
   {
     var earnable = _earnables[id];
