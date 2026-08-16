@@ -10,6 +10,8 @@ using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
 using InternalShip = SwgohApi.Infrastructure.Models.Ship;
+using InternalConquestReward = SwgohApi.Infrastructure.Models.ConquestReward;
+using InternalConquestRewardPhase = SwgohApi.Infrastructure.Models.ConquestRewardPhase;
 
 namespace SwgohApi.Tests.Endpoints;
 
@@ -20,14 +22,18 @@ public sealed class EarnableEndpointsTests : IDisposable
   private readonly Mock<IEarnableRepository<InternalCharacter>> _mockEarnableRepository;
   private readonly Mock<IMapper<InternalCharacter, Character>> _mockEarnableMapper;
   private readonly Mock<IMapper<InternalEarnableLocation, EarnableLocation>> _mockEarnableLocationMapper;
+  private readonly Mock<IMapper<InternalConquestRewardPhase, ConquestRewardPhase>> _mockConquestRewardPhaseMapper;
   private readonly Mock<IMarqueeRepository> _mockMarqueeRepository;
+  private readonly Mock<IConquestRewardRepository> _mockConquestRewardRepository;
 
   public EarnableEndpointsTests()
   {
     _mockEarnableRepository = _mockRepository.Create<IEarnableRepository<InternalCharacter>>();
     _mockEarnableMapper = _mockRepository.Create<IMapper<InternalCharacter, Character>>();
     _mockEarnableLocationMapper =  _mockRepository.Create<IMapper<InternalEarnableLocation, EarnableLocation>>();
+    _mockConquestRewardPhaseMapper = _mockRepository.Create<IMapper<InternalConquestRewardPhase, ConquestRewardPhase>>();
     _mockMarqueeRepository = _mockRepository.Create<IMarqueeRepository>();
+    _mockConquestRewardRepository = _mockRepository.Create<IConquestRewardRepository>();
   }
 
   public void Dispose() => _mockRepository.VerifyAll();
@@ -357,11 +363,14 @@ public sealed class EarnableEndpointsTests : IDisposable
   }
 
   [Theory, SwgohApiAutoData]
-  public async Task UpdateCharacter_Successful(UpdateCharacterRequest request,
-    InternalEarnableLocation[] internalLocations,
+  public async Task UpdateCharacter_Marquee_Successful(InternalEarnableLocation[] internalLocations,
     Character character,
     IFixture fixture)
   {
+    var request = fixture.Build<UpdateCharacterRequest>()
+      .With(request => request.ConquestReward, (ConquestRewardRequest?)null)
+      .Create();
+
     var internalCharacter = fixture.Build<InternalCharacter>()
       .With(c => c.EarnableShards, [])
       .Create();
@@ -389,8 +398,10 @@ public sealed class EarnableEndpointsTests : IDisposable
       request,
       _mockEarnableRepository.Object,
       _mockMarqueeRepository.Object,
+      _mockConquestRewardRepository.Object,
       _mockEarnableMapper.Object,
-      _mockEarnableLocationMapper.Object);
+      _mockEarnableLocationMapper.Object,
+      _mockConquestRewardPhaseMapper.Object);
 
     var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
     var okResult = Assert.IsType<Ok<Character>>(result.Result);
@@ -399,12 +410,15 @@ public sealed class EarnableEndpointsTests : IDisposable
   }
 
   [Theory, SwgohApiAutoData]
-  public async Task UpdateCharacter_CreatingMarquee_Successful(UpdateCharacterRequest request,
-    InternalEarnableLocation[] internalLocations,
+  public async Task UpdateCharacter_CreatingMarquee_Successful(InternalEarnableLocation[] internalLocations,
     InternalMarquee internalMarquee,
     Character character,
     IFixture fixture)
   {
+    var request = fixture.Build<UpdateCharacterRequest>()
+      .With(request => request.ConquestReward, (ConquestRewardRequest?)null)
+      .Create();
+
     var internalCharacter = fixture.Build<InternalCharacter>()
       .With(c => c.Marquee, (InternalMarquee?)null)
       .With(c => c.EarnableShards, [])
@@ -440,8 +454,69 @@ public sealed class EarnableEndpointsTests : IDisposable
       request,
       _mockEarnableRepository.Object,
       _mockMarqueeRepository.Object,
+      _mockConquestRewardRepository.Object,
       _mockEarnableMapper.Object,
-      _mockEarnableLocationMapper.Object);
+      _mockEarnableLocationMapper.Object,
+      _mockConquestRewardPhaseMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Character>>(result.Result);
+
+    Assert.Same(character, okResult.Value);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task UpdateCharacter_CreatingConquestReward_Successful(InternalEarnableLocation[] internalLocations,
+    InternalConquestRewardPhase internalRewardPhase,
+    InternalConquestReward internalConquestReward,
+    Character character,
+    IFixture fixture)
+  {
+    var request = fixture.Build<UpdateCharacterRequest>()
+      .With(request => request.Marquee, (MarqueeRequest?)null)
+      .Create();
+
+    var internalCharacter = fixture.Build<InternalCharacter>()
+      .With(c => c.Marquee, (InternalMarquee?)null)
+      .With(c => c.ConquestReward,  (InternalConquestReward?)null)
+      .With(c => c.EarnableShards, [])
+      .Create();
+
+    _mockEarnableRepository.Setup(repository => repository.GetEarnable(internalCharacter.Id))
+      .ReturnsAsync(internalCharacter);
+
+    foreach (var (src, dest) in request.Locations!.Zip(internalLocations))
+    {
+      _mockEarnableLocationMapper.Setup(mapper => mapper.MapFrom(src))
+        .Returns(dest);
+    }
+
+    _mockEarnableRepository.Setup(repository => repository.SaveEarnable(
+        It.Is<InternalCharacter>(c => c.IsAccelerated == request.IsAccelerated &&
+                                      c.Locations.SequenceEqual(internalLocations))))
+      .Returns(Task.CompletedTask);
+
+    _mockConquestRewardPhaseMapper.Setup(mapper => mapper.MapFrom(request.ConquestReward!.RewardPhase))
+      .Returns(internalRewardPhase);
+    _mockConquestRewardRepository.Setup(repository => repository.CreateConquestReward(
+      internalCharacter,
+      internalRewardPhase,
+      request.ConquestReward!.InitialUnlockDate,
+      request.ConquestReward.FinalRewardCreateDate,
+      request.ConquestReward.ProvingGroundsDate))
+      .ReturnsAsync(internalConquestReward);
+
+    _mockEarnableMapper.Setup(mapper => mapper.MapTo(internalCharacter))
+      .Returns(character);
+
+    var response = await EarnableEndpoints.UpdateCharacter(internalCharacter.Id,
+      request,
+      _mockEarnableRepository.Object,
+      _mockMarqueeRepository.Object,
+      _mockConquestRewardRepository.Object,
+      _mockEarnableMapper.Object,
+      _mockEarnableLocationMapper.Object,
+      _mockConquestRewardPhaseMapper.Object);
 
     var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
     var okResult = Assert.IsType<Ok<Character>>(result.Result);
@@ -460,6 +535,7 @@ public sealed class EarnableEndpointsTests : IDisposable
       .Create();
     var request = fixture.Build<UpdateCharacterRequest>()
       .With(request => request.Marquee, (CharacterMarqueeRequest?)null)
+      .With(request => request.ConquestReward, (ConquestRewardRequest?)null)
       .Create();
 
     _mockEarnableRepository.Setup(repository => repository.GetEarnable(internalCharacter.Id))
@@ -483,8 +559,10 @@ public sealed class EarnableEndpointsTests : IDisposable
       request,
       _mockEarnableRepository.Object,
       _mockMarqueeRepository.Object,
+      _mockConquestRewardRepository.Object,
       _mockEarnableMapper.Object,
-      _mockEarnableLocationMapper.Object);
+      _mockEarnableLocationMapper.Object,
+      _mockConquestRewardPhaseMapper.Object);
 
     var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
     var okResult = Assert.IsType<Ok<Character>>(result.Result);
@@ -503,8 +581,10 @@ public sealed class EarnableEndpointsTests : IDisposable
       request,
       _mockEarnableRepository.Object,
       _mockMarqueeRepository.Object,
+      _mockConquestRewardRepository.Object,
       _mockEarnableMapper.Object,
-      _mockEarnableLocationMapper.Object);
+      _mockEarnableLocationMapper.Object,
+      _mockConquestRewardPhaseMapper.Object);
 
     var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
     var problemResult = Assert.IsType<ProblemHttpResult>(result.Result);
