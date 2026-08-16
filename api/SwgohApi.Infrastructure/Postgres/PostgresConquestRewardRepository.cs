@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using SwgohApi.Infrastructure.Models;
 
 namespace SwgohApi.Infrastructure.Postgres;
@@ -49,6 +50,14 @@ public class PostgresConquestRewardRepository : IConquestRewardRepository
     await _dbContext.ConquestRewards.AddAsync(conquestReward);
     await _dbContext.SaveChangesAsync();
     return conquestReward;
+  }
+
+  public async Task<IEnumerable<ConquestReward>> GetConquestRewards()
+  {
+    return await _dbContext.ConquestRewards
+      .Include(cr => cr.Character)
+      .Include(cr => cr.Ship)
+      .ToListAsync();
   }
 
   public async Task SaveConquestReward(ConquestReward conquestReward)

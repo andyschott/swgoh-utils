@@ -1,4 +1,5 @@
 using SwgohApi.Infrastructure.Models;
+using SwgohApi.Models.Earnables;
 using SwgohApi.Models.Users;
 using Character = SwgohApi.Models.Earnables.Character;
 using EarnableLocation = SwgohApi.Models.Earnables.EarnableLocation;
@@ -33,6 +34,7 @@ public static class ServiceConfiguration
       .AddSingleton<IMapper<InternalEarnableShards,  EarnableShards>, EarnableShardsMapper>()
       .AddSingleton<IMapper<InternalFarmingStatus, FarmingStatus>, FarmingStatusMapper>()
       .AddSingleton<IMapper<InternalConquestRewardPhase, ConquestRewardPhase>, ConquestRewardPhaseMapper>()
-      .AddSingleton<IMapper<InternalConquestReward, ConquestReward>, ConquestRewardMapper>();
+      .AddSingleton<IMapper<InternalConquestReward, ConquestReward>, ConquestRewardMapper>()
+      .AddSingleton<IMapper<InternalConquestReward, ConquestRewardDate>, ConquestRewardDateMapper>();
   }
 }
