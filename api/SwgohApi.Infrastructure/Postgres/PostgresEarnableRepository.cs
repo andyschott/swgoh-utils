@@ -35,6 +35,7 @@ where T : Earnable, new()
   {
     return await DbSet
       .Include(e => e.Marquee)
+      .Include(e => e.ConquestReward)
       .FirstOrDefaultAsync(e => e.Name == name);
   }
 
