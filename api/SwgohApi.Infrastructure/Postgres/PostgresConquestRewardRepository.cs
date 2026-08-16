@@ -50,4 +50,10 @@ public class PostgresConquestRewardRepository : IConquestRewardRepository
     await _dbContext.SaveChangesAsync();
     return conquestReward;
   }
+
+  public async Task SaveConquestReward(ConquestReward conquestReward)
+  {
+    _dbContext.ConquestRewards.Update(conquestReward);
+    await _dbContext.SaveChangesAsync();
+  }
 }

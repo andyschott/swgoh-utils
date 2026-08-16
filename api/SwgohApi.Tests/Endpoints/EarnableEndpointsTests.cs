@@ -410,6 +410,56 @@ public sealed class EarnableEndpointsTests : IDisposable
   }
 
   [Theory, SwgohApiAutoData]
+  public async Task UpdateCharacter_ConquestReward_Successful(InternalEarnableLocation[] internalLocations,
+    InternalConquestRewardPhase internalConquestRewardPhase,
+    Character character,
+    IFixture fixture)
+  {
+    var request = fixture.Build<UpdateCharacterRequest>()
+      .With(request => request.Marquee, (MarqueeRequest?)null)
+      .Create();
+
+    var internalCharacter = fixture.Build<InternalCharacter>()
+      .With(c => c.EarnableShards, [])
+      .Create();
+    _mockEarnableRepository.Setup(repository => repository.GetEarnable(internalCharacter.Id))
+      .ReturnsAsync(internalCharacter);
+
+    foreach (var (src, dest) in request.Locations!.Zip(internalLocations))
+    {
+      _mockEarnableLocationMapper.Setup(mapper => mapper.MapFrom(src))
+        .Returns(dest);
+    }
+
+    _mockEarnableRepository.Setup(repository => repository.SaveEarnable(
+        It.Is<InternalCharacter>(c => c.IsAccelerated == request.IsAccelerated &&
+                                      c.Locations.SequenceEqual(internalLocations))))
+      .Returns(Task.CompletedTask);
+
+    _mockConquestRewardPhaseMapper.Setup(mapper => mapper.MapFrom(request.ConquestReward!.RewardPhase))
+      .Returns(internalConquestRewardPhase);
+    _mockConquestRewardRepository.Setup(repository => repository.SaveConquestReward(internalCharacter.ConquestReward!))
+      .Returns(Task.CompletedTask);
+
+    _mockEarnableMapper.Setup(mapper => mapper.MapTo(internalCharacter))
+      .Returns(character);
+
+    var response = await EarnableEndpoints.UpdateCharacter(internalCharacter.Id,
+      request,
+      _mockEarnableRepository.Object,
+      _mockMarqueeRepository.Object,
+      _mockConquestRewardRepository.Object,
+      _mockEarnableMapper.Object,
+      _mockEarnableLocationMapper.Object,
+      _mockConquestRewardPhaseMapper.Object);
+
+    var result = Assert.IsType<Results<Ok<Character>, ProblemHttpResult>>(response);
+    var okResult = Assert.IsType<Ok<Character>>(result.Result);
+
+    Assert.Same(character, okResult.Value);
+  }
+
+  [Theory, SwgohApiAutoData]
   public async Task UpdateCharacter_CreatingMarquee_Successful(InternalEarnableLocation[] internalLocations,
     InternalMarquee internalMarquee,
     Character character,

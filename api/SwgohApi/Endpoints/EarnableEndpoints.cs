@@ -358,7 +358,12 @@ public static class EarnableEndpoints
 
       if (internalEarnable.ConquestReward is not null)
       {
-        throw new NotImplementedException();
+        internalEarnable.ConquestReward.RewardPhase = internalRewardPhase;
+        internalEarnable.ConquestReward.InitialUnlockDate = conquestReward.InitialUnlockDate;
+        internalEarnable.ConquestReward.FinalRewardCreateDate = conquestReward.FinalRewardCreateDate;
+        internalEarnable.ConquestReward.ProvingGroundsDate = conquestReward.ProvingGroundsDate;
+
+        await conquestRewardRepository.SaveConquestReward(internalEarnable.ConquestReward);
       }
       else
       {

@@ -80,4 +80,16 @@ public class PostgresConquestRewardRepositoryTests : AbstractPostgresRepositoryT
     _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(),
       Times.Once);
   }
+
+  [Theory, SwgohApiAutoData]
+  public async Task SaveMarquee_Successful(ConquestReward conquestReward)
+  {
+    var mockConuestRewardDbSet = CreateMockDbSet(dbContext => dbContext.ConquestRewards);
+
+    var exception = await Record.ExceptionAsync(() => _repository.SaveConquestReward(conquestReward));
+
+    Assert.Null(exception);
+    mockConuestRewardDbSet.Verify(dbSet => dbSet.Update(conquestReward), Times.Once);
+    _mockDbContext.Verify(dbContext => dbContext.SaveChangesAsync(), Times.Once);
+  }
 }

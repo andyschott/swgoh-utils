@@ -9,4 +9,5 @@ public interface IConquestRewardRepository
     DateOnly initialUnlockDate,
     DateOnly finalRewardCrateDate,
     DateOnly provingGroundsDate);
+  Task SaveConquestReward(ConquestReward conquestReward);
 }
