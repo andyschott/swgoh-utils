@@ -122,7 +122,8 @@ app.MapUserEndpoints()
   .MapEarnableEndpoints()
   .MapMarqueeEndpoints()
   .MapConquestRewardEndpoints()
-  .MapEarnableShardsEndpoints();
+  .MapEarnableShardsEndpoints()
+  .MapTerritoryBattleEndpoints();
 app.MapControllerRoute("default",
   "{controller=Home}/{action=Index}/{id?}");
 
