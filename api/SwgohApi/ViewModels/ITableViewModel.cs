@@ -15,4 +15,5 @@ public interface ITableViewModel
   string GetDataType(string column) => "text";
   string? GetCellClass(string id, string column) => string.Empty;
   string? GetCellToolip(string id, string column) => string.Empty;
+  string GetFilterPlaceHolder() => "Enter a name";
 }

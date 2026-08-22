@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SwgohApi.Configuration;
 using SwgohApi.Endpoints;
@@ -12,10 +13,16 @@ using SwgohApi.Services;
 using SwgohApi.Infrastructure.Utilities;
 using SwgohApi.Mapping;
 using SwgohApi.Middleware;
+using SwgohApi.Models.TerritoryBattles;
 
 const string CorsPolicy = "AllowedOrigins";
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Configuration.AddJsonFile("roteRewards.json", false);
+
+var roteSection = builder.Configuration.GetSection("RiseOfTheEmpire");
+builder.Services.Configure<RiseOfTheEmpire>(roteSection);
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins")
   .Get<string[]>();
@@ -115,7 +122,8 @@ app.MapUserEndpoints()
   .MapEarnableEndpoints()
   .MapMarqueeEndpoints()
   .MapConquestRewardEndpoints()
-  .MapEarnableShardsEndpoints();
+  .MapEarnableShardsEndpoints()
+  .MapTerritoryBattleEndpoints();
 app.MapControllerRoute("default",
   "{controller=Home}/{action=Index}/{id?}");
 
@@ -124,5 +132,7 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+var rote = app.Services.GetService<IOptions<RiseOfTheEmpire>>();
 
 app.Run();
