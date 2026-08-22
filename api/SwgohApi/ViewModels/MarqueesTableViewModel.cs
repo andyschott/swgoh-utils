@@ -2,7 +2,7 @@ using SwgohApi.Models.Earnables;
 
 namespace SwgohApi.ViewModels;
 
-public class MarqueesTableViewModel : ITableViewModel
+public class MarqueesTableViewModel : DatesTableViewModel
 {
   private readonly Dictionary<string, MarqueeDate> _marquees;
 
@@ -18,9 +18,9 @@ public class MarqueesTableViewModel : ITableViewModel
     _marquees = marquees.ToDictionary(marquee => marquee.Name);
   }
 
-  public string Title => "Marquees";
+  public override string Title => "Marquees";
 
-  public IEnumerable<string> Columns { get; } =
+  public override IEnumerable<string> Columns { get; } =
   [
     NameColumn,
     IntroductionDateColumn,
@@ -30,12 +30,12 @@ public class MarqueesTableViewModel : ITableViewModel
     AccelerationDate
   ];
 
-  public IEnumerable<string> Items => _marquees.Keys;
+  public override IEnumerable<string> Items => _marquees.Keys;
 
-  public string DefaultSortColumn => IntroductionDateColumn;
-  public bool DefaultSortAscending => false;
+  public override string DefaultSortColumn => IntroductionDateColumn;
+  public override bool DefaultSortAscending => false;
 
-  public string GetText(string id, string column)
+  public override string GetText(string id, string column)
   {
     var marquee = _marquees[id];
     return column switch
@@ -59,31 +59,17 @@ public class MarqueesTableViewModel : ITableViewModel
     };
   }
 
-  public string? GetCellClass(string id, string column)
-  {
-    var isEstimated = IsEstimated(id, column);
-    return isEstimated ? "estimate" : string.Empty;
-  }
-
-  public string? GetCellToolip(string id, string column)
-  {
-    var isEstimated = IsEstimated(id, column);
-    return isEstimated ? "Estimated" : string.Empty;
-  }
-
-  private bool IsEstimated(string id, string column)
+  protected override DateOnly? GetDateForColumn(string id, string column)
   {
     var marquee = _marquees[id];
-    var date = GetDateForColumn(marquee, column);
-
-    var today = DateOnly.FromDateTime(DateTimeOffset.UtcNow.Date);
-    return date > today;
+    return GetDateForColumn(marquee, column);
   }
 
   private static DateOnly? GetDateForColumn(MarqueeDate marquee, string column)
   {
     return column switch
     {
+      NameColumn => null,
       IntroductionDateColumn => marquee.IntroductionDate,
       MarqueeEventDateColumn => marquee.MarqueeEventDate,
       ShipmentDateColumn => marquee.ShipmentDate,

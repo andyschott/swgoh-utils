@@ -2,7 +2,7 @@ using SwgohApi.Models.Earnables;
 
 namespace SwgohApi.ViewModels;
 
-public class ConquestRewardsTableViewModel : ITableViewModel
+public class ConquestRewardsTableViewModel : DatesTableViewModel
 {
   private readonly Dictionary<string, ConquestRewardDate> _conquestRewards;
 
@@ -25,9 +25,9 @@ public class ConquestRewardsTableViewModel : ITableViewModel
     _conquestRewards = conquestRewards.ToDictionary(cr => cr.Name);
   }
 
-  public string Title => "Conquest Rewards";
+  public override string Title => "Conquest Rewards";
 
-  public IEnumerable<string> Columns { get; } =
+  public override IEnumerable<string> Columns { get; } =
   [
     NameColumn,
     RewardPhaseColumn,
@@ -36,12 +36,12 @@ public class ConquestRewardsTableViewModel : ITableViewModel
     ProvingGroundsDateColumn
   ];
 
-  public IEnumerable<string> Items => _conquestRewards.Keys;
+  public override IEnumerable<string> Items => _conquestRewards.Keys;
 
-  public string DefaultSortColumn => InitialUnlockDateColumn;
-  public bool DefaultSortAscending => false;
+  public override string DefaultSortColumn => InitialUnlockDateColumn;
+  public override bool DefaultSortAscending => false;
 
-  public string GetText(string id, string column)
+  public override string GetText(string id, string column)
   {
     var conquestReward = _conquestRewards[id];
     return column switch
@@ -66,6 +66,16 @@ public class ConquestRewardsTableViewModel : ITableViewModel
       ProvingGroundsDateColumn => "date",
       _ => throw new ArgumentOutOfRangeException(nameof(column), column)
     };
+  }
+
+  protected override DateOnly? GetDateForColumn(string id, string column)
+  {
+    if (column is not ProvingGroundsDateColumn)
+    {
+      return null;
+    }
+
+    return _conquestRewards[id].ProvingGroundsDate;
   }
 
   private static string FormatDate(DateOnly? date)
