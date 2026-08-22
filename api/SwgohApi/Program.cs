@@ -114,6 +114,7 @@ app.MapUserEndpoints()
   .MapAuthEndpoints()
   .MapEarnableEndpoints()
   .MapMarqueeEndpoints()
+  .MapConquestRewardEndpoints()
   .MapEarnableShardsEndpoints();
 app.MapControllerRoute("default",
   "{controller=Home}/{action=Index}/{id?}");

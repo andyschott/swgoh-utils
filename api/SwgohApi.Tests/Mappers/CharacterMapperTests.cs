@@ -6,6 +6,7 @@ using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 using InternalEarnableLocation = SwgohApi.Infrastructure.Models.EarnableLocation;
 using InternalEarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
 using InternalMarquee = SwgohApi.Infrastructure.Models.Marquee;
+using InternalConquestReward = SwgohApi.Infrastructure.Models.ConquestReward;
 
 namespace SwgohApi.Tests.Mappers;
 
@@ -16,6 +17,7 @@ public sealed class CharacterMapperTests : IDisposable
   private readonly Mock<IMapper<InternalEarnableLocation, EarnableLocation>> _mockLocationMapper;
   private readonly Mock<IMapper<InternalMarquee, Marquee>> _mockMarqueeMapper;
   private readonly Mock<IMapper<InternalEarnableShards, EarnableShards>> _mockEarnableShardsMapper;
+  private readonly Mock<IMapper<InternalConquestReward, ConquestReward>> _mockConquestRewardMapper;
 
   private readonly CharacterMapper _mapper;
 
@@ -23,10 +25,12 @@ public sealed class CharacterMapperTests : IDisposable
   {
     _mockLocationMapper = _mockRepository.Create<IMapper<InternalEarnableLocation, EarnableLocation>>();
     _mockMarqueeMapper = _mockRepository.Create<IMapper<InternalMarquee, Marquee>>();
+    _mockConquestRewardMapper = _mockRepository.Create<IMapper<InternalConquestReward, ConquestReward>>();
     _mockEarnableShardsMapper = _mockRepository.Create<IMapper<InternalEarnableShards, EarnableShards>>();
 
     _mapper = new CharacterMapper(_mockLocationMapper.Object,
       _mockMarqueeMapper.Object,
+      _mockConquestRewardMapper.Object,
       _mockEarnableShardsMapper.Object);
   }
 
@@ -35,6 +39,7 @@ public sealed class CharacterMapperTests : IDisposable
   [Theory, SwgohApiAutoData]
   public void MapTo_Successful(EarnableLocation[] destinationLocations,
     Marquee destinationMarquee,
+    ConquestReward destinationConquestReward,
     EarnableShards destinationEarnableShards,
     IFixture fixture)
   {
@@ -51,6 +56,8 @@ public sealed class CharacterMapperTests : IDisposable
 
     _mockMarqueeMapper.Setup(mapper => mapper.MapTo(source.Marquee!))
       .Returns(destinationMarquee);
+    _mockConquestRewardMapper.Setup(mapper => mapper.MapTo(source.ConquestReward!))
+      .Returns(destinationConquestReward);
     _mockEarnableShardsMapper.Setup(mapper => mapper.MapTo(source.EarnableShards[0]))
       .Returns(destinationEarnableShards);
 
@@ -64,6 +71,9 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.NotNull(result.Marquee);
     Assert.Same(destinationMarquee, result.Marquee);
 
+    Assert.NotNull(result.ConquestReward);
+    Assert.Same(destinationConquestReward, result.ConquestReward);
+
     Assert.NotNull(result.Shards);
     Assert.Same(destinationEarnableShards, result.Shards);
   }
@@ -74,6 +84,7 @@ public sealed class CharacterMapperTests : IDisposable
   {
     var source = fixture.Build<InternalCharacter>()
       .Without(source => source.Marquee)
+      .Without(source => source.ConquestReward)
       .With(c => c.EarnableShards, [])
       .Create();
     foreach (var (srcLocation, destLocation) in source.Locations.Zip(destinationLocations))
@@ -89,6 +100,7 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Equal(destinationLocations, result.Locations);
     Assert.Equal(source.IsAccelerated, result.IsAccelerated);
     Assert.Null(result.Marquee);
+    Assert.Null(result.ConquestReward);
     Assert.Null(result.Shards);
   }
 
@@ -96,6 +108,7 @@ public sealed class CharacterMapperTests : IDisposable
   public void MapFrom_Successful(Character source,
     InternalEarnableLocation[] destinationLocations,
     InternalMarquee destinationMarquee,
+    InternalConquestReward destinationConquestReward,
     InternalEarnableShards destinationEarnableShards)
   {
     foreach (var (srcLocation, destLocation) in source.Locations.Zip(destinationLocations))
@@ -106,6 +119,8 @@ public sealed class CharacterMapperTests : IDisposable
 
     _mockMarqueeMapper.Setup(mapper => mapper.MapFrom(source.Marquee!))
       .Returns(destinationMarquee);
+    _mockConquestRewardMapper.Setup(mapper => mapper.MapFrom(source.ConquestReward!))
+      .Returns(destinationConquestReward);
     _mockEarnableShardsMapper.Setup(mapper => mapper.MapFrom(source.Shards!))
       .Returns(destinationEarnableShards);
 
@@ -121,6 +136,11 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Equal(source.Id, result.Marquee.CharacterId);
     Assert.Null(result.Marquee.ShipId);
 
+    Assert.NotNull(result.ConquestReward);
+    Assert.Same(destinationConquestReward, result.ConquestReward);
+    Assert.Equal(source.Id, result.ConquestReward.CharacterId);
+    Assert.Null(result.ConquestReward.Ship);
+
     var actualEarnableShards = Assert.Single(result.EarnableShards);
     Assert.Equal(source.Id, actualEarnableShards.CharacterId);
     Assert.Null(actualEarnableShards.ShipId);
@@ -132,6 +152,7 @@ public sealed class CharacterMapperTests : IDisposable
   {
     var source = fixture.Build<Character>()
       .With(source => source.Marquee, (Marquee?)null)
+      .With(source => source.ConquestReward, (ConquestReward?)null)
       .With(source => source.Shards, (EarnableShards?)null)
       .Create();
 
@@ -148,6 +169,7 @@ public sealed class CharacterMapperTests : IDisposable
     Assert.Equal(destinationLocations, result.Locations);
     Assert.Equal(source.IsAccelerated, result.IsAccelerated);
     Assert.Null(result.Marquee);
+    Assert.Null(result.ConquestReward);
     Assert.Empty(result.EarnableShards);
   }
 }

@@ -90,6 +90,10 @@ table.data-table th.sort-desc::after {
   font-size: calc(1em + 1px);
 }
 
+.estimate {
+  font-style: italic;
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --table-header-background: #222222;
