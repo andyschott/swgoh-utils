@@ -9,6 +9,8 @@ public abstract class DatesTableViewModel : ITableViewModel
   public abstract bool DefaultSortAscending { get; }
   public abstract string GetText(string id, string column);
 
+  public virtual string GetDataType(string column) => "text";
+
   public string? GetCellClass(string id, string column)
   {
     var isEstimated = IsEstimated(id, column);

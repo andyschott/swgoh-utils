@@ -70,7 +70,6 @@ function setDefaultSortColumn() {
 
   for (const entry of tableHeaders.entries()) {
     if (entry[1].innerText === defaultSortColumn) {
-      console.log('default sort column', entry[1].innerText);
       entry[1].dataset.sortDir = defaultSortAscending ? 'asc' : 'desc';
       entry[1].classList.add(defaultSortAscending ? 'sort-asc' : 'sort-desc');
 
