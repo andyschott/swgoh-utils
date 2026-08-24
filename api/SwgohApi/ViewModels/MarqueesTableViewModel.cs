@@ -45,7 +45,7 @@ public class MarqueesTableViewModel : DatesTableViewModel
     };
   }
 
-  public string GetDataType(string column)
+  public override string GetDataType(string column)
   {
     return column switch
     {
