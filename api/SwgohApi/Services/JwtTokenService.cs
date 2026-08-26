@@ -25,17 +25,11 @@ public class JwtTokenService : ITokenService
     _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
   }
 
-  public GeneratedTokenPair GenerateTokenPair(User user)
+  public GeneratedTokenPair GenerateTokenPair(IEnumerable<Claim> claims)
   {
     var now = _timeProvider.GetUtcNow().UtcDateTime;
     var accessTokenExpiresAtUtc = now.AddMinutes(_jwtOptions.AccessTokenLifetimeMinutes);
     var refreshTokenExpiresAtUtc = now.AddMinutes(_jwtOptions.RefreshTokenLifetimeMinutes);
-
-    var claims = new[]
-    {
-      new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-      new Claim(JwtRegisteredClaimNames.Email, user.Email)
-    };
 
     var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SigningKey));
     var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);

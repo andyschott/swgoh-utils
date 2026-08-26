@@ -1,3 +1,5 @@
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Identity;
 using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
@@ -43,7 +45,8 @@ public class AuthServiceTests
       .ReturnsAsync(user);
     _mockPasswordHasher.Setup(x => x.VerifyHashedPassword(user, user.Password, password))
       .Returns(PasswordVerificationResult.Success);
-    _mockTokenService.Setup(x => x.GenerateTokenPair(user))
+    _mockTokenService.Setup(x => x.GenerateTokenPair(
+        It.Is<IEnumerable<Claim>>(claims => ValidateClaims(user, claims))))
       .Returns(generatedTokens);
     _mockTokenRepository.Setup(x => x.CreateToken(It.IsAny<RefreshToken>()))
       .ReturnsAsync((RefreshToken token) => token);
@@ -73,6 +76,45 @@ public class AuthServiceTests
   }
 
   [Theory, SwgohApiAutoData]
+  public async Task Login_Web_ValidCredentials(string email,
+    string password,
+    User user)
+  {
+    _mockUserRepository.Setup(x => x.GetUserByEmail(email))
+      .ReturnsAsync(user);
+    _mockPasswordHasher.Setup(x => x.VerifyHashedPassword(user, user.Password, password))
+      .Returns(PasswordVerificationResult.Success);
+
+    var result = await _authService.Login(email, password);
+    Assert.NotNull(result);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task Login_Web_InvalidCredentials(string email,
+    string password,
+    User user)
+  {
+    _mockUserRepository.Setup(x => x.GetUserByEmail(email))
+      .ReturnsAsync(user);
+    _mockPasswordHasher.Setup(x => x.VerifyHashedPassword(user, user.Password, password))
+      .Returns(PasswordVerificationResult.Failed);
+
+    var result = await _authService.Login(email, password);
+    Assert.Null(result);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task Login_Web_UnknownUser(string email,
+    string password)
+  {
+    _mockUserRepository.Setup(x => x.GetUserByEmail(email))
+      .ReturnsAsync((User?)null);
+
+    var result = await _authService.Login(email, password);
+    Assert.Null(result);
+  }
+
+  [Theory, SwgohApiAutoData]
   public async Task Refresh_ValidToken_RotatesAndReturnsTokenResponse(User user,
     RefreshToken existingToken,
     GeneratedTokenPair generatedTokens,
@@ -96,7 +138,8 @@ public class AuthServiceTests
       .ReturnsAsync(activeToken);
     _mockUserRepository.Setup(x => x.GetUserById(user.Id))
       .ReturnsAsync(user);
-    _mockTokenService.Setup(x => x.GenerateTokenPair(user))
+    _mockTokenService.Setup(x => x.GenerateTokenPair(
+        It.Is<IEnumerable<Claim>>(claims => ValidateClaims(user, claims))))
       .Returns(generatedTokens);
     _mockTokenRepository.Setup(x => x.CreateToken(It.IsAny<RefreshToken>()))
       .ReturnsAsync((RefreshToken token) => token);
@@ -141,6 +184,24 @@ public class AuthServiceTests
       .Returns(Task.CompletedTask);
 
     await _authService.RevokeAll(userId);
+  }
+
+  private static bool ValidateClaims(User user, IEnumerable<Claim> claims)
+  {
+    var idClaim = claims.FirstOrDefault(claim => claim.Type is JwtRegisteredClaimNames.Sub);
+    if (idClaim is null)
+    {
+      return false;
+    }
+
+    var emailClaim = claims.FirstOrDefault(claim => claim.Type is JwtRegisteredClaimNames.Email);
+    if (emailClaim is null)
+    {
+      return false;
+    }
+
+    return idClaim.Value == user.Id &&
+           emailClaim.Value == user.Email;;
   }
 }
 

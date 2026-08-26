@@ -5,7 +5,7 @@ namespace SwgohApi.Services;
 
 public interface ITokenService
 {
-  GeneratedTokenPair GenerateTokenPair(User user);
+  GeneratedTokenPair GenerateTokenPair(IEnumerable<Claim> claims);
   string HashToken(string token);
   Task<IReadOnlyDictionary<string, Claim>?> GetClaims(HttpContext httpContext);
 }
