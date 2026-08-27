@@ -1,0 +1,18 @@
+@model SwgohApi.ViewModels.UserEarnablesViewModel<SwgohApi.Models.Earnables.Character>
+
+@{
+  ViewData["Title"] = "Your Characters";
+}
+
+
+@await Html.PartialAsync("_TablePartial", Model.Earnables)
+
+@section Styles
+{
+  <link rel="stylesheet" href="~/css/filter.css"/>
+}
+
+@section Scripts
+{
+  <script src="~/scripts/filter.js" asp-append-version="true"></script>
+}
