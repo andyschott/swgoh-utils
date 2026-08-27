@@ -1,15 +1,18 @@
 @model LoginViewModel
 <form asp-action="Login" method="post">
   <div asp-validation-summary="ModelOnly"></div>
-  <div>
+  <div class="form-controls">
     <label asp-for="Email"></label>
-    <input asp-for="Email" class="form-control" />
+    <input asp-for="Email"/>
     <span asp-validation-for="Email"></span>
-  </div>
-  <div>
     <label asp-for="Password"></label>
-    <input asp-for="Password" class="form-control" />
+    <input asp-for="Password"/>
     <span asp-validation-for="Password"></span>
+    <button type="submit">Log in</button>
   </div>
-  <button type="submit">Log in</button>
 </form>
+
+@section Styles
+{
+  <link rel="stylesheet" href="~/css/login.css"/>
+}
