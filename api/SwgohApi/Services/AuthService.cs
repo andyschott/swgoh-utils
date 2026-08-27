@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
@@ -113,11 +112,18 @@ public class AuthService : IAuthService
 
   private static IEnumerable<Claim> CreateClaims(User user)
   {
-    return
-    [
-      new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-      new Claim(JwtRegisteredClaimNames.Email, user.Email)
-    ];
+    var claims = new List<Claim>
+    {
+      new(ClaimTypes.NameIdentifier, user.Id),
+      new(ClaimTypes.Name, user.Email),
+    };
+
+    if (user.IsAdmin)
+    {
+      claims.Add(new Claim(ClaimTypes.Role, Roles.Admin));
+    }
+
+    return claims;
   }
 
   private async Task<TokenResponse> IssueTokenPair(User user,

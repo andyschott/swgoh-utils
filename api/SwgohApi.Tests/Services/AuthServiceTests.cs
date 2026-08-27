@@ -1,5 +1,5 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using AutoFixture;
 using Microsoft.AspNetCore.Identity;
 using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
@@ -34,11 +34,18 @@ public class AuthServiceTests
       _timeProvider);
   }
 
-  [Theory, SwgohApiAutoData]
-  public async Task Login_ValidCredentials_ReturnsTokenResponse(User user,
+  [Theory]
+  [InlineSwgohApiAutoData(false)]
+  [InlineSwgohApiAutoData(true)]
+  public async Task Login_ValidCredentials_ReturnsTokenResponse(bool isAdmin,
     string password,
-    GeneratedTokenPair generatedTokens)
+    GeneratedTokenPair generatedTokens,
+    IFixture fixture)
   {
+    var user = fixture.Build<User>()
+      .With(user => user.IsAdmin, isAdmin)
+      .With(user => user.EarnableShards, [])
+      .Create();
     var request = new LoginRequest(user.Email, password);
 
     _mockUserRepository.Setup(x => x.GetUserByEmail(user.Email))
@@ -188,20 +195,33 @@ public class AuthServiceTests
 
   private static bool ValidateClaims(User user, IEnumerable<Claim> claims)
   {
-    var idClaim = claims.FirstOrDefault(claim => claim.Type is JwtRegisteredClaimNames.Sub);
+    var idClaim = claims.FirstOrDefault(claim => claim.Type is ClaimTypes.NameIdentifier);
     if (idClaim is null)
     {
       return false;
     }
 
-    var emailClaim = claims.FirstOrDefault(claim => claim.Type is JwtRegisteredClaimNames.Email);
+    var emailClaim = claims.FirstOrDefault(claim => claim.Type is ClaimTypes.Name);
     if (emailClaim is null)
     {
       return false;
     }
 
+    var roleClaim = claims.FirstOrDefault(claim => claim.Type is ClaimTypes.Role);
+    if (!user.IsAdmin)
+    {
+      if (roleClaim is not null)
+      {
+        return false;
+      }
+    }
+    else
+    {
+      return roleClaim is not null && roleClaim.Value is Roles.Admin;
+    }
+
     return idClaim.Value == user.Id &&
-           emailClaim.Value == user.Email;;
+           emailClaim.Value == user.Email;
   }
 }
 

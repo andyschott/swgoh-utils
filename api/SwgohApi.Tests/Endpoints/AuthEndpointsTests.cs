@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -66,7 +65,7 @@ public class AuthEndpointsTests : IDisposable
     {
       User = new ClaimsPrincipal(new ClaimsIdentity(
       [
-        new Claim(JwtRegisteredClaimNames.Sub, userId)
+        new Claim(ClaimTypes.NameIdentifier, userId)
       ], "test"))
     };
 

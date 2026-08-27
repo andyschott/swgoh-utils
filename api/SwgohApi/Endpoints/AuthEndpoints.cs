@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SwgohApi.Models.Auth;
 using SwgohApi.Services;
@@ -9,7 +9,8 @@ public static class AuthEndpoints
 {
   public static RouteGroupBuilder MapAuthEndpoints(this RouteGroupBuilder builder)
   {
-    var auth = builder.MapGroup("/auth");
+    var auth = builder.MapGroup("/auth")
+      .AllowAnonymous();
 
     auth.MapPost("/login", Login);
     auth.MapPost("/refresh", Refresh);
@@ -57,7 +58,7 @@ public static class AuthEndpoints
     HttpContext context,
     IAuthService authService)
   {
-    var userId = context.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+    var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     if (string.IsNullOrEmpty(userId))
     {
       return TypedResults.Unauthorized();

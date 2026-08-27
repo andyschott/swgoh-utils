@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using SwgohApi.Infrastructure.Models;
 
 namespace SwgohApi.Services;
 

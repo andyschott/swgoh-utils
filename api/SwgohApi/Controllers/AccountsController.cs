@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
-using SwgohApi.Pages;
 using SwgohApi.Services;
 using SwgohApi.ViewModels;
 

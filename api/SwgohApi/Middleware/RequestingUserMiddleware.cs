@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
 using SwgohApi.Services;
@@ -19,7 +19,7 @@ public class RequestingUserMiddleware
     IUserRepository userRepository)
   {
     var claims = await tokenService.GetClaims(context);
-    var userId = claims?.GetValueOrDefault(JwtRegisteredClaimNames.Sub);
+    var userId = claims?.GetValueOrDefault(ClaimTypes.NameIdentifier);
     if (userId is null)
     {
       await _next(context);

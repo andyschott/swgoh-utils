@@ -1,4 +1,5 @@
 using System.Net;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -116,10 +117,15 @@ builder.Services.AddAuthentication(options =>
   };
 });
 builder.Services.AddAuthorizationBuilder()
-  .AddPolicy("ApiJwt", policy =>
+  .AddPolicy(Policies.ApiJwt, policy =>
   {
     policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
       .RequireAuthenticatedUser();
+  }).AddPolicy(Policies.ApiJwtAdmin, policy =>
+  {
+    policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+      .RequireAuthenticatedUser()
+      .RequireClaim(ClaimTypes.Role, Roles.Admin);
   });
 
 builder.Services.AddControllersWithViews();
@@ -149,7 +155,7 @@ app.UseExceptionHandler(exceptionApp =>
 app.UseMiddleware<RequestingUserMiddleware>();
 
 var apiEndpoints = app.MapGroup("/api")
-  .RequireAuthorization("ApiJwt");
+  .RequireAuthorization(Policies.ApiJwt);
 apiEndpoints.MapUserEndpoints()
   .MapAuthEndpoints()
   .MapEarnableEndpoints()
