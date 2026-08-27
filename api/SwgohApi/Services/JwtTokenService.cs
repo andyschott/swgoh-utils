@@ -64,14 +64,11 @@ public class JwtTokenService : ITokenService
 
   public async Task<IReadOnlyDictionary<string, Claim>?> GetClaims(HttpContext httpContext)
   {
-    var token = await httpContext.GetTokenAsync(JwtBearerDefaults.AuthenticationScheme,
-      "access_token");
-    if (string.IsNullOrEmpty(token))
+    if (httpContext.User.Identity?.IsAuthenticated != true)
     {
       return null;
     }
 
-    var parsedToken = _jwtSecurityTokenHandler.ReadJwtToken(token);
-    return parsedToken.Claims.ToDictionary(claim => claim.Type);
+    return httpContext.User.Claims.ToDictionary(claim => claim.Type);
   }
 }
