@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SwgohApi.Configuration;
@@ -64,7 +65,8 @@ public class JwtTokenService : ITokenService
 
   public async Task<IReadOnlyDictionary<string, Claim>?> GetClaims(HttpContext httpContext)
   {
-    var token = await httpContext.GetTokenAsync("access_token");
+    var token = await httpContext.GetTokenAsync(JwtBearerDefaults.AuthenticationScheme,
+      "access_token");
     if (string.IsNullOrEmpty(token))
     {
       return null;

@@ -72,33 +72,55 @@ builder.Services.AddSingleton<ITokenService, JwtTokenService>()
   .AddScoped<IAuthService, AuthService>()
   .AddMappers();
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-  .AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
+{
+  // Default to cookies for MVC views
+  options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+  options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+  options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+})
+.AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, options =>
+{
+  options.LoginPath = "/Account/Login";
+  options.AccessDeniedPath = "/Account/AccessDenied";
+  options.ExpireTimeSpan = TimeSpan.FromDays(7);
+  options.SlidingExpiration = true;
+  options.Events.OnRedirectToLogin = context =>
   {
-    var jwtOptions = builder.Configuration.GetSection("Jwt")
-      .Get<JwtOptions>()
-      ?? throw new Exception("Jwt configuration is missing");
-    options.TokenValidationParameters = new TokenValidationParameters
+    // Only redirect to login when using cookies
+    if (context.Request.Path.StartsWithSegments("/api"))
     {
-      ValidateIssuer = true,
-      ValidateAudience = true,
-      ValidateIssuerSigningKey = true,
-      ValidateLifetime = true,
-      ValidIssuer = jwtOptions.Issuer,
-      ValidAudience = jwtOptions.Audience,
-      IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey)),
-      ClockSkew = TimeSpan.FromSeconds(30)
-    };
-  });
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-  .AddCookie(options =>
+      context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+      return Task.CompletedTask;
+    }
+
+    context.Response.Redirect(context.RedirectUri);
+    return Task.CompletedTask;
+  };
+})
+.AddJwtBearer(options =>
+{
+  var jwtOptions = builder.Configuration.GetSection("Jwt")
+    .Get<JwtOptions>()
+    ?? throw new Exception("Jwt configuration is missing");
+  options.TokenValidationParameters = new TokenValidationParameters
   {
-    options.LoginPath = "/Account/Login";
-    options.AccessDeniedPath = "/Account/AccessDenied";
-    options.ExpireTimeSpan = TimeSpan.FromDays(7);
-    options.SlidingExpiration = true;
+    ValidateIssuer = true,
+    ValidateAudience = true,
+    ValidateIssuerSigningKey = true,
+    ValidateLifetime = true,
+    ValidIssuer = jwtOptions.Issuer,
+    ValidAudience = jwtOptions.Audience,
+    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtOptions.SigningKey)),
+    ClockSkew = TimeSpan.FromSeconds(30)
+  };
+});
+builder.Services.AddAuthorizationBuilder()
+  .AddPolicy("ApiJwt", policy =>
+  {
+    policy.AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
+      .RequireAuthenticatedUser();
   });
-builder.Services.AddAuthorization();
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddOpenApi();
@@ -126,7 +148,9 @@ app.UseExceptionHandler(exceptionApp =>
 
 app.UseMiddleware<RequestingUserMiddleware>();
 
-app.MapUserEndpoints()
+var apiEndpoints = app.MapGroup("/api")
+  .RequireAuthorization("ApiJwt");
+apiEndpoints.MapUserEndpoints()
   .MapAuthEndpoints()
   .MapEarnableEndpoints()
   .MapMarqueeEndpoints()

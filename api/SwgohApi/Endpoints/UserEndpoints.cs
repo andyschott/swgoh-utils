@@ -15,10 +15,9 @@ namespace SwgohApi.Endpoints;
 
 public static class UserEndpoints
 {
-  public static WebApplication MapUserEndpoints(this WebApplication app)
+  public static RouteGroupBuilder MapUserEndpoints(this RouteGroupBuilder builder)
   {
-    var users = app.MapGroup("/api/users")
-      .RequireAuthorization();
+    var users = builder.MapGroup("/users");
 
     users.MapGet(string.Empty, GetUsers);
     users.MapPost(string.Empty, CreateUser)
@@ -28,7 +27,7 @@ public static class UserEndpoints
       .RequireAdmin();
     users.MapDelete("/{id}", DeleteUser);
 
-    return app;
+    return builder;
   }
 
   public static async Task<Results<Ok<IEnumerable<UserDto>>, ProblemHttpResult>> GetUsers(

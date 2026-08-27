@@ -12,14 +12,14 @@ namespace SwgohApi.Endpoints;
 
 public static class ConquestRewardEndpoints
 {
-  public static WebApplication MapConquestRewardEndpoints(this WebApplication app)
+  public static RouteGroupBuilder MapConquestRewardEndpoints(this RouteGroupBuilder builder)
   {
-    var conquestRewards = app.MapGroup("/api/conquestRewards");
+    var conquestRewards = builder.MapGroup("/conquestRewards");
 
     conquestRewards.MapGet(string.Empty, GetConquestRewards)
       .AllowAnonymous();
 
-    return app;
+    return builder;
   }
 
   public static async Task<Ok<IEnumerable<ConquestRewardDate>>> GetConquestRewards(

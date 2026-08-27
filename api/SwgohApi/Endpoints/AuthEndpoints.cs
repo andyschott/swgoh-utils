@@ -7,17 +7,16 @@ namespace SwgohApi.Endpoints;
 
 public static class AuthEndpoints
 {
-  public static WebApplication MapAuthEndpoints(this WebApplication app)
+  public static RouteGroupBuilder MapAuthEndpoints(this RouteGroupBuilder builder)
   {
-    var auth = app.MapGroup("/api/auth");
+    var auth = builder.MapGroup("/auth");
 
     auth.MapPost("/login", Login);
     auth.MapPost("/refresh", Refresh);
     auth.MapPost("/revoke", Revoke);
-    auth.MapPost("/revoke-all", RevokeAll)
-      .RequireAuthorization();
+    auth.MapPost("/revoke-all", RevokeAll);
 
-    return app;
+    return builder;
   }
 
   public static async Task<Results<Ok<TokenResponse>, UnauthorizedHttpResult>> Login(

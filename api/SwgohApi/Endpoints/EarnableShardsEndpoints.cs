@@ -13,17 +13,15 @@ namespace SwgohApi.Endpoints;
 
 public static class EarnableShardsEndpoints
 {
-  public static WebApplication MapEarnableShardsEndpoints(this WebApplication app)
+  public static RouteGroupBuilder MapEarnableShardsEndpoints(this RouteGroupBuilder builder)
   {
-    app.MapGroup("/api/charactersForUser")
-      .RequireAuthorization()
+    builder.MapGroup("/charactersForUser")
       .MapEndpoints<InternalCharacter, Character>();
 
-    app.MapGroup("/api/shipsForUser")
-      .RequireAuthorization()
+    builder.MapGroup("/shipsForUser")
       .MapEndpoints<InternalShip, Ship>();
 
-    return app;
+    return builder;
   }
 
   private static RouteGroupBuilder MapEndpoints<TInternal, T>(this RouteGroupBuilder builder)
