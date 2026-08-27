@@ -6,14 +6,14 @@ namespace SwgohApi.Endpoints;
 
 public static class TerritoryBattleEndpoints
 {
-  public static WebApplication MapTerritoryBattleEndpoints(this WebApplication app)
+  public static RouteGroupBuilder MapTerritoryBattleEndpoints(this RouteGroupBuilder builder)
   {
-    var tb = app.MapGroup("/api/tb")
+    var tb = builder.MapGroup("/tb")
       .AllowAnonymous();
 
     tb.MapGet("rote/rewards", GetRoteRewards);
 
-    return app;
+    return builder;
   }
 
   public static Ok<IEnumerable<RiseOfTheEmpireRewards>> GetRoteRewards(

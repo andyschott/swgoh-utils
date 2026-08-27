@@ -1,4 +1,4 @@
-using SwgohApi.Filters;
+using SwgohApi.Services;
 
 namespace SwgohApi.Extensions;
 
@@ -8,7 +8,7 @@ public static class RouteHandlerBuilderExtensions
   {
     public RouteHandlerBuilder RequireAdmin()
     {
-      return builder.AddEndpointFilter<RequireAdminEndpointFilter>();
+      return builder.RequireAuthorization(Policies.ApiJwtAdmin);
     }
   }
 }

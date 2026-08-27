@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
@@ -24,6 +26,26 @@ public class AuthService : IAuthService
     _passwordHasher = passwordHasher;
     _tokenService = tokenService;
     _timeProvider = timeProvider;
+  }
+
+  public async Task<ClaimsPrincipal?> Login(string email, string password)
+  {
+    var user = await _userRepository.GetUserByEmail(email);
+    if (user is null)
+    {
+      return null;
+    }
+
+    var result = _passwordHasher.VerifyHashedPassword(user, user.Password, password);
+    if (result is not (PasswordVerificationResult.Success or PasswordVerificationResult.SuccessRehashNeeded))
+    {
+      return null;
+    }
+
+    var claims = CreateClaims(user);
+    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+    return new ClaimsPrincipal(identity);
   }
 
   public async Task<TokenResponse?> Login(LoginRequest request)
@@ -88,11 +110,28 @@ public class AuthService : IAuthService
     await _tokenRepository.RevokeAllTokens(userId, now);
   }
 
+  private static IEnumerable<Claim> CreateClaims(User user)
+  {
+    var claims = new List<Claim>
+    {
+      new(ClaimTypes.NameIdentifier, user.Id),
+      new(ClaimTypes.Name, user.Email),
+    };
+
+    if (user.IsAdmin)
+    {
+      claims.Add(new Claim(ClaimTypes.Role, Roles.Admin));
+    }
+
+    return claims;
+  }
+
   private async Task<TokenResponse> IssueTokenPair(User user,
     string? parentTokenId = null,
     RefreshToken? replacedToken = null)
   {
-    var generatedTokenPair = _tokenService.GenerateTokenPair(user);
+    var claims = CreateClaims(user);
+    var generatedTokenPair = _tokenService.GenerateTokenPair(claims);
     var now = _timeProvider.GetUtcNow().UtcDateTime;
 
     var refreshToken = new RefreshToken(Guid.NewGuid().ToString(),

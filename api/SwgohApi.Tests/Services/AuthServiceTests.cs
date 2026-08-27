@@ -1,3 +1,5 @@
+using System.Security.Claims;
+using AutoFixture;
 using Microsoft.AspNetCore.Identity;
 using SwgohApi.Infrastructure;
 using SwgohApi.Infrastructure.Models;
@@ -32,18 +34,26 @@ public class AuthServiceTests
       _timeProvider);
   }
 
-  [Theory, SwgohApiAutoData]
-  public async Task Login_ValidCredentials_ReturnsTokenResponse(User user,
+  [Theory]
+  [InlineSwgohApiAutoData(false)]
+  [InlineSwgohApiAutoData(true)]
+  public async Task Login_ValidCredentials_ReturnsTokenResponse(bool isAdmin,
     string password,
-    GeneratedTokenPair generatedTokens)
+    GeneratedTokenPair generatedTokens,
+    IFixture fixture)
   {
+    var user = fixture.Build<User>()
+      .With(user => user.IsAdmin, isAdmin)
+      .With(user => user.EarnableShards, [])
+      .Create();
     var request = new LoginRequest(user.Email, password);
 
     _mockUserRepository.Setup(x => x.GetUserByEmail(user.Email))
       .ReturnsAsync(user);
     _mockPasswordHasher.Setup(x => x.VerifyHashedPassword(user, user.Password, password))
       .Returns(PasswordVerificationResult.Success);
-    _mockTokenService.Setup(x => x.GenerateTokenPair(user))
+    _mockTokenService.Setup(x => x.GenerateTokenPair(
+        It.Is<IEnumerable<Claim>>(claims => ValidateClaims(user, claims))))
       .Returns(generatedTokens);
     _mockTokenRepository.Setup(x => x.CreateToken(It.IsAny<RefreshToken>()))
       .ReturnsAsync((RefreshToken token) => token);
@@ -73,6 +83,45 @@ public class AuthServiceTests
   }
 
   [Theory, SwgohApiAutoData]
+  public async Task Login_Web_ValidCredentials(string email,
+    string password,
+    User user)
+  {
+    _mockUserRepository.Setup(x => x.GetUserByEmail(email))
+      .ReturnsAsync(user);
+    _mockPasswordHasher.Setup(x => x.VerifyHashedPassword(user, user.Password, password))
+      .Returns(PasswordVerificationResult.Success);
+
+    var result = await _authService.Login(email, password);
+    Assert.NotNull(result);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task Login_Web_InvalidCredentials(string email,
+    string password,
+    User user)
+  {
+    _mockUserRepository.Setup(x => x.GetUserByEmail(email))
+      .ReturnsAsync(user);
+    _mockPasswordHasher.Setup(x => x.VerifyHashedPassword(user, user.Password, password))
+      .Returns(PasswordVerificationResult.Failed);
+
+    var result = await _authService.Login(email, password);
+    Assert.Null(result);
+  }
+
+  [Theory, SwgohApiAutoData]
+  public async Task Login_Web_UnknownUser(string email,
+    string password)
+  {
+    _mockUserRepository.Setup(x => x.GetUserByEmail(email))
+      .ReturnsAsync((User?)null);
+
+    var result = await _authService.Login(email, password);
+    Assert.Null(result);
+  }
+
+  [Theory, SwgohApiAutoData]
   public async Task Refresh_ValidToken_RotatesAndReturnsTokenResponse(User user,
     RefreshToken existingToken,
     GeneratedTokenPair generatedTokens,
@@ -96,7 +145,8 @@ public class AuthServiceTests
       .ReturnsAsync(activeToken);
     _mockUserRepository.Setup(x => x.GetUserById(user.Id))
       .ReturnsAsync(user);
-    _mockTokenService.Setup(x => x.GenerateTokenPair(user))
+    _mockTokenService.Setup(x => x.GenerateTokenPair(
+        It.Is<IEnumerable<Claim>>(claims => ValidateClaims(user, claims))))
       .Returns(generatedTokens);
     _mockTokenRepository.Setup(x => x.CreateToken(It.IsAny<RefreshToken>()))
       .ReturnsAsync((RefreshToken token) => token);
@@ -141,6 +191,37 @@ public class AuthServiceTests
       .Returns(Task.CompletedTask);
 
     await _authService.RevokeAll(userId);
+  }
+
+  private static bool ValidateClaims(User user, IEnumerable<Claim> claims)
+  {
+    var idClaim = claims.FirstOrDefault(claim => claim.Type is ClaimTypes.NameIdentifier);
+    if (idClaim is null)
+    {
+      return false;
+    }
+
+    var emailClaim = claims.FirstOrDefault(claim => claim.Type is ClaimTypes.Name);
+    if (emailClaim is null)
+    {
+      return false;
+    }
+
+    var roleClaim = claims.FirstOrDefault(claim => claim.Type is ClaimTypes.Role);
+    if (!user.IsAdmin)
+    {
+      if (roleClaim is not null)
+      {
+        return false;
+      }
+    }
+    else
+    {
+      return roleClaim is not null && roleClaim.Value is Roles.Admin;
+    }
+
+    return idClaim.Value == user.Id &&
+           emailClaim.Value == user.Email;
   }
 }
 

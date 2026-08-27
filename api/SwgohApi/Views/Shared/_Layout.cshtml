@@ -33,6 +33,16 @@
       <li>
         <a asp-controller="RiseOfTheEmpireRewards" asp-action="Index">Rise of the Empire Rewards</a>
       </li>
+      <li>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+          <a asp-controller="Accounts" asp-action="Logout">Logout</a>
+        }
+        else
+        {
+          <a asp-controller="Accounts" asp-action="Login">Login</a>
+        }
+      </li>
     </ul>
   </div>
   <div class="overlay"></div>

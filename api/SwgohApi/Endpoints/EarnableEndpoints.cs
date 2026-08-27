@@ -13,10 +13,9 @@ namespace SwgohApi.Endpoints;
 
 public static class EarnableEndpoints
 {
-  public static WebApplication MapEarnableEndpoints(this WebApplication app)
+  public static RouteGroupBuilder MapEarnableEndpoints(this RouteGroupBuilder builder)
   {
-    var characters = app.MapGroup("/api/characters")
-      .RequireAuthorization()
+    var characters = builder.MapGroup("/characters")
       .MapEndpoints<InternalCharacter, Character>();
     characters.MapPost(string.Empty, CreateCharacter)
       .RequireAdmin();
@@ -25,8 +24,7 @@ public static class EarnableEndpoints
     characters.MapPost("/import", ImportCharacters)
       .RequireAdmin();
 
-    var ships = app.MapGroup("/api/ships")
-      .RequireAuthorization()
+    var ships = builder.MapGroup("/ships")
       .MapEndpoints<InternalShip, Ship>();
     ships.MapPost(string.Empty, CreateShip)
       .RequireAdmin();
@@ -35,7 +33,7 @@ public static class EarnableEndpoints
     ships.MapPost("/import", ImportShips)
       .RequireAdmin();
 
-    return app;
+    return builder;
   }
 
   private static RouteGroupBuilder MapEndpoints<TInternal, T>(this RouteGroupBuilder builder)

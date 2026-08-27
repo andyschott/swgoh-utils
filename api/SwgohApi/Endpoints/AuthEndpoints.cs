@@ -1,4 +1,4 @@
-using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using Microsoft.AspNetCore.Http.HttpResults;
 using SwgohApi.Models.Auth;
 using SwgohApi.Services;
@@ -7,17 +7,17 @@ namespace SwgohApi.Endpoints;
 
 public static class AuthEndpoints
 {
-  public static WebApplication MapAuthEndpoints(this WebApplication app)
+  public static RouteGroupBuilder MapAuthEndpoints(this RouteGroupBuilder builder)
   {
-    var auth = app.MapGroup("/api/auth");
+    var auth = builder.MapGroup("/auth")
+      .AllowAnonymous();
 
     auth.MapPost("/login", Login);
     auth.MapPost("/refresh", Refresh);
     auth.MapPost("/revoke", Revoke);
-    auth.MapPost("/revoke-all", RevokeAll)
-      .RequireAuthorization();
+    auth.MapPost("/revoke-all", RevokeAll);
 
-    return app;
+    return builder;
   }
 
   public static async Task<Results<Ok<TokenResponse>, UnauthorizedHttpResult>> Login(
@@ -58,7 +58,7 @@ public static class AuthEndpoints
     HttpContext context,
     IAuthService authService)
   {
-    var userId = context.User.FindFirst(JwtRegisteredClaimNames.Sub)?.Value;
+    var userId = context.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
     if (string.IsNullOrEmpty(userId))
     {
       return TypedResults.Unauthorized();

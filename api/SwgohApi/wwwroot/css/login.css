@@ -1,0 +1,6 @@
+form .form-controls {
+  display: grid;
+  grid-template-columns: fit-content(30vw) 1fr 2fr;
+  column-gap: 0.5em;
+  row-gap: 0.5em;
+}

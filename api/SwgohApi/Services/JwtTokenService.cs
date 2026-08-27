@@ -3,10 +3,10 @@ using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using SwgohApi.Configuration;
-using SwgohApi.Infrastructure.Models;
 
 namespace SwgohApi.Services;
 
@@ -25,17 +25,11 @@ public class JwtTokenService : ITokenService
     _jwtSecurityTokenHandler = new JwtSecurityTokenHandler();
   }
 
-  public GeneratedTokenPair GenerateTokenPair(User user)
+  public GeneratedTokenPair GenerateTokenPair(IEnumerable<Claim> claims)
   {
     var now = _timeProvider.GetUtcNow().UtcDateTime;
     var accessTokenExpiresAtUtc = now.AddMinutes(_jwtOptions.AccessTokenLifetimeMinutes);
     var refreshTokenExpiresAtUtc = now.AddMinutes(_jwtOptions.RefreshTokenLifetimeMinutes);
-
-    var claims = new[]
-    {
-      new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-      new Claim(JwtRegisteredClaimNames.Email, user.Email)
-    };
 
     var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtOptions.SigningKey));
     var credentials = new SigningCredentials(signingKey, SecurityAlgorithms.HmacSha256);
@@ -70,7 +64,8 @@ public class JwtTokenService : ITokenService
 
   public async Task<IReadOnlyDictionary<string, Claim>?> GetClaims(HttpContext httpContext)
   {
-    var token = await httpContext.GetTokenAsync("access_token");
+    var token = await httpContext.GetTokenAsync(JwtBearerDefaults.AuthenticationScheme,
+      "access_token");
     if (string.IsNullOrEmpty(token))
     {
       return null;

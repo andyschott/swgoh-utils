@@ -1,4 +1,3 @@
-using System.Runtime;
 using SwgohApi.Infrastructure.Models;
 using SwgohApi.Infrastructure.Postgres;
 using SwgohApi.TestUtilities;

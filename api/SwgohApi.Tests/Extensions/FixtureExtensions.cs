@@ -1,4 +1,3 @@
-using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using AutoFixture;
 
@@ -16,14 +15,14 @@ public static class FixtureExtensions
 
       if (id is not null)
       {
-        claims.Add(JwtRegisteredClaimNames.Sub,
-          new Claim(JwtRegisteredClaimNames.Sub, id));
+        claims.Add(ClaimTypes.NameIdentifier,
+          new Claim(ClaimTypes.NameIdentifier, id));
       }
 
       if (email is not null)
       {
-        claims.Add(JwtRegisteredClaimNames.Email,
-          new Claim(JwtRegisteredClaimNames.Email, email));
+        claims.Add(ClaimTypes.Name,
+          new Claim(ClaimTypes.Name, email));
       }
 
       return claims;

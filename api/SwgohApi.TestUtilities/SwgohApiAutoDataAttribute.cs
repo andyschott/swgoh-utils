@@ -12,7 +12,7 @@ public class SwgohApiAutoDataAttribute : AutoDataAttribute
   {
   }
 
-  private static IFixture Customize()
+  public static IFixture Customize()
   {
     var fixture = new Fixture();
     fixture.Customize(new DateOnlyCustomization());

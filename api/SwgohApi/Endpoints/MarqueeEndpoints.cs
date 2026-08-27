@@ -10,16 +10,16 @@ namespace SwgohApi.Endpoints;
 
 public static class MarqueeEndpoints
 {
-  public static WebApplication MapMarqueeEndpoints(this WebApplication app)
+  public static RouteGroupBuilder MapMarqueeEndpoints(this RouteGroupBuilder builder)
   {
-    var marquees = app.MapGroup("/api/marquees");
+    var marquees = builder.MapGroup("/marquees");
 
     marquees.MapGet(string.Empty, GetMarquees)
       .AllowAnonymous();
     marquees.MapPost("import", ImportMarquees)
       .RequireAdmin();
 
-    return app;
+    return builder;
   }
 
   public static async Task<Ok<IEnumerable<MarqueeDate>>> GetMarquees(
