@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
@@ -12,26 +11,23 @@ using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 
 namespace SwgohApi.Controllers;
 
-public class CharactersForUserController : Controller
+public class UserController : Controller
 {
-  private readonly IUserRepository _userRepository;
   private readonly ICharacterRepository _repository;
   private readonly IMapper<InternalCharacter, Character> _mapper;
   private readonly IComparer<Earnable> _userEarnableComparer;
 
-  public CharactersForUserController(IUserRepository userRepository,
-    ICharacterRepository repository,
+  public UserController(ICharacterRepository repository,
     IMapper<InternalCharacter, Character> mapper,
     [FromKeyedServices(KeyedServiceNames.UserCharacterComparer)] IComparer<Earnable> userEarnableComparer)
   {
-    _userRepository = userRepository;
     _repository = repository;
     _mapper = mapper;
     _userEarnableComparer = userEarnableComparer;
   }
 
   [HttpGet]
-  public async Task<IActionResult> Index()
+  public async Task<IActionResult> CharactersIndex()
   {
     var user = HttpContext.RequestingUser;
     if (user is null)
