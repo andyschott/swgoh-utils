@@ -32,7 +32,7 @@ where T : Earnable
   ];
   public IEnumerable<string> Items => _earnables.Keys;
 
-  public string DefaultSortColumn => StatusColumn;
+  public string DefaultSortColumn => string.Empty;
   public bool DefaultSortAscending => true;
 
   public string GetText(string id, string column)

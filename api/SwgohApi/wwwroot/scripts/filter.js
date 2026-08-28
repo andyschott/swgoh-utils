@@ -57,14 +57,12 @@ function sortTable(th, colIndex) {
   th.classList.add(ascending ? 'sort-asc' : 'sort-desc');
 }
 
-document.querySelectorAll('#data-table thead th').forEach((th, colIndex) => {
-  th.style.cursor = 'pointer';
-  th.addEventListener('click', () => sortTable(th, colIndex));
-});
-
 function setDefaultSortColumn() {
   const dataTable = document.querySelector('#data-table');
   const defaultSortColumn = dataTable.dataset.defaultSortColumn;
+  if (defaultSortColumn.length === 0) {
+    return;
+  }
   const defaultSortAscending = dataTable.dataset.defaultSortAscending === 'true';
   const tableHeaders = dataTable.querySelectorAll('thead th');
 
@@ -76,6 +74,11 @@ function setDefaultSortColumn() {
       break;
     }
   }
+
+  document.querySelectorAll('#data-table thead th').forEach((th, colIndex) => {
+    th.style.cursor = 'pointer';
+    th.addEventListener('click', () => sortTable(th, colIndex));
+  });
 }
 setDefaultSortColumn();
 
