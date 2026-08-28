@@ -34,6 +34,12 @@
         </ul>
       </li>
       <li><a asp-controller="Ships" asp-action="Index">Ships</a></li>
+      <ul>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+          <li><a asp-controller="User" asp-action="ShipsIndex">Your Ships</a></li>
+        }
+      </ul>
       <li>
         <a asp-controller="RiseOfTheEmpireRewards" asp-action="Index">Rise of the Empire Rewards</a>
       </li>
