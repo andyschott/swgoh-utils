@@ -1,8 +1,10 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
+using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
+using SwgohApi.Services;
 using SwgohApi.ViewModels;
 using EarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
 using InternalFarmingStatus = SwgohApi.Infrastructure.Models.FarmingStatus;
@@ -15,33 +17,23 @@ public class CharactersForUserController : Controller
   private readonly IUserRepository _userRepository;
   private readonly ICharacterRepository _repository;
   private readonly IMapper<InternalCharacter, Character> _mapper;
+  private readonly IComparer<Earnable> _userEarnableComparer;
 
   public CharactersForUserController(IUserRepository userRepository,
     ICharacterRepository repository,
-    IMapper<InternalCharacter, Character> mapper)
+    IMapper<InternalCharacter, Character> mapper,
+    [FromKeyedServices(KeyedServiceNames.UserCharacterComparer)] IComparer<Earnable> userEarnableComparer)
   {
     _userRepository = userRepository;
     _repository = repository;
     _mapper = mapper;
+    _userEarnableComparer = userEarnableComparer;
   }
 
   [HttpGet]
   public async Task<IActionResult> Index()
   {
-    if (User.Identity?.IsAuthenticated != true)
-    {
-      // TODO: handle error
-      return View();
-    }
-
-    var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-    if (string.IsNullOrEmpty(userId))
-    {
-      // TODO: handle error
-      return View();
-    }
-
-    var user = await _userRepository.GetUserById(userId);
+    var user = HttpContext.RequestingUser;
     if (user is null)
     {
       // TODO: handle error
@@ -63,56 +55,14 @@ public class CharactersForUserController : Controller
           FarmingStatus = InternalFarmingStatus.Backlog,
           Shards = 0,
           User = user,
-          UserId = userId
+          UserId = user.Id
         });
       }
 
       return _mapper.MapTo(internalCharacter);
-    }).ToArray();
-
-    characters.Sort((x, y) =>
-    {
-      var xStatus = x.Shards!.FarmingStatus;
-      var yStatus = y.Shards!.FarmingStatus;
-
-      if (xStatus == yStatus)
-      {
-        return x.Name.CompareTo(y.Name, StringComparison.OrdinalIgnoreCase);
-      }
-
-      // Order is Active -> Backlog -> Done
-      if (xStatus is FarmingStatus.Active)
-      {
-        return -1;
-      }
-
-      if (yStatus is FarmingStatus.Active)
-      {
-        return 1;
-      }
-
-      if (xStatus is FarmingStatus.Backlog)
-      {
-        return -1;
-      }
-
-      if (yStatus is FarmingStatus.Backlog)
-      {
-        return 1;
-      }
-
-      if (xStatus is FarmingStatus.Done)
-      {
-        return -1;
-      }
-
-      if (yStatus is FarmingStatus.Done)
-      {
-        return 1;
-      }
-
-      return 0;
-    });
+    }).Order(_userEarnableComparer)
+    .Cast<Character>()
+    .ToArray();
 
     var model = new UserEarnablesViewModel<Character>
     {
