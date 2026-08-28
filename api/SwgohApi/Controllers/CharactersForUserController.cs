@@ -1,12 +1,11 @@
 using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
-using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
 using SwgohApi.ViewModels;
 using EarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
-using FarmingStatus = SwgohApi.Infrastructure.Models.FarmingStatus;
+using InternalFarmingStatus = SwgohApi.Infrastructure.Models.FarmingStatus;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 
 namespace SwgohApi.Controllers;
@@ -61,7 +60,7 @@ public class CharactersForUserController : Controller
           CharacterId = internalCharacter.Id,
           Ship = null,
           ShipId = null,
-          FarmingStatus = FarmingStatus.Backlog,
+          FarmingStatus = InternalFarmingStatus.Backlog,
           Shards = 0,
           User = user,
           UserId = userId
@@ -70,6 +69,50 @@ public class CharactersForUserController : Controller
 
       return _mapper.MapTo(internalCharacter);
     }).ToArray();
+
+    characters.Sort((x, y) =>
+    {
+      var xStatus = x.Shards!.FarmingStatus;
+      var yStatus = y.Shards!.FarmingStatus;
+
+      if (xStatus == yStatus)
+      {
+        return x.Name.CompareTo(y.Name, StringComparison.OrdinalIgnoreCase);
+      }
+
+      // Order is Active -> Backlog -> Done
+      if (xStatus is FarmingStatus.Active)
+      {
+        return -1;
+      }
+
+      if (yStatus is FarmingStatus.Active)
+      {
+        return 1;
+      }
+
+      if (xStatus is FarmingStatus.Backlog)
+      {
+        return -1;
+      }
+
+      if (yStatus is FarmingStatus.Backlog)
+      {
+        return 1;
+      }
+
+      if (xStatus is FarmingStatus.Done)
+      {
+        return -1;
+      }
+
+      if (yStatus is FarmingStatus.Done)
+      {
+        return 1;
+      }
+
+      return 0;
+    });
 
     var model = new UserEarnablesViewModel<Character>
     {
