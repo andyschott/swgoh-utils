@@ -71,7 +71,9 @@ builder.Services.AddOptions<JwtOptions>()
 
 builder.Services.AddSingleton<ITokenService, JwtTokenService>()
   .AddScoped<IAuthService, AuthService>()
-  .AddMappers();
+  .AddMappers()
+  .AddKeyedSingleton<IComparer<SwgohApi.Models.Earnables.Earnable>, UserEarnableComparer>(
+    KeyedServiceNames.UserCharacterComparer);
 
 builder.Services.AddAuthentication(options =>
 {

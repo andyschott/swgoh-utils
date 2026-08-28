@@ -25,11 +25,21 @@
       <li>
         <a asp-controller="Characters" asp-action="Index">Characters</a>
         <ul>
+          @if (User.Identity?.IsAuthenticated == true)
+          {
+            <li><a asp-controller="User" asp-action="CharactersIndex">Your Characters</a></li>
+          }
           <li><a asp-controller="Marquees" asp-action="Index">Marquees</a></li>
           <lia><a asp-controller="ConquestRewards" asp-action="Index">Conquest Rewards</a></lia>
         </ul>
       </li>
       <li><a asp-controller="Ships" asp-action="Index">Ships</a></li>
+      <ul>
+        @if (User.Identity?.IsAuthenticated == true)
+        {
+          <li><a asp-controller="User" asp-action="ShipsIndex">Your Ships</a></li>
+        }
+      </ul>
       <li>
         <a asp-controller="RiseOfTheEmpireRewards" asp-action="Index">Rise of the Empire Rewards</a>
       </li>
