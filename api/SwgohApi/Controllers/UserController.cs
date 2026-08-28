@@ -1,11 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
+using SwgohApi.Infrastructure.Models;
 using SwgohApi.Mapping;
-using SwgohApi.Models.Earnables;
 using SwgohApi.Services;
 using SwgohApi.ViewModels;
+using Character = SwgohApi.Models.Earnables.Character;
+using Earnable = SwgohApi.Models.Earnables.Earnable;
 using EarnableShards = SwgohApi.Infrastructure.Models.EarnableShards;
+using InternalEarnable = SwgohApi.Infrastructure.Models.Earnable;
 using InternalFarmingStatus = SwgohApi.Infrastructure.Models.FarmingStatus;
 using InternalCharacter = SwgohApi.Infrastructure.Models.Character;
 
@@ -13,16 +16,16 @@ namespace SwgohApi.Controllers;
 
 public class UserController : Controller
 {
-  private readonly ICharacterRepository _repository;
-  private readonly IMapper<InternalCharacter, Character> _mapper;
+  private readonly ICharacterRepository _characterRepository;
+  private readonly IMapper<InternalCharacter, Character> _characterMapper;
   private readonly IComparer<Earnable> _userEarnableComparer;
 
-  public UserController(ICharacterRepository repository,
-    IMapper<InternalCharacter, Character> mapper,
+  public UserController(ICharacterRepository characterRepository,
+    IMapper<InternalCharacter, Character> characterMapper,
     [FromKeyedServices(KeyedServiceNames.UserCharacterComparer)] IComparer<Earnable> userEarnableComparer)
   {
-    _repository = repository;
-    _mapper = mapper;
+    _characterRepository = characterRepository;
+    _characterMapper = characterMapper;
     _userEarnableComparer = userEarnableComparer;
   }
 
@@ -36,34 +39,48 @@ public class UserController : Controller
       return View();
     }
 
-    var internalCharacters = await _repository.GetEarnablesForUser(user);
-    var characters = internalCharacters.Select(internalCharacter =>
-    {
-      if (internalCharacter.CurrentEarnableShards is null)
-      {
-        internalCharacter.EarnableShards.Add(new EarnableShards
-        {
-          Id = string.Empty,
-          Character = internalCharacter,
-          CharacterId = internalCharacter.Id,
-          Ship = null,
-          ShipId = null,
-          FarmingStatus = InternalFarmingStatus.Backlog,
-          Shards = 0,
-          User = user,
-          UserId = user.Id
-        });
-      }
-
-      return _mapper.MapTo(internalCharacter);
-    }).Order(_userEarnableComparer)
-    .Cast<Character>()
-    .ToArray();
-
-    var model = new UserEarnablesViewModel<Character>
-    {
-      Earnables = new UserCharactersTableViewModel(characters)
-    };
+    var model = await CreateViewModel(user,
+      _characterRepository,
+      _characterMapper,
+      characters => new UserCharactersTableViewModel(characters));
     return View(model);
+  }
+
+  private async Task<UserEarnablesViewModel<T>> CreateViewModel<T, TInternal>(
+    User user,
+    IEarnableRepository<TInternal> earnableRepository,
+    IMapper<TInternal, T> mapper,
+    Func<IEnumerable<T>, UserEarnablesTableViewModel<T>> createTableViewModel)
+  where T : Earnable
+  where TInternal : InternalEarnable
+  {
+    var internalEarnables = await earnableRepository.GetEarnablesForUser(user);
+    var earnables = internalEarnables.Select(internalEarnable =>
+      {
+        if (internalEarnable.CurrentEarnableShards is null)
+        {
+          internalEarnable.EarnableShards.Add(new EarnableShards
+          {
+            Id = string.Empty,
+            Character = null,
+            CharacterId = null,
+            Ship = null,
+            ShipId = null,
+            FarmingStatus = InternalFarmingStatus.Backlog,
+            Shards = 0,
+            User = user,
+            UserId = user.Id
+          });
+        }
+
+        return mapper.MapTo(internalEarnable);
+      }).Order(_userEarnableComparer)
+      .Cast<T>()
+      .ToArray();
+
+    return new UserEarnablesViewModel<T>
+    {
+      Earnables = createTableViewModel(earnables)
+    };
   }
 }
