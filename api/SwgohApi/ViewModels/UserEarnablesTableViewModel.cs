@@ -1,4 +1,5 @@
 using SwgohApi.Models.Earnables;
+using SwgohApi.Services;
 
 namespace SwgohApi.ViewModels;
 
@@ -13,6 +14,8 @@ where T : Earnable
   private const string LocationsColumn = "Loctions";
 
   private readonly Dictionary<string, T> _earnables;
+
+  private static EarnableLocationsMapper _locationsMapper = new();
 
   public UserEarnablesTableViewModel(IEnumerable<T> earnables)
   {
@@ -46,7 +49,7 @@ where T : Earnable
       ShardsColumn => shards.ToString(),
       RemainingShardsColumn => (330 - earnable.Shards.Shards).ToString(),
       StatusColumn => earnable.Shards.FarmingStatus.ToString(),
-      // TODO: map locations
+      LocationsColumn => _locationsMapper.MapTo(earnable.Locations),
       _ => string.Empty
     };
   }
