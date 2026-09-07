@@ -34,12 +34,6 @@ public class AuthServiceTests
       _timeProvider);
   }
 
-  [Fact]
-  public void ShouldFail()
-  {
-    Assert.False(true);
-  }
-
   [Theory]
   [InlineSwgohApiAutoData(false)]
   [InlineSwgohApiAutoData(true)]
