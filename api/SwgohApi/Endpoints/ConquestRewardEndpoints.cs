@@ -1,5 +1,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Http.HttpResults;
+using SwgohApi.Extensions;
 using SwgohApi.Infrastructure;
 using SwgohApi.Mapping;
 using SwgohApi.Models.Earnables;
@@ -18,6 +19,8 @@ public static class ConquestRewardEndpoints
 
     conquestRewards.MapGet(string.Empty, GetConquestRewards)
       .AllowAnonymous();
+    conquestRewards.MapPost(string.Empty, CreateConquestReward)
+      .RequireAdmin();
 
     return builder;
   }
@@ -73,7 +76,7 @@ public static class ConquestRewardEndpoints
       shipRepository);
 
     // The current Main Reward should become the secondary reward.
-    var newSecondaryReward = conquestRewards.FirstOrDefault(cr => cr.RewardPhase is ConquestRewardPhase.SecondaryReward);
+    var newSecondaryReward = conquestRewards.FirstOrDefault(cr => cr.RewardPhase is ConquestRewardPhase.MainReward);
     if (newSecondaryReward is null)
     {
       return TypedResults.Problem("Could not find Main Reward Conquest Reward",
